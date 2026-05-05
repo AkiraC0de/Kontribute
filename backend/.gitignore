@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Local env variables (Crucial for security!)
+.env
+.env.local
+.env.development.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Optional IDE specific folders
+.vscode/
+.idea/
