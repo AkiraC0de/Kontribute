@@ -1,4 +1,4 @@
-import GenericError from "../errors/GenericError";
+import GenericError from "../errors/GenericError.js";
 
 const errorHandler = (err, req, res, next) => {
     if (err instanceof GenericError) {

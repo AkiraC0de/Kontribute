@@ -1,5 +1,5 @@
-import GenericError from "./GenericError";
-import ERROR_CODES from "../config/errorCodes";
+import GenericError from "./GenericError.js";
+import ERROR_CODES from "../config/errorCodes.js";
 
 class ValidationError extends GenericError {
   constructor(message, errors){

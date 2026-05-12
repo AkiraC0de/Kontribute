@@ -1,4 +1,4 @@
-import ERROR_CODES from "../config/errorCodes";
+import ERROR_CODES from "../config/errorCodes.js";
 
 class GenericError extends Error {
   constructor(status, message, code) {

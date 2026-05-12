@@ -1,8 +1,9 @@
 import { Router } from "express";
+import joiValidator from "../../middlewares/joiValidator.js";
 
 import { 
   handleRegister
- } from "./auth.controller.js";
+ } from "../controllers/auth.controller.js";
 
 const authRoute = Router();
 
