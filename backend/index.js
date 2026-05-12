@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/ErrorHandler.js";
 
 import authRoute from "./src/routes/auth.routes.js";
+import connectToDB from "./config/database.js";
 
 const app = express();
 
@@ -11,11 +12,14 @@ const app = express();
 app.use(cors())
 app.use(cookieParser());
 app.use(express.json());
-app.use(errorHandler);
 
 // Routes
 app.use('/api/v1/auth', authRoute);
 
+// Error handler
+app.use(errorHandler);
+
 app.listen(process.env.PORT, () => {
+    connectToDB();
     console.log(`The Server is running at PORT ${process.env.PORT}`);
 })

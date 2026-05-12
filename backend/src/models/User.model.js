@@ -1,7 +1,7 @@
-import { Schema } from "mongoose";
+import { mongo, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-const User = new Schema({
+const userSchema = new Schema({
     firstName: {
         type: String,
         required: true,
@@ -74,5 +74,8 @@ userSchema.methods.toPublicJSON = function() {
     email: this.email,
   };
 };
+
+
+const User = model("User", userSchema);
 
 export default User;
