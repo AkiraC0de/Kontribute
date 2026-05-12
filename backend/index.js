@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoute);
+app.use('/api/v1/auth', authRoute);
 
 app.listen(process.env.PORT, () => {
     console.log(`The Server is running at PORT ${process.env.PORT}`);

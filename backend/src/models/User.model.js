@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 const User = new Schema({
     firstName: {
@@ -14,7 +14,7 @@ const User = new Schema({
         trim: true,
         minlength: 1
     },
-    middleName: {
+    middleInitial: {
         type: String,
         trim: true,
         minlength: 1
@@ -36,11 +36,16 @@ const User = new Schema({
     role: {
         type: String,
         enum: ['user', 'admin'],
+        index: true,
         default: 'user'
     },
     isEmailVerified: {
         type: Boolean,
         default: false
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false,
     }
 }, { 
     timestamps: true
@@ -58,13 +63,13 @@ userSchema.index(
 );
 
 userSchema.methods.comparePassword = async function(enteredPassword) {
-  return await bcryptjs.compare(enteredPassword, this.password);
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 userSchema.methods.toPublicJSON = function() {
   return {
     firstName: this.firstName,
-    middleName: this.middleName,
+    middleInitial: this.middleInitial,
     lastName: this.lastName,
     email: this.email,
   };
