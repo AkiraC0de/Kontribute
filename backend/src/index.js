@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/ErrorHandler.js";
 
-import authRoute from "./src/routes/auth.routes.js";
+import authRoute from "./routes/auth.routes.js";
 import connectToDB from "./config/database.js";
 
 const app = express();

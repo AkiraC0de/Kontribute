@@ -1,5 +1,5 @@
 import { Router } from "express";
-import joiValidator from "../../middlewares/joiValidator.js";
+import joiValidator from "../middlewares/joiValidator.js";
 import { registerSchema } from "../validations/auth.validations.js"
 
 import { 

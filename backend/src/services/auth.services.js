@@ -1,7 +1,8 @@
-import GenericError from "../../errors/GenericError.js";
-import ERROR_CODES from "../../config/errorCodes.js";
+import GenericError from "../errors/GenericError.js";
+import ERROR_CODES from "../config/errorCodes.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const registerUser = async (userData) => {
   const { firstName, lastName, middleInitial, email, password} = userData;
@@ -17,7 +18,7 @@ export const registerUser = async (userData) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  // If they exist but are UNVERIFIED, overwrite/update their details
+  // If the user exist but are UNVERIFIED, overwrite/update their details
   if(existingUser && !existingUser.isEmailVerified){
     existingUser.firstName = firstName;
     existingUser.lastName = lastName;
@@ -42,3 +43,21 @@ export const registerUser = async (userData) => {
 
   return newUser.toPublicJSON();
 }
+
+//
+
+const generateToken = (user) => {
+  const accessToken = jwt.sign(
+    { _id: user._id, role: user.role },
+    process.env.JWT_ACCESS_SECRET, 
+    { expiresIn: "15m" } 
+  );
+
+  const refreshToken = jwt.sign(
+    { _id: user._id, role: user.role },
+    process.env.JWT_REFRESH_SECRET, 
+    { expiresIn: "30d" }
+  );
+
+  return { accessToken, refreshToken };
+};
