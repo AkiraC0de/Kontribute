@@ -7,6 +7,7 @@ export const handleRegister = async (req, res) => {
     .json({
       success: true,
       message: "Account has successfully created.",
-      ...result
+      user: result.user,
+      sessionToken: result.sessionToken,
     });
 }
