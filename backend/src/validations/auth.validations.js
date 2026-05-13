@@ -65,3 +65,17 @@ export const registerSchema = Joi.object({
       "any.required": "Agreement with terms and conditions is required."
     }),
 });
+
+export const emailVerificationSchema = Joi.object({
+  pin: Joi.string()
+    .trim()
+    .required()
+    .length(6)
+    .pattern(/^[0-9]+$/)
+    .messages({
+      "string.length": "Pin must be exactly 6 digits long.",
+      "string.pattern.base": "Pin must contain only numbers.",
+      "string.empty": "Pin is required.",
+      "any.required": "Pin is a required field."
+    }),
+});

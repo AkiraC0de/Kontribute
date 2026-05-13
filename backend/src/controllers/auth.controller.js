@@ -11,3 +11,7 @@ export const handleRegister = async (req, res) => {
       sessionToken: result.sessionToken,
     });
 }
+
+export const handleEmailVerification = async (req, res) => {
+    res.status(200).json({"test" : "test"});
+}

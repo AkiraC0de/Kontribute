@@ -14,6 +14,7 @@ const otpSchema = new Schema({
     type: String,
     enum: ["emailVerification"],
     required: true,
+    index: true,
   },
   updatedAt: {
     type: Date,

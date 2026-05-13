@@ -1,3 +1,5 @@
+import ERROR_CODES from "../config/errorCodes.js";
+import GenericError from "../errors/GenericError.js";
 import ValidationError from "../errors/ValidationError.js";
 import Joi from "joi";
 
@@ -5,6 +7,10 @@ const { Schema } = Joi;
 
 const joiValidator = (schema, source = "body") => {
   return (req, res, next) => {
+    if(!req[source]){
+      throw new GenericError(400, `'${source}' is required in the request.`, ERROR_CODES.REQUEST_ERROR);
+    }
+
     const { error, value } = schema.validate(req[source], { 
       abortEarly: false,
       stripUnknown: true 
