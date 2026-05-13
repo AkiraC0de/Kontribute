@@ -1,4 +1,4 @@
-import { registerUser } from "../services/auth.services.js"
+import { registerUser, verifyUserEmail } from "../services/auth.services.js"
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);
@@ -13,5 +13,12 @@ export const handleRegister = async (req, res) => {
 }
 
 export const handleEmailVerification = async (req, res) => {
-    res.status(200).json({"test" : "test"});
+  const result = await verifyUserEmail(req.user._id, req.body.pin);
+
+  return res.status(200)
+    .json({
+      success : true,
+      message: "Email has been verified.",
+      user: result.user
+    });
 }

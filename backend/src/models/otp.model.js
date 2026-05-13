@@ -1,4 +1,7 @@
 import { Schema, model } from "mongoose";
+import crypto from "crypto";
+
+export const MAX_OTP_ATTEMPTS = 10;
 
 const otpSchema = new Schema({
   user: {
@@ -9,6 +12,11 @@ const otpSchema = new Schema({
   pin: {
     type: String,
     required: true,
+  },
+  attempts: {
+    type: Number,
+    max: MAX_OTP_ATTEMPTS,
+    default: 0,
   },
   type: {
     type: String,
@@ -33,7 +41,7 @@ otpSchema.methods.comparePin = function(pin){
         .update(pin)
         .digest('hex');
 
-  return hashedPin === pin;
+  return hashedPin === this.pin;
 }
 
 otpSchema.methods.isOnCooldown = function() {
@@ -41,6 +49,13 @@ otpSchema.methods.isOnCooldown = function() {
   
   return (new Date() - this.createdAt) > coolDownInMs;
 };
+
+otpSchema.methods.incrementAttempt = async function(){
+  if(this.attempts < MAX_OTP_ATTEMPTS){
+    this.attempts += 1;
+    await this.save();
+  }
+}
 
 const Otp = model("Otp", otpSchema);
 

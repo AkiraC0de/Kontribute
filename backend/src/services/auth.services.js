@@ -10,7 +10,7 @@ import User from "../models/user.model.js";
 import SessionToken from "../models/sessionToken.model.js";
 
 import { generateCryptoToken, generateSixDigitCode } from "../utils/utils.js";
-import Otp from "../models/otp.model.js";
+import Otp, { MAX_OTP_ATTEMPTS } from "../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../utils/mailer.js";
 
 export const registerUser = async (userData) => {
@@ -25,9 +25,11 @@ export const registerUser = async (userData) => {
 
   // If the user exist but are UNVERIFIED, delete the exisiting data
   if(existingUser && !existingUser.isEmailVerified){
-    await existingUser.deleteOne();
-    await SessionToken.deleteMany({ user: existingUser._id});
-    await Otp.deleteMany({ user: existingUser._id});
+    await Promise.all([
+      await existingUser.deleteOne(),
+      await SessionToken.deleteMany({ user: existingUser._id}),
+      await Otp.deleteMany({ user: existingUser._id})
+    ]);
   }
 
   // hash the password
@@ -43,14 +45,58 @@ export const registerUser = async (userData) => {
   });
 
   // create the session token and OTP for email verification
-  const sessionToken = await createSessionToken(newUser._id, "emailVerification");
-  const otp = await createOtp(newUser._id, "emailVerification");
+  const [sessionToken, otp] = await Promise.all([
+    await createSessionToken(newUser._id, "emailVerification"),
+    await createOtp(newUser._id, "emailVerification"),
+  ]);
 
   await sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
 
   return {
     user: newUser.toPublicJSON(),
     sessionToken
+  };
+}
+
+export const verifyUserEmail = async (userId, pin) => {
+  const user = await User.findById(userId);
+  if(!user){
+    throw GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
+  }
+
+  // Check for OTP if it exist
+  const otp = await Otp.findOne({user: userId, type: "emailVerification"});
+  if(!otp){
+    throw GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
+  }
+
+  // Check and Compare the input PIN from the one in the database
+  if(!(otp.comparePin(pin))) {
+    await otp.incrementAttempt(); // record attempt
+
+    const hasAttemptsRemaining =
+            otp.attempts < MAX_OTP_ATTEMPTS;
+
+    if(hasAttemptsRemaining){
+      const remainingAttempts = MAX_OTP_ATTEMPTS - otp.attempts;
+      throw new GenericError(400, `Pin is incorrect. You have ${remainingAttempts} attempts remaining.`, ERROR_CODES.INCORRECT_PIN);
+    } else {
+      throw new GenericError(400, "You have reached the maximum attempts. Please request a new PIN.", ERROR_CODES.INCORRECT_PIN);
+    }
+  }    
+
+  // Verify the user
+  user.isEmailVerified = true;
+  await user.save();
+
+  // Delete the session token and OTP to invalidate the email verification session.
+  await Promise.all([
+    otp.deleteOne(),
+    SessionToken.deleteMany({ user: userId, type: "emailVerification"})
+  ]);
+
+  return {
+    user: user.toPublicJSON()
   };
 }
 
@@ -94,23 +140,23 @@ const createOtp = async (userId, otpType) => {
     await Otp.deleteMany({ user: userId,type: otpType });
   }
 
-  const rawOtp = generateSixDigitCode();
+  const rawPin = generateSixDigitCode();
 
-  const hashedOtp = crypto
+  const hashedPin = crypto
       .createHash('sha256')
-      .update(rawOtp)
+      .update(rawPin)
       .digest('hex');
 
   const newOtp = await Otp.create({
     user: userId,
-    pin: hashedOtp,
+    pin: hashedPin,
     type: otpType,
   })
 
-  return rawOtp;
+  return rawPin;
 }
 
-const generateToken = (user) => {
+const generateTokens = (user) => {
   const accessToken = jwt.sign(
     { _id: user._id, role: user.role },
     process.env.JWT_ACCESS_SECRET, 
