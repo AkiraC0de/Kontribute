@@ -1,10 +1,9 @@
 
-const COOKIE_REFRESHTOKEN_MAX_AGE = 15 * 24 * 60 * 60 * 1000, // 15 days
 
 export const COOKIE_REFRESHTOKEN = {
-  NAME: "KontributeGF",
+  NAME: "KontributeRF",
   OPTIONS:{
-    maxAge: COOKIE_MAX_AGE,
+    maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
     path: "/",                       
     httpOnly: true,                  
     // secure: isProduction,            

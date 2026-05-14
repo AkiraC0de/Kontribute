@@ -4,7 +4,7 @@ import crypto from "crypto";
 export const MAX_OTP_ATTEMPTS = 10;
 
 const otpSchema = new Schema({
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,

@@ -24,13 +24,13 @@ const verifySessionToken = (sessionType) => {
 
     const sessionToken = await SessionToken
                           .findOne({ token: hashedToken, type: sessionType })
-                          .populate("user");
+                          .populate("userId");
     
     if(!sessionToken){
       throw new UnauthorizeError("Invalid or Expired Session Token.");
     }
 
-    req.user = sessionToken.user;
+    req.user = sessionToken.userId;
     next();
   }
 }

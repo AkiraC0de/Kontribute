@@ -37,10 +37,10 @@ export const handleLogin = async (req, res) => {
     });
 }
 
-const handleLogout = async (req, res) => {
-    res.clearCookie(COOKIE_REFRESHTOKEN.NAME);
-    res.status(200).json({
-        success: true, 
-        message: "Logged out.",
-    });
+export const handleLogout = async (req, res) => {
+  res.clearCookie(COOKIE_REFRESHTOKEN.NAME);
+  res.status(200).json({
+      success: true, 
+      message: "Logged out.",
+  });
 }

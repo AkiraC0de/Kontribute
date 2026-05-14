@@ -1,7 +1,7 @@
 import { mongo, Schema, model } from "mongoose";
 
 const sessionTokenSchema = new Schema({
-  user: {
+  userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

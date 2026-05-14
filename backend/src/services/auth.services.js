@@ -27,8 +27,8 @@ export const registerUser = async (userData) => {
   if(existingUser && !existingUser.isEmailVerified){
     await Promise.all([
       existingUser.deleteOne(),
-      SessionToken.deleteMany({ user: existingUser._id}),
-      Otp.deleteMany({ user: existingUser._id})
+      SessionToken.deleteMany({ userId: existingUser._id}),
+      Otp.deleteMany({ userId: existingUser._id})
     ]);
   }
 
@@ -67,7 +67,7 @@ export const verifyUserEmail = async (userId, pin) => {
   }
 
   // Check for OTP if it exist
-  const otp = await Otp.findOne({user: userId, type: "emailVerification"});
+  const otp = await Otp.findOne({userId, type: "emailVerification"});
   if(!otp){
     throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
   }
@@ -94,7 +94,7 @@ export const verifyUserEmail = async (userId, pin) => {
   // Delete the session token and OTP to invalidate the email verification session.
   await Promise.all([
     otp.deleteOne(),
-    SessionToken.deleteMany({ user: userId, type: "emailVerification"})
+    SessionToken.deleteMany({ userId, type: "emailVerification"})
   ]);
 
   return {
@@ -146,7 +146,7 @@ const createSessionToken = async (userId, sessionType) => {
       .digest('hex');
 
   const newSessionToken = await SessionToken.create({
-    user: userId,
+    userId: userId,
     token: hashedToken,
     type: sessionType,
   })
@@ -173,7 +173,7 @@ const createOtp = async (userId, otpType) => {
       .digest('hex');
 
   const newOtp = await Otp.create({
-    user: userId,
+    userId: userId,
     pin: hashedPin,
     type: otpType,
   })
