@@ -35,7 +35,7 @@ const otpSchema = new Schema({
   }
 });
 
-otpSchema.methods.comparePin = function(pin){
+otpSchema.methods.isValidPin = function(pin){
   const hashedPin = crypto
         .createHash('sha256')
         .update(pin)

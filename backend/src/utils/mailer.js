@@ -6,6 +6,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.MAILER_EMAIL_USER, 
     pass: process.env.MAILER_EMAIL_PASS,
   },
+  pool: true,
 });
 
 export const sendEmail = async (to, subject, htmlContent) => {

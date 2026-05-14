@@ -26,9 +26,9 @@ export const registerUser = async (userData) => {
   // If the user exist but are UNVERIFIED, delete the exisiting data
   if(existingUser && !existingUser.isEmailVerified){
     await Promise.all([
-      await existingUser.deleteOne(),
-      await SessionToken.deleteMany({ user: existingUser._id}),
-      await Otp.deleteMany({ user: existingUser._id})
+      existingUser.deleteOne(),
+      SessionToken.deleteMany({ user: existingUser._id}),
+      Otp.deleteMany({ user: existingUser._id})
     ]);
   }
 
@@ -46,13 +46,14 @@ export const registerUser = async (userData) => {
 
   // create the session token and OTP for email verification
   const [sessionToken, otp] = await Promise.all([
-    await createSessionToken(newUser._id, "emailVerification"),
-    await createOtp(newUser._id, "emailVerification"),
+    createSessionToken(newUser._id, "emailVerification"),
+    createOtp(newUser._id, "emailVerification"),
   ]);
 
   await sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
 
   return {
+    message: "Account has successfully created.",
     user: newUser.toPublicJSON(),
     sessionToken
   };
@@ -71,7 +72,7 @@ export const verifyUserEmail = async (userId, pin) => {
   }
 
   // Check and Compare the input PIN from the one in the database
-  if(!(otp.comparePin(pin))) {
+  if(!(otp.isValidPin(pin))) {
     await otp.incrementAttempt(); // record attempt
 
     const hasAttemptsRemaining =
@@ -96,7 +97,8 @@ export const verifyUserEmail = async (userId, pin) => {
   ]);
 
   return {
-    user: user.toPublicJSON()
+    message : "Your Email is now verified.", 
+    user : user.toPublicJSON()
   };
 }
 

@@ -6,7 +6,7 @@ export const handleRegister = async (req, res) => {
   return res.status(200)
     .json({
       success: true,
-      message: "Account has successfully created.",
+      message: result.message,
       user: result.user,
       sessionToken: result.sessionToken,
     });
@@ -18,7 +18,7 @@ export const handleEmailVerification = async (req, res) => {
   return res.status(200)
     .json({
       success : true,
-      message: "Email has been verified.",
+      message: result.message,
       user: result.user
     });
 }
