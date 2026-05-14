@@ -1,3 +1,4 @@
+import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
 import { loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
 
 export const handleRegister = async (req, res) => {
@@ -27,17 +28,19 @@ export const handleLogin = async (req, res) => {
   const result = await loginUser(req.body);
 
   return res.status(200)
-    .cookie("kontributeRF", result.refreshToken, {
-      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
-      path: "/",                       
-      httpOnly: true,                  
-      // secure: isProduction,            
-      // sameSite: isProduction ? "strict" : "lax",
-    })
+    .cookie(COOKIE_REFRESHTOKEN.NAME, result.refreshToken, COOKIE_REFRESHTOKEN.OPTIONS)
     .json({
       success: true,
       message: "Login successful.",
       user: result.user,
       accessToken: result.accessToken,
+    });
+}
+
+const handleLogout = async (req, res) => {
+    res.clearCookie(COOKIE_REFRESHTOKEN.NAME);
+    res.status(200).json({
+        success: true, 
+        message: "Logged out.",
     });
 }
