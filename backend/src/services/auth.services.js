@@ -50,7 +50,8 @@ export const registerUser = async (userData) => {
     createOtp(newUser._id, "emailVerification"),
   ]);
 
-  await sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
+  // No await for advance response
+  sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
 
   return {
     message: "Account has successfully created.",
@@ -62,13 +63,13 @@ export const registerUser = async (userData) => {
 export const verifyUserEmail = async (userId, pin) => {
   const user = await User.findById(userId);
   if(!user){
-    throw GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
+    throw new GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
   }
 
   // Check for OTP if it exist
   const otp = await Otp.findOne({user: userId, type: "emailVerification"});
   if(!otp){
-    throw GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
+    throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
   }
 
   // Check and Compare the input PIN from the one in the database
@@ -102,6 +103,28 @@ export const verifyUserEmail = async (userId, pin) => {
   };
 }
 
+export const loginUser = async (userData) => {
+  const { email, password } = userData;
+
+  const user = await User.findOne({ email }).select("+password");; 
+
+  if(!user){
+    throw new GenericError(400, "Email or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
+  }
+  
+  const isPasswordValid = await user.comparePassword(password);
+  if(!isPasswordValid){
+    throw new GenericError(400, "Email or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
+  }
+
+  const tokens = generateTokens(user);
+
+  return {
+    user: user.toPublicJSON(),
+    accessToken : tokens.accessToken,
+    refreshToken : tokens.refreshToken
+  }
+}
 //
 
 const createSessionToken = async (userId, sessionType) => {
@@ -168,7 +191,7 @@ const generateTokens = (user) => {
   const refreshToken = jwt.sign(
     { _id: user._id, role: user.role },
     process.env.JWT_REFRESH_SECRET, 
-    { expiresIn: "30d" }
+    { expiresIn: "15d" }
   );
 
   return { accessToken, refreshToken };

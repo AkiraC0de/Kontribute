@@ -79,3 +79,23 @@ export const emailVerificationSchema = Joi.object({
       "any.required": "Pin is a required field."
     }),
 });
+
+export const loginSchema = Joi.object({
+  email: Joi.string()
+    .trim()
+    .required()
+    .lowercase()
+    .email()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.empty": "Email is required.",
+      "any.required": "Email is a required field."
+    }),
+  password: Joi.string()
+    .trim()
+    .required()
+    .messages({
+      "string.empty" : "Password is required.",
+      "any.required" : "Password is a required field."
+    })  
+});
