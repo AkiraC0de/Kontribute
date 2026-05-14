@@ -120,11 +120,13 @@ export const loginUser = async (userData) => {
   const tokens = generateTokens(user);
 
   return {
-    user: user.toPublicJSON(),
+    message : "Login successful.",
+    user : user.toPublicJSON(),
     accessToken : tokens.accessToken,
     refreshToken : tokens.refreshToken
   }
 }
+
 //
 
 const createSessionToken = async (userId, sessionType) => {
@@ -181,15 +183,15 @@ const createOtp = async (userId, otpType) => {
   return rawPin;
 }
 
-const generateTokens = (user) => {
+export const generateTokens = (userData) => {
   const accessToken = jwt.sign(
-    { _id: user._id, role: user.role },
+    { _id: userData._id, role: userData.role },
     process.env.JWT_ACCESS_SECRET, 
     { expiresIn: "15m" } 
   );
 
   const refreshToken = jwt.sign(
-    { _id: user._id, role: user.role },
+    { _id: userData._id, role: userData.role },
     process.env.JWT_REFRESH_SECRET, 
     { expiresIn: "15d" }
   );

@@ -1,5 +1,7 @@
 import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
-import { loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
+import GenericError from "../errors/GenericError.js";
+import User from "../models/user.model.js";
+import { generateTokens, loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);
@@ -31,7 +33,7 @@ export const handleLogin = async (req, res) => {
     .cookie(COOKIE_REFRESHTOKEN.NAME, result.refreshToken, COOKIE_REFRESHTOKEN.OPTIONS)
     .json({
       success: true,
-      message: "Login successful.",
+      message: result.message,
       user: result.user,
       accessToken: result.accessToken,
     });
@@ -43,4 +45,22 @@ export const handleLogout = async (req, res) => {
       success: true, 
       message: "Logged out.",
   });
+}
+
+export const handleRefresh = async (req, res) => {
+  const newTokens = generateTokens(req.user);
+  const user = await User.findById(req.user._id);
+
+  if(!user){
+     throw new GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
+  }
+
+  res.status(200)
+    .cookie(COOKIE_REFRESHTOKEN.NAME, newTokens.refreshToken, COOKIE_REFRESHTOKEN.OPTIONS)
+    .json({
+        success: true, 
+        message: "Refresh successful.",
+        user: user.toPublicJSON(),
+        accessToken: newTokens.accessToken
+    });
 }

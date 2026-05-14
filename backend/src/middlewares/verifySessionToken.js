@@ -4,8 +4,6 @@ import crypto from "crypto";
 
 const verifySessionToken = (sessionType) => {
   return async (req, res, next) => {
-    const auhtorization = req.header.auhtorization;
-
     const authorization = req.headers.authorization || req.headers.Authorization;
     if(!authorization) {
       throw new UnauthorizeError("Authorization in request headers is required.");

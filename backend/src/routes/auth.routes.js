@@ -6,9 +6,11 @@ import {
   handleEmailVerification,
   handleLogin,
   handleLogout,
+  handleRefresh,
   handleRegister
 } from "../controllers/auth.controller.js";
 import verifySessionToken from "../middlewares/verifySessionToken.js";
+import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
 
 const authRoute = Router();
 
@@ -19,5 +21,7 @@ authRoute.post("/verify-email", verifySessionToken("emailVerification"),  joiVal
 authRoute.post("/login", joiValidator(loginSchema, "body"), handleLogin);
 
 authRoute.get("/logout", handleLogout);
+
+authRoute.get("/refresh", verifyRefreshToken, handleRefresh);
 
 export default authRoute
