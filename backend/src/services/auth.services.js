@@ -13,6 +13,7 @@ import { generateCryptoToken, generateSixDigitCode } from "../utils/utils.js";
 import Otp, { MAX_OTP_ATTEMPTS } from "../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../utils/mailer.js";
 import { generateTokens } from "../utils/token.js";
+import UserNotFound from "../errors/UserNotFound.js";
 
 export const registerUser = async (userData) => {
   const { firstName, lastName, middleInitial, email, password} = userData;
@@ -55,7 +56,7 @@ export const registerUser = async (userData) => {
   sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
 
   return {
-    message: "Account has successfully created.",
+    message: "Account has successfully created. PIN for verification has been sent via Email.",
     user: newUser.toPublicJSON(),
     sessionToken
   };
@@ -64,7 +65,7 @@ export const registerUser = async (userData) => {
 export const verifyUserEmail = async (userId, pin) => {
   const user = await User.findById(userId);
   if(!user){
-    throw new GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
+    throw new UserNotFound();
   }
 
   // Check for OTP if it exist
@@ -128,17 +129,39 @@ export const loginUser = async (userData) => {
   }
 }
 
+export const requestResetPassword = async (email) => {
+  const user = await User.findOne({email});
+
+  if(!user){
+    throw new UserNotFound();
+  }
+
+  // create the session token and OTP for email verification
+  const [sessionToken, otp] = await Promise.all([
+    createSessionToken(user._id, "resetPasswordVerification"),
+    createOtp(user._id, "resetPasswordVerification"),
+  ]);
+
+  // No await for advance response
+  //sendVerificationCodeViaEmail(email, "Reset Password Verification", otp);
+
+  return {
+    message: "PIN for verification has sent via email.",
+    sessionToken
+  };
+}
+
 //
 
 const createSessionToken = async (userId, sessionType) => {
-  const existingSessionToken = await SessionToken.findOne({ user: userId, type: sessionType, });
+  const existingSessionToken = await SessionToken.findOne({ userId, type: sessionType, });
 
   if(existingSessionToken && existingSessionToken.isOnCooldown()){
     throw new GenericError(429, "Please wait for a few moments before requesting for new session.", ERROR_CODES.TOO_MANY_REQUEST);
   }
 
   if (existingSessionToken) {
-    await SessionToken.deleteMany({ user: userId,type: sessionType });
+    await SessionToken.deleteMany({ userId,type: sessionType });
   }
 
   const rawToken = generateCryptoToken();
@@ -158,14 +181,14 @@ const createSessionToken = async (userId, sessionType) => {
 }
 
 const createOtp = async (userId, otpType) => {
-  const existingOtp = await Otp.findOne({ user: userId, type: otpType, });
+  const existingOtp = await Otp.findOne({ userId, type: otpType, });
 
   if(existingOtp && existingOtp.isOnCooldown()){
     throw new GenericError(429, "Please wait for a few moments before requesting for new OTP.", ERROR_CODES.TOO_MANY_REQUEST);
   }
 
   if (existingOtp) {
-    await Otp.deleteMany({ user: userId,type: otpType });
+    await Otp.deleteMany({ userId,type: otpType });
   }
 
   const rawPin = generateSixDigitCode();

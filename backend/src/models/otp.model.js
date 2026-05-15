@@ -45,9 +45,14 @@ otpSchema.methods.isValidPin = function(pin){
 }
 
 otpSchema.methods.isOnCooldown = function() {
-  const coolDownInMs = 1 * 60 * 1000; // 1 minute
+  const COOLDOWN_IN_MS = 1 * 60 * 1000; // 1 minute
   
-  return (new Date() - this.createdAt) > coolDownInMs;
+  // Explicitly convert to Date object to prevent string coercion bugs
+  const createdTime = new Date(this.createdAt).getTime();
+  const cooldownEndTime = createdTime + COOLDOWN_IN_MS;
+  
+  // It's on cooldown if the current time hasn't passed the end time yet
+  return Date.now() < cooldownEndTime;
 };
 
 otpSchema.methods.incrementAttempt = async function(){

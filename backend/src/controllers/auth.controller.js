@@ -1,7 +1,8 @@
 import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
 import GenericError from "../errors/GenericError.js";
+import UserNotFound from "../errors/UserNotFound.js";
 import User from "../models/user.model.js";
-import { loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
+import { loginUser, registerUser, requestResetPassword, verifyUserEmail } from "../services/auth.services.js"
 import { generateTokens } from "../utils/token.js";
 import ERROR_CODES from "../config/errorCodes.js";
 import { verifyToken } from "../utils/token.js";
@@ -55,7 +56,7 @@ export const handleRefresh = async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if(!user){
-     throw new GenericError(404, "User not found.", ERROR_CODES.NOT_FOUND);
+     throw new UserNotFound();
   }
 
   res.status(200)
@@ -87,5 +88,19 @@ export const handleVerifyToken = async (req, res) => {
       success: true, 
       message: "Token is valid.",
       [tokenType]: token
+    })
+}
+
+
+export const handleRequestResetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const result = await requestResetPassword(email);
+
+  return res.status(200)  
+    .json({
+      success: true,
+      message: result.message,
+      sessionToken: result.sessionToken
     })
 }
