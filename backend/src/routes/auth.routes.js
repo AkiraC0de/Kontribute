@@ -15,16 +15,36 @@ import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
 
 const authRoute = Router();
 
+// -- Core Authentication
+
+// Register a new account
 authRoute.post("/register", joiValidator(registerSchema, "body"), handleRegister );
 
-authRoute.post("/verify-email", verifySessionToken("emailVerification"),  joiValidator(emailVerificationSchema, "body") , handleEmailVerification );
-
+// Authenticate user & issue tokens (Access/Refresh pairs)
 authRoute.post("/login", joiValidator(loginSchema, "body"), handleLogin);
 
-authRoute.get("/logout", handleLogout);
+// Clear cookies / revoke sessions 
+authRoute.post("/logout", handleLogout);
 
-authRoute.get("/refresh", verifyRefreshToken, handleRefresh);
+// Exchange an old refresh token for a new pair 
+authRoute.post("/refresh", verifyRefreshToken, handleRefresh);
 
-authRoute.get("/verify-token", handleVerifyToken);
+
+// -- Token and Account Verification
+
+// Verify active token state safely via headers/cookies
+authRoute.post("/verify/token", handleVerifyToken);
+
+// Process email verification OTP. Requires SessionToken (type: emailVerification)
+authRoute.post("/verify/email", 
+  verifySessionToken("emailVerification"),  
+  joiValidator(emailVerificationSchema, "body"), 
+  handleEmailVerification 
+);
+
+// Verify the emailed OTP. Requires SessionToken (type: resetPasswordVerification)
+// authRoute.post("/verify/reset-password") //NOT FINISH
+
+//  
 
 export default authRoute

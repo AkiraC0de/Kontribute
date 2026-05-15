@@ -20,7 +20,7 @@ const otpSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["emailVerification"],
+    enum: ["emailVerification", "resetPasswordVerification"],
     required: true,
     index: true,
   },

@@ -14,7 +14,7 @@ const sessionTokenSchema = new Schema({
       type: String,
       required: true,
       index: true,
-      enum: ["emailVerification", "resetPassword"]
+      enum: ["emailVerification", "resetPasswordVerification" ,"resetPassword"]
   },
   updatedAt: {
       type: Date,
