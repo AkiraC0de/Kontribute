@@ -12,6 +12,7 @@ import SessionToken from "../models/sessionToken.model.js";
 import { generateCryptoToken, generateSixDigitCode } from "../utils/utils.js";
 import Otp, { MAX_OTP_ATTEMPTS } from "../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../utils/mailer.js";
+import { generateTokens } from "../utils/token.js";
 
 export const registerUser = async (userData) => {
   const { firstName, lastName, middleInitial, email, password} = userData;
@@ -183,18 +184,3 @@ const createOtp = async (userId, otpType) => {
   return rawPin;
 }
 
-export const generateTokens = (userData) => {
-  const accessToken = jwt.sign(
-    { _id: userData._id, role: userData.role },
-    process.env.JWT_ACCESS_SECRET, 
-    { expiresIn: "15m" } 
-  );
-
-  const refreshToken = jwt.sign(
-    { _id: userData._id, role: userData.role },
-    process.env.JWT_REFRESH_SECRET, 
-    { expiresIn: "15d" }
-  );
-
-  return { accessToken, refreshToken };
-};

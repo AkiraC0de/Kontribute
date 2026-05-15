@@ -1,6 +1,7 @@
 import SessionToken from "../models/sessionToken.model.js";
 import UnauthorizeError from "../errors/UnauthorizeError.js";
 import crypto from "crypto";
+import { validateSessionToken } from "../utils/token.js";
 
 const verifySessionToken = (sessionType) => {
   return async (req, res, next) => {
@@ -15,20 +16,10 @@ const verifySessionToken = (sessionType) => {
     // Extract the token from authorization
     const token = authorization.split(' ')[1];
 
-    const hashedToken = crypto
-                          .createHash('sha256')
-                          .update(token)
-                          .digest('hex');
+    // validate the token if it does exist in the databsae
+    const sessionToken = await validateSessionToken(token, sessionType);
 
-    const sessionToken = await SessionToken
-                          .findOne({ token: hashedToken, type: sessionType })
-                          .populate("userId");
-    
-    if(!sessionToken){
-      throw new UnauthorizeError("Invalid or Expired Session Token.");
-    }
-
-    req.user = sessionToken.userId;
+    req.user = sessionToken.userId; // populated user
     next();
   }
 }

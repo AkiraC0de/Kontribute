@@ -1,7 +1,8 @@
 import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
 import GenericError from "../errors/GenericError.js";
 import User from "../models/user.model.js";
-import { generateTokens, loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
+import { loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
+import { generateTokens } from "../utils/token.js";
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);
@@ -63,4 +64,8 @@ export const handleRefresh = async (req, res) => {
         user: user.toPublicJSON(),
         accessToken: newTokens.accessToken
     });
+}
+
+export const handleVerifyToken = (req, res) => {
+  
 }

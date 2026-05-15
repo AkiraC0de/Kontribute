@@ -7,7 +7,8 @@ import {
   handleLogin,
   handleLogout,
   handleRefresh,
-  handleRegister
+  handleRegister,
+  handleVerifyToken
 } from "../controllers/auth.controller.js";
 import verifySessionToken from "../middlewares/verifySessionToken.js";
 import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
@@ -23,5 +24,7 @@ authRoute.post("/login", joiValidator(loginSchema, "body"), handleLogin);
 authRoute.get("/logout", handleLogout);
 
 authRoute.get("/refresh", verifyRefreshToken, handleRefresh);
+
+authRoute.get("verify-token", handleVerifyToken);
 
 export default authRoute
