@@ -3,6 +3,8 @@ import GenericError from "../errors/GenericError.js";
 import User from "../models/user.model.js";
 import { loginUser, registerUser, verifyUserEmail } from "../services/auth.services.js"
 import { generateTokens } from "../utils/token.js";
+import ERROR_CODES from "../config/errorCodes.js";
+import { verifyToken } from "../utils/token.js";
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);
@@ -66,6 +68,24 @@ export const handleRefresh = async (req, res) => {
     });
 }
 
-export const handleVerifyToken = (req, res) => {
-  
+export const handleVerifyToken = async (req, res) => {
+  const token = req?.query?.token;
+  if(!token) {
+    throw new GenericError(400, "'token' is required in the request query.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  const tokenType = req?.query?.type;
+
+  if(!tokenType) {
+    throw new GenericError(400, "'type' is required in the request query.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  await verifyToken(token, tokenType);
+
+  res.status(200)
+    .json({
+      success: true, 
+      message: "Token is valid.",
+      [tokenType]: token
+    })
 }

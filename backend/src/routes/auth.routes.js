@@ -25,6 +25,6 @@ authRoute.get("/logout", handleLogout);
 
 authRoute.get("/refresh", verifyRefreshToken, handleRefresh);
 
-authRoute.get("verify-token", handleVerifyToken);
+authRoute.get("/verify-token", handleVerifyToken);
 
 export default authRoute

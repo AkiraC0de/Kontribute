@@ -48,8 +48,14 @@ export const validateSessionToken = async (sessionToken, sessionType = null) => 
                           .update(sessionToken)
                           .digest('hex');
 
+  const query = { token: hashedToken };
+
+  if (sessionType !== null) {
+    query.type = sessionType;
+  }                          
+
   const validSessionToken = await SessionToken
-                        .findOne({ token: hashedToken, type: sessionType })
+                        .findOne(query)
                         .populate("userId");
   
   if(!validSessionToken){
@@ -61,9 +67,6 @@ export const validateSessionToken = async (sessionToken, sessionType = null) => 
 
 export const verifyToken = async (token, type) => {
   switch(type){
-    case "refreshToken" :
-      return await decodedRefreshToken(token);
-      break;
     case "accessToken" :
       return await decodeAccessToken(token);
       break;  
@@ -71,7 +74,7 @@ export const verifyToken = async (token, type) => {
       return await validateSessionToken(token);
       break;    
     default:
-      throw new UnauthorizeError("Invalid or Expired Token.");
+      throw new UnauthorizeError("Invalid token type.");
       break;  
   }
 }
