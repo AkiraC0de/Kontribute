@@ -66,7 +66,7 @@ export const registerSchema = Joi.object({
     }),
 });
 
-export const emailVerificationSchema = Joi.object({
+export const sixDigitPinVerificationSchema = Joi.object({
   pin: Joi.string()
     .trim()
     .required()

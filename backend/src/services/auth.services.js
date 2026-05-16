@@ -63,31 +63,8 @@ export const registerUser = async (userData) => {
 }
 
 export const verifyUserEmail = async (userId, pin) => {
-  const user = await User.findById(userId);
-  if(!user){
-    throw new UserNotFound();
-  }
-
-  // Check for OTP if it exist
-  const otp = await Otp.findOne({userId, type: "emailVerification"});
-  if(!otp){
-    throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
-  }
-
-  // Check and Compare the input PIN from the one in the database
-  if(!(otp.isValidPin(pin))) {
-    await otp.incrementAttempt(); // record attempt
-
-    const hasAttemptsRemaining =
-            otp.attempts < MAX_OTP_ATTEMPTS;
-
-    if(hasAttemptsRemaining){
-      const remainingAttempts = MAX_OTP_ATTEMPTS - otp.attempts;
-      throw new GenericError(400, `Pin is incorrect. You have ${remainingAttempts} attempts remaining.`, ERROR_CODES.INCORRECT_PIN);
-    } else {
-      throw new GenericError(400, "You have reached the maximum attempts. Please request a new PIN.", ERROR_CODES.INCORRECT_PIN);
-    }
-  }    
+  // verify the pin
+  await verifyOtp(userId, pin, "emailVerification");
 
   // Verify the user
   user.isEmailVerified = true;
@@ -143,7 +120,7 @@ export const requestResetPassword = async (email) => {
   ]);
 
   // No await for advance response
-  //sendVerificationCodeViaEmail(email, "Reset Password Verification", otp);
+  sendVerificationCodeViaEmail(email, "Reset Password Verification", otp);
 
   return {
     message: "PIN for verification has sent via email.",
@@ -151,7 +128,26 @@ export const requestResetPassword = async (email) => {
   };
 }
 
-//
+export const verifyResetPassword = async (userId, pin) => {
+  // verify the pin
+  await verifyOtp(userId, pin, "resetPasswordVerification");
+
+  // delete the old session token and OTP (type: resetPasswordVerification)
+  await Promise.all([
+    SessionToken.deleteMany({userId, type: "resetPasswordVerification"}),
+    Otp.deleteMany({userId, type: "resetPasswordVerification"})
+  ]);
+
+  // Create a session token for resetting password
+  const sessionToken = await createSessionToken(userId, "resetPassword");
+
+  return {
+    message: "Request for resetting password has been granted.",
+    sessionToken
+  }
+} 
+
+// --
 
 const createSessionToken = async (userId, sessionType) => {
   const existingSessionToken = await SessionToken.findOne({ userId, type: sessionType, });
@@ -207,3 +203,30 @@ const createOtp = async (userId, otpType) => {
   return rawPin;
 }
 
+export const verifyOtp = async ( userId, pin, otpType ) => {
+  const user = await User.findById(userId);
+  if(!user){
+    throw new UserNotFound();
+  }
+
+  // Check for OTP if it exist
+  const otp = await Otp.findOne({userId, type: otpType});
+  if(!otp){
+    throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
+  }
+
+  // Check and Compare the input PIN from the one in the database
+  if(!(otp.isValidPin(pin))) {
+    await otp.incrementAttempt(); // record attempt
+
+    const hasAttemptsRemaining =
+            otp.attempts < MAX_OTP_ATTEMPTS;
+
+    if(hasAttemptsRemaining){
+      const remainingAttempts = MAX_OTP_ATTEMPTS - otp.attempts;
+      throw new GenericError(400, `Pin is incorrect. You have ${remainingAttempts} attempts remaining.`, ERROR_CODES.INCORRECT_PIN);
+    } else {
+      throw new GenericError(400, "You have reached the maximum attempts. Please request a new PIN.", ERROR_CODES.INCORRECT_PIN);
+    }
+  }    
+}

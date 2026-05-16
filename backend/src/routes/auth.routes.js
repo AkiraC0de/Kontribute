@@ -1,6 +1,13 @@
 import { Router } from "express";
 import joiValidator from "../middlewares/joiValidator.js";
-import { emailVerificationSchema, loginSchema, registerSchema, requestResetPasswordSchema } from "../validations/auth.validations.js"
+import verifySessionToken from "../middlewares/verifySessionToken.js";
+import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
+
+import { sixDigitPinVerificationSchema, 
+  loginSchema, 
+  registerSchema, 
+  requestResetPasswordSchema 
+} from "../validations/auth.validations.js"
 
 import { 
   handleEmailVerification,
@@ -9,10 +16,10 @@ import {
   handleRefresh,
   handleRegister,
   handleRequestResetPassword,
+  handleResetPasswordVerification,
   handleVerifyToken
 } from "../controllers/auth.controller.js";
-import verifySessionToken from "../middlewares/verifySessionToken.js";
-import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
+
 
 const authRoute = Router();
 
@@ -40,12 +47,17 @@ authRoute.post("/verify/token", handleVerifyToken);
 // Requires SessionToken (type: emailVerification)
 authRoute.post("/verify/email", 
   verifySessionToken("emailVerification"),  
-  joiValidator(emailVerificationSchema, "body"), 
+  joiValidator(sixDigitPinVerificationSchema, "body"), 
   handleEmailVerification 
 );
 
 // Verify the emailed OTP. Requires SessionToken (type: resetPasswordVerification)
-// authRoute.post("/verify/reset-password-pin") //NOT FINISH
+authRoute.post("/verify/reset-password", 
+  verifySessionToken("resetPasswordVerification"), 
+  joiValidator(sixDigitPinVerificationSchema, "body"),
+  handleResetPasswordVerification
+);
+// -- Password reset 
 
 // Recieve an OTP via email and SessionToken (type: requestResetPassword). Requires users in email.
 authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchema, "body"), handleRequestResetPassword);
