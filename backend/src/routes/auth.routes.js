@@ -6,7 +6,8 @@ import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
 import { sixDigitPinVerificationSchema, 
   loginSchema, 
   registerSchema, 
-  requestResetPasswordSchema 
+  requestResetPasswordSchema, 
+  resetPasswordSchema
 } from "../validations/auth.validations.js"
 
 import { 
@@ -16,6 +17,7 @@ import {
   handleRefresh,
   handleRegister,
   handleRequestResetPassword,
+  handleResetPassword,
   handleResetPasswordVerification,
   handleVerifyToken
 } from "../controllers/auth.controller.js";
@@ -26,10 +28,10 @@ const authRoute = Router();
 // -- Core Authentication
 
 // Register a new account
-authRoute.post("/register", joiValidator(registerSchema, "body"), handleRegister );
+authRoute.post("/register", joiValidator(registerSchema), handleRegister );
 
 // Authenticate user & issue tokens (Access/Refresh pairs)
-authRoute.post("/login", joiValidator(loginSchema, "body"), handleLogin);
+authRoute.post("/login", joiValidator(loginSchema), handleLogin);
 
 // Clear cookies / revoke sessions 
 authRoute.post("/logout", handleLogout);
@@ -47,14 +49,14 @@ authRoute.post("/verify/token", handleVerifyToken);
 // Requires SessionToken (type: emailVerification)
 authRoute.post("/verify/email", 
   verifySessionToken("emailVerification"),  
-  joiValidator(sixDigitPinVerificationSchema, "body"), 
+  joiValidator(sixDigitPinVerificationSchema), 
   handleEmailVerification 
 );
 
 // Verify the emailed OTP. Requires SessionToken (type: resetPasswordVerification)
 authRoute.post("/verify/reset-password", 
   verifySessionToken("resetPasswordVerification"), 
-  joiValidator(sixDigitPinVerificationSchema, "body"),
+  joiValidator(sixDigitPinVerificationSchema),
   handleResetPasswordVerification
 );
 // -- Password reset 
@@ -62,7 +64,12 @@ authRoute.post("/verify/reset-password",
 // Recieve an OTP via email and SessionToken (type: requestResetPassword). Requires users in email.
 authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchema, "body"), handleRequestResetPassword);
 
-// authRoute.post("/password/reset");
+// Reset user password. Requires SessionToken (type: resetPassword)
+authRoute.post("/password/reset", 
+  verifySessionToken("resetPassword"),
+  joiValidator(resetPasswordSchema),
+  handleResetPassword
+);
 
 
 

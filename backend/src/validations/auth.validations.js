@@ -112,3 +112,25 @@ export const requestResetPasswordSchema = Joi.object({
       "any.required" : "Email is a required field."
     })
 })
+
+export const resetPasswordSchema = Joi.object({
+  newPassword: Joi.string()
+    .trim()
+    .min(8)
+    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"))
+    .required()
+    .messages({
+      "string.min": "Password must be at least 8 characters long.",
+      "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
+      "string.empty": "Password is required.",
+      "any.required": "Password is a required field."
+    }),
+  passwordConfirm: Joi.string()
+    .trim()
+    .required()
+    .valid(Joi.ref("newPassword"))
+    .messages({
+      "any.only": "Passwords do not match.",
+      "any.required": "Please confirm your password."
+    }), 
+}); 

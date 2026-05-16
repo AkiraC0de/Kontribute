@@ -2,7 +2,7 @@ import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
 import GenericError from "../errors/GenericError.js";
 import UserNotFound from "../errors/UserNotFound.js";
 import User from "../models/user.model.js";
-import { loginUser, registerUser, requestResetPassword, verifyResetPassword, verifyUserEmail } from "../services/auth.services.js"
+import { loginUser, registerUser, requestResetPassword, resetUserPassword, verifyResetPassword, verifyUserEmail } from "../services/auth.services.js"
 import { generateTokens } from "../utils/token.js";
 import ERROR_CODES from "../config/errorCodes.js";
 import { verifyToken } from "../utils/token.js";
@@ -113,3 +113,13 @@ export const handleResetPasswordVerification = async (req, res) => {
       sessionToken: result.sessionToken
     })
 }
+
+export const handleResetPassword = async (req, res) => {
+  const result = await resetUserPassword(req.user._id, req.body.newPassword);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: result.message,
+    })
+} 

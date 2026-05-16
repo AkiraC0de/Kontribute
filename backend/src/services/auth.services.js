@@ -85,7 +85,7 @@ export const verifyUserEmail = async (userId, pin) => {
 export const loginUser = async (userData) => {
   const { email, password } = userData;
 
-  const user = await User.findOne({ email }).select("+password");; 
+  const user = await User.findOne({ email }).select("+password");
 
   if(!user){
     throw new GenericError(400, "Email or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
@@ -146,6 +146,24 @@ export const verifyResetPassword = async (userId, pin) => {
     sessionToken
   }
 } 
+
+export const resetUserPassword = async (userId, newPassword) => {
+  const user = await User.findById(userId).select("+password");
+
+  // delete the sessionToken for resetting the password
+  await SessionToken.deleteMany({userId, type: "resetPassword"})
+
+  // hash the password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  return {
+    message: "Password was successfully changed."
+  }  
+}
 
 // --
 
