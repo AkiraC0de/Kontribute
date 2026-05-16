@@ -25,6 +25,16 @@ export const registerSchema = Joi.object({
     .optional()
     .allow("", null),
 
+  username: Joi.string()
+    .trim()
+    .required()
+    .min(3)
+    .messages({
+      "string.min": "Username must be at least 3 characters long.",
+      "string.empty": "Username is required.",
+      "any.required": "Username is a required field."
+    }),
+
   email: Joi.string()
     .trim()
     .lowercase()
@@ -81,15 +91,12 @@ export const sixDigitPinVerificationSchema = Joi.object({
 });
 
 export const loginSchema = Joi.object({
-  email: Joi.string()
+  identifier: Joi.string()
     .trim()
     .required()
-    .lowercase()
-    .email()
     .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.empty": "Email is required.",
-      "any.required": "Email is a required field."
+      "string.empty": "Email or Username is required.",
+      "any.required": "Identifier is a required field."
     }),
   password: Joi.string()
     .trim()

@@ -19,6 +19,13 @@ const userSchema = new Schema({
         trim: true,
         minlength: 1
     },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 3,
+        trim: true
+    },
     email: {
         type: String,
         required: true,
@@ -53,12 +60,12 @@ const userSchema = new Schema({
 
 
 // Add Time To Live (TTL) for unverified accounnts
-// expireAfterSeconds: 900 (15 minutes)
+// expireAfterSeconds: 600 (10 minutes)
 userSchema.index(
   { createdAt: 1 }, 
   { 
-    expireAfterSeconds: 900, 
-    partialFilterExpression: { isVerified: false } 
+    expireAfterSeconds: 600, 
+    partialFilterExpression: { isEmailVerified: false } 
   }
 );
 
@@ -72,6 +79,7 @@ userSchema.methods.toPublicJSON = function() {
     middleInitial: this.middleInitial,
     lastName: this.lastName,
     email: this.email,
+    username: this.username
   };
 };
 

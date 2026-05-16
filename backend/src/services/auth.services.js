@@ -16,13 +16,23 @@ import { generateTokens } from "../utils/token.js";
 import UserNotFound from "../errors/UserNotFound.js";
 
 export const registerUser = async (userData) => {
-  const { firstName, lastName, middleInitial, email, password} = userData;
+  const { firstName, lastName, middleInitial, username, email, password} = userData;
 
-  const existingUser = await User.findOne({email});
+  const existingUser = await User.findOne({ 
+    $or: [
+      { username },
+      { email }
+    ] 
+  }).select("+password");
   
   // Check if the user already exist and is VERIFIED.
-  if(existingUser && existingUser.isEmailVerified){
+  if(existingUser && existingUser.isEmailVerified && existingUser.username !== username){
     throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED)
+  }
+
+  // Check if the username already taken, even if the existing user is not verified yet.
+  if(existingUser && existingUser.username === username){
+    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN)
   }
 
   // If the user exist but are UNVERIFIED, delete the exisiting data
@@ -42,6 +52,7 @@ export const registerUser = async (userData) => {
     firstName,
     lastName,
     middleInitial,
+    username,
     email,
     password: hashedPassword
   });
@@ -67,12 +78,13 @@ export const verifyUserEmail = async (userId, pin) => {
   await verifyOtp(userId, pin, "emailVerification");
 
   // Verify the user
+  const user = await User.findById(userId);
   user.isEmailVerified = true;
   await user.save();
 
   // Delete the session token and OTP to invalidate the email verification session.
   await Promise.all([
-    otp.deleteOne(),
+    Otp.deleteMany({ userId, type: "emailVerification"}),
     SessionToken.deleteMany({ userId, type: "emailVerification"})
   ]);
 
@@ -83,17 +95,22 @@ export const verifyUserEmail = async (userId, pin) => {
 }
 
 export const loginUser = async (userData) => {
-  const { email, password } = userData;
+  const { identifier, password } = userData;
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ 
+    $or: [
+      { username: identifier },
+      { email: identifier }
+    ] 
+  }).select("+password");
 
   if(!user){
-    throw new GenericError(400, "Email or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
+    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
   }
   
   const isPasswordValid = await user.comparePassword(password);
   if(!isPasswordValid){
-    throw new GenericError(400, "Email or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
+    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
   }
 
   const tokens = generateTokens(user);
@@ -107,7 +124,7 @@ export const loginUser = async (userData) => {
 }
 
 export const requestResetPassword = async (email) => {
-  const user = await User.findOne({email});
+  const user = await User.findOne({email, isEmailVerified: true});
 
   if(!user){
     throw new UserNotFound();
