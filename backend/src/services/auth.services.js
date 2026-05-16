@@ -18,6 +18,7 @@ import UserNotFound from "../errors/UserNotFound.js";
 export const registerUser = async (userData) => {
   const { firstName, lastName, middleInitial, username, email, password} = userData;
 
+  // NEEDS REFACTORING
   const existingUser = await User.findOne({ 
     $or: [
       { username },
@@ -101,8 +102,12 @@ export const loginUser = async (userData) => {
     $or: [
       { username: identifier },
       { email: identifier }
-    ] 
+    ]
   }).select("+password");
+
+  if (!user.isEmailVerified) {
+    throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
+  }
 
   if(!user){
     throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
@@ -124,7 +129,11 @@ export const loginUser = async (userData) => {
 }
 
 export const requestResetPassword = async (email) => {
-  const user = await User.findOne({email, isEmailVerified: true});
+  const user = await User.findOne({email});
+
+  if (!user.isEmailVerified) {
+    throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
+  }
 
   if(!user){
     throw new UserNotFound();
