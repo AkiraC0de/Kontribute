@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 import GenericError from "../errors/GenericError.js";
 import ERROR_CODES from "../config/errorCodes.js";
+import UserNotFound from "../errors/UserNotFound.js";
 
 import User from "../models/user.model.js";
 import SessionToken from "../models/sessionToken.model.js";
@@ -13,60 +14,23 @@ import { generateCryptoToken, generateSixDigitCode } from "../utils/utils.js";
 import Otp, { MAX_OTP_ATTEMPTS } from "../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../utils/mailer.js";
 import { generateTokens } from "../utils/token.js";
-import UserNotFound from "../errors/UserNotFound.js";
+
+// --- services
 
 export const registerUser = async (userData) => {
   const { firstName, lastName, middleInitial, username, email, password} = userData;
+  const credentials = { username, email};
 
-  // NEEDS REFACTORING
-  const existingUser = await User.findOne({ 
-    $or: [
-      { username },
-      { email }
-    ] 
-  }).select("+password");
+  const existingUser = await findConflictingUser(credentials);
+  if (existingUser) await resolveConflict(existingUser, credentials);
   
-  // Check if the user already exist and is VERIFIED.
-  if(existingUser && existingUser.isEmailVerified && existingUser.username !== username){
-    throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED)
-  }
+  const hashedPassword = await User.hashPassword(password);
+  const newUser = await createUserRecord({ firstName, lastName, middleInitial, username, email }, hashedPassword);
 
-  // Check if the username already taken, even if the existing user is not verified yet.
-  if(existingUser && existingUser.username === username){
-    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN)
-  }
+  const [sessionToken, otp] = await issueVerificationTokens(newUser._id, "emailVerification");
 
-  // If the user exist but are UNVERIFIED, delete the exisiting data
-  if(existingUser && !existingUser.isEmailVerified){
-    await Promise.all([
-      existingUser.deleteOne(),
-      SessionToken.deleteMany({ userId: existingUser._id}),
-      Otp.deleteMany({ userId: existingUser._id})
-    ]);
-  }
-
-  // hash the password
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-  const newUser = await User.create({
-    firstName,
-    lastName,
-    middleInitial,
-    username,
-    email,
-    password: hashedPassword
-  });
-
-  // create the session token and OTP for email verification
-  const [sessionToken, otp] = await Promise.all([
-    createSessionToken(newUser._id, "emailVerification"),
-    createOtp(newUser._id, "emailVerification"),
-  ]);
-
-  // No await for advance response
-  sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp);
-
+  sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp); // No await for advance response
+ 
   return {
     message: "Account has successfully created. PIN for verification has been sent via Email.",
     user: newUser.toPublicJSON(),
@@ -75,19 +39,16 @@ export const registerUser = async (userData) => {
 }
 
 export const verifyUserEmail = async (userId, pin) => {
+  const user = await findUserById(userId);
+
   // verify the pin
   await verifyOtp(userId, pin, "emailVerification");
 
   // Verify the user
-  const user = await User.findById(userId);
   user.isEmailVerified = true;
   await user.save();
 
-  // Delete the session token and OTP to invalidate the email verification session.
-  await Promise.all([
-    Otp.deleteMany({ userId, type: "emailVerification"}),
-    SessionToken.deleteMany({ userId, type: "emailVerification"})
-  ]);
+  await invalidateSessionAndOtp(userId, "emailVerification");
 
   return {
     message : "Your Email is now verified.", 
@@ -129,24 +90,15 @@ export const loginUser = async (userData) => {
 }
 
 export const requestResetPassword = async (email) => {
-  const user = await User.findOne({email});
-
+  const user = await findUserByEmail(email);
   if (!user.isEmailVerified) {
     throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
   }
 
-  if(!user){
-    throw new UserNotFound();
-  }
-
   // create the session token and OTP for email verification
-  const [sessionToken, otp] = await Promise.all([
-    createSessionToken(user._id, "resetPasswordVerification"),
-    createOtp(user._id, "resetPasswordVerification"),
-  ]);
+  const [sessionToken, otp] = await issueVerificationTokens(user._id, "resetPasswordVerification");
 
-  // No await for advance response
-  sendVerificationCodeViaEmail(email, "Reset Password Verification", otp);
+  sendVerificationCodeViaEmail(email, "Reset Password Verification", otp); // No await for advance response
 
   return {
     message: "PIN for verification has sent via email.",
@@ -159,10 +111,7 @@ export const verifyResetPassword = async (userId, pin) => {
   await verifyOtp(userId, pin, "resetPasswordVerification");
 
   // delete the old session token and OTP (type: resetPasswordVerification)
-  await Promise.all([
-    SessionToken.deleteMany({userId, type: "resetPasswordVerification"}),
-    Otp.deleteMany({userId, type: "resetPasswordVerification"})
-  ]);
+  await invalidateSessionAndOtp(userId,  "resetPasswordVerification");
 
   // Create a session token for resetting password
   const sessionToken = await createSessionToken(userId, "resetPassword");
@@ -176,22 +125,92 @@ export const verifyResetPassword = async (userId, pin) => {
 export const resetUserPassword = async (userId, newPassword) => {
   const user = await User.findById(userId).select("+password");
 
-  // delete the sessionToken for resetting the password
-  await SessionToken.deleteMany({userId, type: "resetPassword"})
-
-  // hash the password
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
+  // change user password
+  const hashedPassword = await User.hashPassword(newPassword);
   user.password = hashedPassword;
   await user.save();
+
+  // delete the sessionToken for resetting the password
+  await SessionToken.deleteMany({userId, type: "resetPassword"})
 
   return {
     message: "Password was successfully changed."
   }  
 }
 
-// --
+
+
+// --- Helpers
+
+
+const findConflictingUser = ({ username, email }) =>
+  User.findOne({ $or: [{ username }, { email }] });
+
+
+const throwIfVerifiedConflict = (existingUser, { username, email }) => {
+  if (existingUser.email === email) {
+    throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED);
+  }
+  if (existingUser.username === username) {
+    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN);
+  }
+};
+
+const handleUnverifiedConflic = async (existingUser, { username, email }) => {
+  const isSamePerson = existingUser.email === email;
+  const isDifferentPerson = existingUser.username === username;
+
+  if (isSamePerson) {
+    // Re-registration attempt — wipe stale unverified records so they can start fresh
+    await Promise.all([
+      existingUser.deleteOne(),
+      SessionToken.deleteMany({ userId: existingUser._id }),
+      Otp.deleteMany({ userId: existingUser._id }),
+    ]);
+  } else if (isDifferentPerson) {
+    // Someone else trying to claim an unverified username, block them
+    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN);
+  }
+}
+
+const resolveConflict = async (existingUser, { username, email }) => {
+  if(existingUser.isEmailVerified){
+    throwIfVerifiedConflict(existingUser, credentials);
+  }{
+    await handleUnverifiedConflic(existingUser, { username, email })
+  }
+}
+
+const issueVerificationTokens = (userId, verificationType) =>
+  Promise.all([
+    createSessionToken(userId, verificationType),
+    createOtp(userId, verificationType),
+  ]);
+
+const createUserRecord = (userData, hashedPassword) =>
+  User.create({ ...userData, password: hashedPassword });  
+
+const findUserById = async (userId) => {
+  const user = await User.findById(userId);
+  if(!user){
+    throw new UserNotFound();
+  }
+  return user;
+}
+
+const findUserByEmail = async (email) => {
+  const user = await User.findOne({email});
+  if(!user){
+    throw new UserNotFound();
+  }
+  return user;
+}
+
+const invalidateSessionAndOtp = (userId, sessionType) =>
+  Promise.all([
+    Otp.deleteMany({ userId, type: sessionType}),
+    SessionToken.deleteMany({ userId, type: sessionType})
+  ]);
 
 const createSessionToken = async (userId, sessionType) => {
   const existingSessionToken = await SessionToken.findOne({ userId, type: sessionType, });
@@ -248,11 +267,6 @@ const createOtp = async (userId, otpType) => {
 }
 
 export const verifyOtp = async ( userId, pin, otpType ) => {
-  const user = await User.findById(userId);
-  if(!user){
-    throw new UserNotFound();
-  }
-
   // Check for OTP if it exist
   const otp = await Otp.findOne({userId, type: otpType});
   if(!otp){

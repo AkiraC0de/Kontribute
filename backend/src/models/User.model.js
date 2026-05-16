@@ -69,6 +69,11 @@ userSchema.index(
   }
 );
 
+userSchema.statics.hashPassword = async function(password) {
+    const HASH_SALT = 10;
+    return bcrypt.hash(password, HASH_SALT);
+};
+
 userSchema.methods.comparePassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
