@@ -66,14 +66,14 @@ export const loginUser = async (userData) => {
     ]
   }).select("+password");
 
+  if(!user){
+    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
+  }
+
   if (!user.isEmailVerified) {
     throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
   }
 
-  if(!user){
-    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
-  }
-  
   const isPasswordValid = await user.comparePassword(password);
   if(!isPasswordValid){
     throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
