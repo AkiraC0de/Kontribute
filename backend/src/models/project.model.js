@@ -15,13 +15,27 @@ const memberSchema = new Schema({
   status: {
     type: String,
     enum: ["active", "left", "removed"],
-    default: "active"
+    default: "active",
+    required: true,
   },
   joinedAt: {
     type: Date,
     default: Date.now
   }
 } , { _id: false });
+
+const settingsSchema = new Schema({
+  allowMembersToInvite: {
+    type: Boolean,
+    default: false
+  },
+  maxMembers: {
+    type: Number,
+    default: 8,
+    min: 2,
+    max: 50
+  },
+}, { _id: false });
 
 const projectSchema = new Schema({
   // Project Meta Data
@@ -49,22 +63,23 @@ const projectSchema = new Schema({
   deadline: {
     type: Date,
     required: true,
-  },
-  createdBy: {
+  }, 
+  
+  // Members Management
+  leader: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true
   },
-  
-  // Members Management
   members: [memberSchema],
-  maxMembers: {
-    type: Number,
-    default: 8,
-    min: 2,
-    max: 50
-  },
+  
+
+  // project settings
+  settings: {
+    type: settingsSchema,
+    default: () => ({})
+  },  
 
   shareToken: {
     type: String,
@@ -72,13 +87,19 @@ const projectSchema = new Schema({
     required: true
   },
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    index: true
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
   archivedAt: {
     type: Date,
     default: null
   }
-})
+}, { 
+  timestamps: true
+});
+
+const Project = model("Project", projectSchema);
+
+export default Project;

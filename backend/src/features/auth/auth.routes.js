@@ -1,14 +1,14 @@
 import { Router } from "express";
-import joiValidator from "../middlewares/joiValidator.js";
-import verifySessionToken from "../middlewares/verifySessionToken.js";
-import verifyRefreshToken from "../middlewares/verifyRefreshToken.js";
+import joiValidator from "../../middlewares/joiValidator.js";
+import verifySessionToken from "../../middlewares/verifySessionToken.js";
+import verifyRefreshToken from "../../middlewares/verifyRefreshToken.js";
 
 import { sixDigitPinVerificationSchema, 
   loginSchema, 
   registerSchema, 
   requestResetPasswordSchema, 
   resetPasswordSchema
-} from "../validations/auth.validations.js"
+} from "./auth.validations.js"
 
 import { 
   handleEmailVerification,
@@ -20,7 +20,7 @@ import {
   handleResetPassword,
   handleResetPasswordVerification,
   handleVerifyToken
-} from "../controllers/auth.controller.js";
+} from "./auth.controller.js";
 
 
 const authRoute = Router();

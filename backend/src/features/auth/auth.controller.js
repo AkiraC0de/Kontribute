@@ -1,11 +1,20 @@
-import { COOKIE_REFRESHTOKEN } from "../config/cookie.js";
-import GenericError from "../errors/GenericError.js";
-import UserNotFound from "../errors/UserNotFound.js";
-import User from "../models/user.model.js";
-import { loginUser, registerUser, requestResetPassword, resetUserPassword, verifyResetPassword, verifyUserEmail } from "../services/auth.services.js"
-import { generateTokens } from "../utils/token.js";
-import ERROR_CODES from "../config/errorCodes.js";
-import { verifyToken } from "../utils/token.js";
+import { COOKIE_REFRESHTOKEN } from "../../config/cookie.js";
+import GenericError from "../../errors/GenericError.js";
+import UserNotFound from "../../errors/UserNotFound.js";
+import User from "../../models/user.model.js";
+
+import { generateTokens } from "../../utils/token.js";
+import ERROR_CODES from "../../config/errorCodes.js";
+import { verifyToken } from "../../utils/token.js";
+
+import { 
+  loginUser, 
+  registerUser, 
+  requestResetPassword, 
+  resetUserPassword, 
+  verifyResetPassword, 
+  verifyUserEmail 
+} from "./auth.services.js"
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);

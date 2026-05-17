@@ -3,17 +3,17 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-import GenericError from "../errors/GenericError.js";
-import ERROR_CODES from "../config/errorCodes.js";
-import UserNotFound from "../errors/UserNotFound.js";
+import GenericError from "../../errors/GenericError.js";
+import ERROR_CODES from "../../config/errorCodes.js";
+import UserNotFound from "../../errors/UserNotFound.js";
 
-import User from "../models/user.model.js";
-import SessionToken from "../models/sessionToken.model.js";
+import User from "../../models/user.model.js";
+import SessionToken from "../../models/sessionToken.model.js";
 
-import { generateCryptoToken, generateSixDigitCode } from "../utils/utils.js";
-import Otp, { MAX_OTP_ATTEMPTS } from "../models/otp.model.js";
-import { sendVerificationCodeViaEmail } from "../utils/mailer.js";
-import { generateTokens } from "../utils/token.js";
+import { generateCryptoToken, generateSixDigitCode } from "../../utils/utils.js";
+import Otp, { MAX_OTP_ATTEMPTS } from "../../models/otp.model.js";
+import { sendVerificationCodeViaEmail } from "../../utils/mailer.js";
+import { generateTokens } from "../../utils/token.js";
 
 // --- services
 
