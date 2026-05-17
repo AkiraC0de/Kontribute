@@ -1,10 +1,13 @@
 import { Schema, model} from "mongoose";
+import GenericError from "../errors/GenericError.js";
+import ERROR_CODES from "../config/errorCodes.js";
 
 const memberSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
+    index: true
   },
   role: {
     type: String,
@@ -104,12 +107,79 @@ const projectSchema = new Schema({
 
 projectSchema.methods.toPublicJSON = function() {
   return {
+    _id: this._id,
     title: this.title,
     description: this.description,
     subject: this.subject,
-    status: this.status
+    status: this.status,
+    members: this.members,
+    leader: this.leader,
+    settings: {
+      maxMembers: this.settings.maxMembers
+    },
+    createdAt: this.createdAt
   }
 }
+
+projectSchema.methods.addMember = async function(userId) {
+  // check if user already a member
+  const alreadyMember = this.members.some(m => m.userId.equals(userId));
+  if(alreadyMember){
+    throw new GenericError(400, "This user is already member of the group.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  // Check if group is full
+  const activeCount = this.members.filter(m => m.status === 'active').length;
+  if (activeCount >= this.settings.maxMembers) {
+    throw new GenericError(400, "The group is already full.");
+  }
+
+  this.members.push({
+    userId,
+    role: "member"
+  })
+
+  return this;
+}
+
+// Remove member
+projectSchema.methods.removeMember = function(userId, reason = "left") {
+  const member = this.members.find(m => m.userId.equals(userId));
+  if (!member) {
+    throw new GenericError(400, "Member not found.", ERROR_CODES.NOT_FOUND);
+  }
+  
+  member.status = reason === "removed" ? "removed" :  "left";
+  return this;
+};
+
+projectSchema.methods.transferLeadership = function(fromUserId, toUserId) {
+  // transferring leadership to yourself
+  if (fromUserId.toString() === toUserId.toString()) {
+    throw new GenericError(400, "You are already the leader of this project.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  // Verify that the 'fromUser' is actually the current leader
+  const currentLeader = this.members.find(m => m.userId.equals(fromUserId) && m.role === "leader");
+  if (!currentLeader) {
+    throw new GenericError(403, "You don't have the authority to transfer leadership.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  // Verify that the 'toUser' is an active member of this project
+  const targetMember = this.members.find(m => m.userId.equals(toUserId) && m.status === "active");
+  if (!targetMember) {
+    throw new GenericError(404, "Active member not found in this project.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  this.leader = toUserId;
+
+  // Swap roles inside the subdocument members array
+  currentLeader.role = "member";
+  targetMember.role = "leader";
+  
+  return this;
+};
+
 
 const Project = model("Project", projectSchema);
 

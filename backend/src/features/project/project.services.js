@@ -39,3 +39,28 @@ export const createProject = async (userId, projectData) => {
   }
 }
 
+export const getMyProjects = async (userId, statusFilter) => {
+  const projects = await Project.find({
+    status: statusFilter,
+    $or: [
+      { leader: userId },
+      { "members.userId": userId }
+    ]
+  })
+  .sort({ deadline: 1 })
+  .populate("leader", "name email");
+
+  const projectsCount = projects.length;
+
+  if(projectsCount == 0){
+    throw GenericError(404, "Not projects have found.", ERROR_CODES.NOT_FOUND);
+  }
+
+  const sanitizedProjects = projects.map(p => p.toPublicJSON()) 
+
+  return {
+    message: "These are your projects.",
+    projectsCount,
+    projects : sanitizedProjects
+  }
+} 
