@@ -175,7 +175,7 @@ const handleUnverifiedConflic = async (existingUser, { username, email }) => {
 
 const resolveConflict = async (existingUser, { username, email }) => {
   if(existingUser.isEmailVerified){
-    throwIfVerifiedConflict(existingUser, credentials);
+    throwIfVerifiedConflict(existingUser, { username, email });
   }{
     await handleUnverifiedConflic(existingUser, { username, email })
   }
