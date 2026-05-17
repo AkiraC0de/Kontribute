@@ -58,7 +58,8 @@ const projectSchema = new Schema({
   status: {
     type: String,
     enum: ["active", "completed", "archived"],
-    default: "active"
+    default: "active",
+    index: true
   },
   deadline: {
     type: Date,
@@ -91,6 +92,7 @@ const projectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    index: true
   },
   archivedAt: {
     type: Date,
@@ -99,6 +101,15 @@ const projectSchema = new Schema({
 }, { 
   timestamps: true
 });
+
+projectSchema.methods.toPublicJSON = function() {
+  return {
+    title: this.title,
+    description: this.description,
+    subject: this.subject,
+    status: this.status
+  }
+}
 
 const Project = model("Project", projectSchema);
 

@@ -21,8 +21,6 @@ const verifyAccess = (requiredRole = "user") => (
       return next(new UnauthorizeError("You don't have access to this route."));
     }
 
-    console.log(userRole);
-
     req.user = decoded;
     next();
   }
