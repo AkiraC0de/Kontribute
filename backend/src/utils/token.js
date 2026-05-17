@@ -78,3 +78,18 @@ export const verifyToken = async (token, type) => {
       break;  
   }
 }
+
+export const getTokenFromHeaders = (reqHeader) => {
+  const authorization = reqHeader.authorization || reqHeader.Authorization;
+  if(!authorization) {
+    throw new UnauthorizeError("Authorization in request headers is required.");
+  }
+  
+  if(!authorization.startsWith("Bearer ")) {
+    throw new UnauthorizeError("Invalid Authorization format. Valid : Bearer <token>");
+  }
+  // Extract the token from authorization
+  const token = authorization.split(' ')[1];
+
+  return token;
+}
