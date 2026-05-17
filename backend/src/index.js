@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/ErrorHandler.js";
 
 import authRoute from "./features/auth/auth.routes.js";
+import projectRoute from "./features/project/project.routes.js";
 import connectToDB from "./config/database.js";
 
 const app = express();
@@ -14,7 +15,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Routes
-app.use('/api/v1/auth', authRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/project", projectRoute);
 
 // Error handler
 app.use(errorHandler);
