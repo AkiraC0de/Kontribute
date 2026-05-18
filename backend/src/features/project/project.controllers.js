@@ -10,7 +10,9 @@ import {
   findActiveProjectById, 
   getMyInvitaions, 
   getMyProjects, 
-  inviteMember 
+  inviteMember ,
+  findPendingInvitationById,
+  respondToMyInvitation
 } from "./project.services.js";
 
 export const handleCreateProject = async (req, res) => {
@@ -54,6 +56,8 @@ export const handleInviteMember = async (req, res) => {
 
   const project = await findActiveProjectById(req.params.projectId);
 
+  console.log(project)
+
   // verify if the invitedByUser is a member of this project
   if(!project.isMember(invitedByUserId)){
     throw new UnauthorizeError("You are not a member of this project.")
@@ -96,9 +100,12 @@ export const handleGetMyInvitations = async (req, res) => {
   })
 }
 
-export const handleResponseToMyInvitation = async (req, res) => {
+export const handleRespondToMyInvitation = async (req, res) => {
+  const result = await respondToMyInvitation(req.params.invitationId, req.body.response);  
+  
   return res.status(200)
     .json({
-      success: true
+      success: true,
+      message: result.message
     })
 }

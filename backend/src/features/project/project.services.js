@@ -1,5 +1,6 @@
 import ERROR_CODES from "../../config/errorCodes.js";
 import GenericError from "../../errors/GenericError.js";
+import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import Invitation from "../../models/invitation.model.js";
 import Project from "../../models/project.model.js"
@@ -118,10 +119,55 @@ export const getMyInvitaions = async (userId, statusFilter = "pending") => {
   }
 }
 
+export const respondToMyInvitation = async (invitationId, response) => {
+  const invitation = await findPendingInvitationById(invitationId);
+
+  if(response === "accept"){
+    await handleAcceptedInvitation(invitation)
+  } else if(response === "reject"){
+    await handleRejectedInvitation(invitation);
+  } 
+
+  const responseMessage = response === "accept" 
+                            ? "You have accepted the invitation. You are now part of the project."
+                            : "You have rejected the invitation."
+  return {
+    message: responseMessage
+  }
+}
+
 // -- helpers
+const handleRejectedInvitation = async (invitation) => {
+  return invitation.changeStatus("rejected").save();
+}
+
+const handleAcceptedInvitation = async (invitation) => {
+  // set the invitation as accepted
+  await invitation.changeStatus("accepted").save()
+
+  // add the user to projects member
+  const project = await Project.findById(invitation.projectId);
+  console.log(project)
+  await project.addMember(invitation.inviting).save();
+}
+
+
 export const findActiveProjectById = async (projectId) => {
   const project = await Project.findOne({status: "active", _id: projectId});
 
+  if(!project){
+    throw new ProjectNotFound();
+  }
   
   return project;
+}
+
+export const findPendingInvitationById = async (invitationId) => {
+  const invitation = await Invitation.findOne({status: "pending", _id: invitationId});
+
+  if(!invitation){
+    throw new InvitationNotFound();
+  }
+
+  return invitation;
 }

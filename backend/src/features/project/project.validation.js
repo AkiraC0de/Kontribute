@@ -39,3 +39,14 @@ export const createProjectSchema = Joi.object({
       .default(8)
   }).default() // .default() here ensures it defaults to {} if entirely missing from req.body
 });
+
+export const respondToMyInvitationSchema = Joi.object({
+  response: Joi.string()
+    .required()
+    .valid("accept", "reject")
+    .messages({
+      "string.base": "Response must be a valid text string.",
+      "any.only": "Response must be either 'accept' or 'reject'.",
+      "any.required": "Response is a required field."
+    })
+});

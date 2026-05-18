@@ -36,6 +36,12 @@ const invitationSchema = new Schema({
   respondedAt: Date
 });
 
+invitationSchema.methods.changeStatus = function(status){
+  this.status = status;
+
+  return this
+}
+
 invitationSchema.methods.toPublicJSON = function(){
   return{
     _id: this._id,

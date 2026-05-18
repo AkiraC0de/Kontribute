@@ -4,13 +4,15 @@ import verifyAccess from "../../middlewares/verifyAccess.js";
 import joiValidator from "../../middlewares/joiValidator.js"
 
 import { 
-  createProjectSchema
+  createProjectSchema,
+  respondToMyInvitationSchema
 } from "./project.validation.js";
 import { 
   handleGetMyInvitations,
   handleCreateProject,
   handleGetMyProjects,
-  handleInviteMember
+  handleInviteMember,
+  handleRespondToMyInvitation
 } from "./project.controllers.js";
 
 
@@ -50,8 +52,12 @@ projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMemb
 // fetch users pending project invitations
 projectRoute.get("/invitation", verifyAccess(), handleGetMyInvitations);
 
-// Users resonse to their pending project invitations
-projectRoute.put("/invitation/:invitationId", verifyAccess(), handleGetMyInvitations);
+// Users respond to their pending project invitations
+projectRoute.put("/invitation/:invitationId", 
+  verifyAccess(), 
+  joiValidator(respondToMyInvitationSchema), 
+  handleRespondToMyInvitation
+);
 
 
 
