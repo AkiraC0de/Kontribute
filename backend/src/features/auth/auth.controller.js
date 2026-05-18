@@ -95,8 +95,10 @@ export const handleVerifyToken = async (req, res) => {
     .json({
       success: true, 
       message: "Token is valid.",
-      token,
-      tokenType
+      data: {
+        token,
+        tokenType
+      }
     })
 }
 

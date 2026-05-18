@@ -20,7 +20,9 @@ export const handleCreateProject = async (req, res) => {
     .json({
       success : true,
       message: result.message,
-      project: result.project
+      data: {
+        project: result.project
+      }
     });
 }
 
@@ -32,8 +34,10 @@ export const handleGetMyProjects = async (req, res) => {
     .json({
       success : true,
       message: result.message,
-      projectsCount: result.projectsCount,
-      projects: result.projects
+      data: {
+        projectsCount: result.projectsCount,
+        projects: result.projects
+      }
     });
 }
 
@@ -85,8 +89,10 @@ export const handleGetMyInvitations = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: result.message,
-    invitationsCount : result.invitationsCount,
-    invitations : result.invitations
+    data: {
+      invitationsCount : result.invitationsCount,
+      invitations : result.invitations
+    }
   })
 }
 
