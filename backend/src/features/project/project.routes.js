@@ -25,7 +25,11 @@ const projectRoute = Router();
 // -- Project routes
 
 // Create a brand new project
-projectRoute.post("/", verifyAccess(), joiValidator(createProjectSchema), handleCreateProject);
+projectRoute.post("/", 
+  verifyAccess(), 
+  joiValidator(createProjectSchema), 
+  handleCreateProject
+);
 
 // Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
@@ -80,10 +84,6 @@ projectRoute.put("/invitation/:invitationId",
 
 // fetch the project members
 // projectRoute.get("/:projectId/member". verifyAccess(),  );
-
-// // add Member route
-// projectRoute.post("/:projectId/member/:userId". verifyAccess());
-
 
 // // remove a member from the group ONLY for LEADER
 // projectRoute.delete("/:projectId/member/:userId". verifyAccess());

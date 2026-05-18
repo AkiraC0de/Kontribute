@@ -3,8 +3,6 @@ import UnauthorizeError from "../../errors/UnauthorizeError.js";
 import Project from "../../models/project.model.js";
 import ERROR_CODES from "../../config/errorCodes.js";
 
-import { findUserById } from "../auth/auth.services.js";
-
 import { 
   createProject, 
   findActiveProjectById, 
@@ -15,6 +13,7 @@ import {
   respondToMyInvitation,
   updateProjectStatus
 } from "./project.services.js";
+
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
 
@@ -82,12 +81,10 @@ export const handleInviteMember = async (req, res) => {
   if(project.isMember(invitingUserId)){
     throw new GenericError(400, "User is already a member of this project.", ERROR_CODES.REQUEST_ERROR);
   }
-
-  const invitingUser = await findUserById(invitingUserId);
   
-  const invitation = await inviteMember(project._id, invitedByUserId, invitingUser._id);
+  const invitation = await inviteMember(project._id, invitedByUserId, invitingUserId);
 
-  const responseMessage = `Project invitation has been sent to @${invitingUser.username}.`
+  const responseMessage = `Project invitation has been sent.`
 
   return res.status(200).json({
     success: true,

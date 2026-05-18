@@ -5,6 +5,7 @@ import errorHandler from "./middlewares/ErrorHandler.js";
 
 import authRoute from "./features/auth/auth.routes.js";
 import projectRoute from "./features/project/project.routes.js";
+import notificationRoute from "./features/notification/notification.routes.js";
 import connectToDB from "./config/database.js";
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/project", projectRoute);
+app.use("/api/v1/notification", notificationRoute);
 
 // Error handler
 app.use(errorHandler);

@@ -60,11 +60,11 @@ const userSchema = new Schema({
 
 
 // Add Time To Live (TTL) for unverified accounnts
-// expireAfterSeconds: 600 (10 minutes)
+// expireAfterSeconds: 900 (15 minutes)
 userSchema.index(
   { createdAt: 1 }, 
   { 
-    expireAfterSeconds: 600, 
+    expireAfterSeconds: 900, 
     partialFilterExpression: { isEmailVerified: false } 
   }
 );
