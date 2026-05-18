@@ -143,13 +143,13 @@ projectSchema.methods.addMember = function(userId) {
 }
 
 // Remove member
-projectSchema.methods.removeMember = function(userId, reason = "left") {
+projectSchema.methods.removeMember = function(userId) {
   const member = this.members.find(m => m.userId.equals(userId));
   if (!member) {
-    throw new GenericError(400, "Member not found.", ERROR_CODES.NOT_FOUND);
+    throw new GenericError(400, "User is not a member.", ERROR_CODES.NOT_FOUND);
   }
-  
-  member.status = reason === "removed" ? "removed" :  "left";
+
+  this.members.pull({ userId: userId });
   return this;
 };
 

@@ -12,7 +12,8 @@ import {
   handleCreateProject,
   handleGetMyProjects,
   handleInviteMember,
-  handleRespondToMyInvitation
+  handleRespondToMyInvitation,
+  handleLeaveProject
 } from "./project.controllers.js";
 
 
@@ -25,6 +26,9 @@ projectRoute.post("/", verifyAccess(), joiValidator(createProjectSchema), handle
 
 // Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
+
+// // leave from the project route
+projectRoute.post("/:projectId/leave", verifyAccess(), handleLeaveProject) ;
 
 // Fetch all projects where the user is the leader
 //projectRoute.get("/leader", verifyAccess());
@@ -40,7 +44,6 @@ projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 
 // Permanently delete a project
 // projectRoute.delete("/:projectId", verifyAccess());
-
 
 
 
@@ -70,8 +73,6 @@ projectRoute.put("/invitation/:invitationId",
 // // add Member route
 // projectRoute.post("/:projectId/member/:userId". verifyAccess());
 
-// // leave from the project route
-// projectRoute.post("/:projectId/leave/:userId". verifyAccess());
 
 // // remove a member from the group ONLY for LEADER
 // projectRoute.delete("/:projectId/member/:userId". verifyAccess());

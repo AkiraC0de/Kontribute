@@ -108,12 +108,37 @@ export const handleRespondToMyInvitation = async (req, res) => {
     throw new InvitationNotFound();
   }
 
-  // process the response
+  // process the users response to invitation
   const result = await respondToMyInvitation(invitation, req.body.response);  
   
   return res.status(200)
     .json({
       success: true,
       message: result.message
+    })
+}
+
+export const handleLeaveProject = async (req, res) => {
+  const project = await findActiveProjectById(req.params.projectId);
+  const userId = req.user._id;
+
+  // check if the user is not a member
+  if(!project.isMember(userId)){
+    throw new UnauthorizeError("You are not a member of this project.")
+  }
+
+  // Avoid leader from leaving. Should transfer first the leadership or archive the project
+  const isLeader = project.leader.equals(userId);
+  if(isLeader){
+    throw new GenericError(400, "You are the leader. You must transfer first the leadership, or finish the project, or delete the project.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  // remove the user as a member of the project.
+  await project.removeMember(userId).save();
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: `You have successfully leave the project ${project.title}`
     })
 }

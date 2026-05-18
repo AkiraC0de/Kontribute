@@ -142,7 +142,6 @@ const handleRejectedInvitation = async (invitation) => {
 const handleAcceptedInvitation = async (invitation) => {
   // add the user to projects member
   const project = await findActiveProjectById(invitation.projectId);
-  console.log(project)
   await project.addMember(invitation.inviting).save();
 
   // set the invitation as accepted
