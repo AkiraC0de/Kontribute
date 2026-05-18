@@ -50,3 +50,14 @@ export const respondToMyInvitationSchema = Joi.object({
       "any.required": "Response is a required field."
     })
 });
+
+export const updateProjectStatusSchema = Joi.object({
+  status: Joi.string()
+    .required()
+    .valid("active", "completed", "deleted")
+    .messages({
+      "string.base": "Status must be a valid text string.",
+      "any.only": "Status must be either 'active', 'completed', or 'deleted'.",
+      "any.required": "Status is a required field."
+    })
+})

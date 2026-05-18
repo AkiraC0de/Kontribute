@@ -5,7 +5,8 @@ import joiValidator from "../../middlewares/joiValidator.js"
 
 import { 
   createProjectSchema,
-  respondToMyInvitationSchema
+  respondToMyInvitationSchema,
+  updateProjectStatusSchema
 } from "./project.validation.js";
 import { 
   handleGetMyInvitations,
@@ -14,7 +15,8 @@ import {
   handleInviteMember,
   handleRespondToMyInvitation,
   handleLeaveProject,
-  handleTransferLeadership
+  handleTransferLeadership,
+  handleUpdateProjectStatus
 } from "./project.controllers.js";
 
 
@@ -37,6 +39,13 @@ projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAccess(), han
 // Send an invitation to someone to be part of the project.
 projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
 
+// Update the projects status (active, completed, archived)
+projectRoute.patch("/:projectId/status", 
+  verifyAccess(), 
+  joiValidator(updateProjectStatusSchema), 
+  handleUpdateProjectStatus
+)
+
 // Fetch all projects where the user is the leader
 //projectRoute.get("/leader", verifyAccess());
 
@@ -46,8 +55,6 @@ projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMemb
 // Update projects data
 //projectRoute.put("/:projectId")
 
-// Update the projects status (active, completed, archived)
-//projectRoute.patch("/:projectId/status")
 
 // Permanently delete a project
 // projectRoute.delete("/:projectId", verifyAccess());

@@ -47,36 +47,30 @@ export const createProject = async (userId, projectData) => {
 }
 
 
-
 export const getMyProjects = async (userId, statusFilter) => {
-  const projects = await Project.find({
-    status: statusFilter,
+  const query = {
     $or: [
       { leader: userId },
-      { "members.userId": userId }
+      { members: { $elemMatch: { userId: userId, status: "active" } } } // Updated to use $elemMatch as discussed earlier
     ]
-  })
-  .sort({ deadline: 1 })
-  .populate("leader", "firstname lastname username");
+  };
 
-  const projectsCount = projects.length;
-
-  if(projectsCount == 0){
-    return {
-      message: "No projects have found.",
-      projectsCount,
-      projects : []
-    }
+  if (statusFilter) {
+    // If they ask for "active" or "completed", give them exactly that
+    query.status = statusFilter;
+  } else {
+    // If status is null/undefined, fetch everything EXCEPT "archived"
+    query.status = { $ne: "archived" };
   }
 
-  const sanitizedProjects = projects.map(p => p.toPublicJSON()) 
+  const projects = await fetchProjects(query);
 
   return {
-    message: "These are your projects.",
-    projectsCount,
-    projects : sanitizedProjects
-  }
-} 
+    message: projects.length ? "These are your projects." : "No projects were found.",
+    projectsCount: projects.length,
+    projects: projects.map((p) => p.toPublicJSON()),
+  };
+};
 
 // -- invitation services
 
@@ -134,7 +128,23 @@ export const respondToMyInvitation = async (invitation, response) => {
   }
 }
 
+export const updateProjectStatus = async (project, status) => {
+  // check if the current status is same as the new status
+  if(project.status === status){
+    throw new GenericError(400, "Current status of the project is same as you want to change into.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  project.status = status;
+  return project.save() 
+}
+
 // -- helpers
+
+const fetchProjects = (query) =>
+  Project.find(query)
+    .sort({ deadline: 1 })
+    .populate("leader", "firstname lastname username");
+
 const handleRejectedInvitation = async (invitation) => {
   return invitation.changeStatus("rejected").save();
 }

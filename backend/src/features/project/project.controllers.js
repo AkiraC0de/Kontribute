@@ -12,9 +12,11 @@ import {
   getMyProjects, 
   inviteMember ,
   findPendingInvitationById,
-  respondToMyInvitation
+  respondToMyInvitation,
+  updateProjectStatus
 } from "./project.services.js";
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
+import ProjectNotFound from "../../errors/ProjectNotFound.js";
 
 export const handleCreateProject = async (req, res) => {
   const result = await createProject(req.user._id, req.body);
@@ -30,7 +32,14 @@ export const handleCreateProject = async (req, res) => {
 }
 
 export const handleGetMyProjects = async (req, res) => {
-  const statusFilter = req.query.status ||  "active";
+  const ALLOWED_STATUS = ["active", "completed"];
+  const statusFilter = req.query.status;
+
+  // If a status is provided, validate it against the allowed array
+  if (statusFilter && !ALLOWED_STATUS.includes(statusFilter)) {
+    throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
+  }
+
   const result = await getMyProjects(req.user._id, statusFilter);
 
   return res.status(200)
@@ -88,6 +97,9 @@ export const handleInviteMember = async (req, res) => {
 
 export const handleGetMyInvitations = async (req, res) => {
   const statusFilter = req.query.status || "pending";
+  if(statusFilter == "pending" || statusFilter == "completed"){
+    throw new GenericError(400, "Invalid status of project.")
+  }
   const result = await getMyInvitaions(req.user._id, statusFilter);
 
   return res.status(200).json({
@@ -145,7 +157,7 @@ export const handleLeaveProject = async (req, res) => {
 
 export const handleTransferLeadership = async (req, res) => {
   const project = await findActiveProjectById(req.params.projectId);
-  
+
   const transferingFrom = req.user._id;
   const transferingTo = req.params.userId;
 
@@ -154,6 +166,44 @@ export const handleTransferLeadership = async (req, res) => {
   res.status(200)
     .json({
       success: true,
-      message: "You have successfully transfer the leadership. You are now a member."
+      message: "You have successfully transfer the leadership. You are now a member.",
+      data: {
+        project: project.toPublicJSON()
+      }
+    })
+}
+
+export const handleUpdateProjectStatus = async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+
+  // check if the project was already archived
+  if(project.status === "archived"){
+    throw new ProjectNotFound();
+  }
+
+  const userId = req.user._id;
+  const status = req.body.status;
+  const newStatus = status === "deleted" ? "archived" : status;
+
+  // check if the user is a member
+  if(!project.isMember(userId)){
+    throw new UnauthorizeError("You are not a member of this project.")
+  }
+
+  // check if the user is the leader
+  const isLeader = project.leader.equals(userId);
+  if(!isLeader){
+    throw new UnauthorizeError("Only leader is allowed to update the project status.")
+  }
+
+  await updateProjectStatus(project, newStatus);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: `The project status has been changed to ${status}`,
+      data: {
+        project: status === "deleted" ? null : project.toPublicJSON()
+      }
     })
 }
