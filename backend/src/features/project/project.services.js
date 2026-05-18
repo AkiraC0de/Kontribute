@@ -81,7 +81,7 @@ export const getMyProjects = async (userId, statusFilter) => {
 // -- invitation services
 
 export const inviteMember = async (projectId, invitedBy, inviting) => {
-  const conflictInvitation = await Invitation.findOne({projectId, inviting});
+  const conflictInvitation = await Invitation.findOne({projectId, inviting, status: "pending"});
   if(conflictInvitation){
     throw new GenericError(400, "User already invited.", ERROR_CODES.REQUEST_ERROR);
   }
@@ -119,9 +119,7 @@ export const getMyInvitaions = async (userId, statusFilter = "pending") => {
   }
 }
 
-export const respondToMyInvitation = async (invitationId, response) => {
-  const invitation = await findPendingInvitationById(invitationId);
-
+export const respondToMyInvitation = async (invitation, response) => {
   if(response === "accept"){
     await handleAcceptedInvitation(invitation)
   } else if(response === "reject"){
@@ -142,13 +140,13 @@ const handleRejectedInvitation = async (invitation) => {
 }
 
 const handleAcceptedInvitation = async (invitation) => {
-  // set the invitation as accepted
-  await invitation.changeStatus("accepted").save()
-
   // add the user to projects member
-  const project = await Project.findById(invitation.projectId);
+  const project = await findActiveProjectById(invitation.projectId);
   console.log(project)
   await project.addMember(invitation.inviting).save();
+
+  // set the invitation as accepted
+  await invitation.changeStatus("accepted").save()
 }
 
 

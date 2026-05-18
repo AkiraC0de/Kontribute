@@ -121,7 +121,7 @@ projectSchema.methods.isMember = function (userId){
   return this.members.some(m => m.userId.equals(userId) && m.status === "active");
 }
 
-projectSchema.methods.addMember = async function(userId) {
+projectSchema.methods.addMember = function(userId) {
   // check if user already a member
   const alreadyMember = this.members.some(m => m.userId.equals(userId));
   if(alreadyMember){

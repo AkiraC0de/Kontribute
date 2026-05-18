@@ -14,6 +14,7 @@ import {
   findPendingInvitationById,
   respondToMyInvitation
 } from "./project.services.js";
+import InvitationNotFound from "../../errors/InvitationNotFound.js";
 
 export const handleCreateProject = async (req, res) => {
   const result = await createProject(req.user._id, req.body);
@@ -56,8 +57,6 @@ export const handleInviteMember = async (req, res) => {
 
   const project = await findActiveProjectById(req.params.projectId);
 
-  console.log(project)
-
   // verify if the invitedByUser is a member of this project
   if(!project.isMember(invitedByUserId)){
     throw new UnauthorizeError("You are not a member of this project.")
@@ -76,6 +75,7 @@ export const handleInviteMember = async (req, res) => {
   }
 
   const invitingUser = await findUserById(invitingUserId);
+  
   const invitation = await inviteMember(project._id, invitedByUserId, invitingUser._id);
 
   const responseMessage = `Project invitation has been sent to @${invitingUser.username}.`
@@ -101,7 +101,15 @@ export const handleGetMyInvitations = async (req, res) => {
 }
 
 export const handleRespondToMyInvitation = async (req, res) => {
-  const result = await respondToMyInvitation(req.params.invitationId, req.body.response);  
+  const invitation = await findPendingInvitationById(req.params.invitationId);
+
+  // verify if the invitation belongs to the user
+  if(!invitation.inviting.equals(req.user._id)){
+    throw new InvitationNotFound();
+  }
+
+  // process the response
+  const result = await respondToMyInvitation(invitation, req.body.response);  
   
   return res.status(200)
     .json({

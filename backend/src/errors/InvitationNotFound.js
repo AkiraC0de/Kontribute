@@ -5,7 +5,7 @@ class InvitationNotFound extends GenericError {
   constructor(){
     super(
       404,
-      "Project not found.",
+      "Invitation not found.",
       ERROR_CODES.NOT_FOUND,
     );
   }
