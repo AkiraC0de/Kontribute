@@ -18,7 +18,8 @@ import {
   handleTransferLeadership,
   handleUpdateProjectStatus,
   handleGetProject,
-  handleGetMyLedProjects
+  handleGetMyLedProjects,
+  handleKickMember
 } from "./project.controllers.js";
 
 
@@ -58,6 +59,9 @@ projectRoute.patch("/:projectId/status",
   handleUpdateProjectStatus
 )
 
+// POST /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
+projectRoute.post("/:projectId/kick/:userId". verifyAccess(), handleKickMember);
+
 // -- project invitation routes
 
 // GET /api/v1/project/invitation - Fetch users pending project invitations
@@ -72,10 +76,6 @@ projectRoute.put("/invitation/:invitationId",
 
 // -- Future implementation (commented out)
 
-
-
-
-
 // PUT /api/v1/project/:projectId - Update projects data
 // projectRoute.put("/:projectId")
 
@@ -87,7 +87,6 @@ projectRoute.put("/invitation/:invitationId",
 // GET /api/v1/project/:projectId/member - Fetch the project members
 // projectRoute.get("/:projectId/member". verifyAccess(),  );
 
-// DELETE /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
-// projectRoute.delete("/:projectId/member/:userId". verifyAccess());
+
 
 export default projectRoute;

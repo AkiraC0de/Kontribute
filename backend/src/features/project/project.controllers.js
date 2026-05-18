@@ -251,3 +251,37 @@ export const handleGetMyLedProjects = async (req, res) => {
       }
     });
 }
+
+export const handleKickMember = async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+  const userId = req.user._id;
+  const kickUserId = req.params.userId;
+
+  // check if the project was already archived
+  if(project.status === "archived"){
+    throw new ProjectNotFound();
+  }
+
+  if(!project.isMember(userId)){
+    throw new UnauthorizeError("You are not a member of this project.")
+  }
+
+  // Check if the user is the leader
+  const isLeader = project.leader.equals(userId);
+  if(!isLeader){
+    throw new UnauthorizeError("You are not a the leader of this project to kick someone.")
+  }
+
+  if(!project.isMember(kickUserId)){
+    throw new UnauthorizeError("User is not a member of this project.")
+  }
+
+  // remove the user as a member of the project.
+  await project.removeMember(kickUserId).save();
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: "You have successfully kick the member from the project."
+    })
+} 
