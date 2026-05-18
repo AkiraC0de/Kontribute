@@ -39,7 +39,11 @@ projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 // Permanently delete a project
 // projectRoute.delete("/:projectId", verifyAccess());
 
+
 // -- project invitation routes
+
+// fetch users pending invitations
+projectRoute.post("/invitations", verifyAccess(), handleGetMyInvitations);
 
 // Send an invitation to someone to be part of the project.
 projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);

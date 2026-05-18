@@ -37,6 +37,7 @@ const invitationSchema = new Schema({
 });
 
 invitationSchema.index({ projectId: 1, inviting: 1 }, { unique: true });
+invitationSchema.index({ inviting: 1 });
 
 const Invitation = model("Invitation", invitationSchema);
 

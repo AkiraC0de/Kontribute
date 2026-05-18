@@ -118,7 +118,7 @@ projectSchema.methods.toPublicJSON = function() {
 }
 
 projectSchema.methods.isMember = function (userId){
-  return this.members.some(m => m.userId.equals(userId));
+  return this.members.some(m => m.userId.equals(userId) && m.status === "active");
 }
 
 projectSchema.methods.addMember = async function(userId) {

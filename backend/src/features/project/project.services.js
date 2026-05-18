@@ -1,6 +1,7 @@
 import ERROR_CODES from "../../config/errorCodes.js";
 import GenericError from "../../errors/GenericError.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
+import Invitation from "../../models/invitation.model.js";
 import Project from "../../models/project.model.js"
 import { generateCryptoToken } from "../../utils/utils.js";
 
@@ -12,7 +13,7 @@ export const createProject = async (userId, projectData) => {
     leader: userId,  
     status: "active"
   }).limit(maxAmountProjects);
-  
+
   if(activeProjectsCount >= maxAmountProjects){
     throw GenericError(400, "You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.", ERROR_CODES.TOO_MANY_REQUEST);
   }
@@ -60,7 +61,7 @@ export const getMyProjects = async (userId, statusFilter) => {
   const projectsCount = projects.length;
 
   if(projectsCount == 0){
-    throw GenericError(404, "No projects found.", ERROR_CODES.NOT_FOUND);
+    throw new GenericError(404, "No projects found.", ERROR_CODES.NOT_FOUND);
   }
 
   const sanitizedProjects = projects.map(p => p.toPublicJSON()) 
@@ -72,9 +73,24 @@ export const getMyProjects = async (userId, statusFilter) => {
   }
 } 
 
+
+export const inviteMember = async (projectId, invitedBy, inviting) => {
+  const conflictInvitation = await Invitation.findOne({projectId, inviting});
+  if(conflictInvitation){
+    throw new GenericError(400, "User already invited.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  return Invitation.create({
+    projectId,
+    invitedBy,
+    inviting,
+    status: "pending"
+  })    
+}
+
 // -- helpers
-export const findProjectById = async (projectId) => {
-  const project = await Project.findById(projectId);
+export const findActiveProjectById = async (projectId) => {
+  const project = await Project.findOne({status: "active", _id: projectId});
   if(!project) {
     throw new ProjectNotFound();
   }
