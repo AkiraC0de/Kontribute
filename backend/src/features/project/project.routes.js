@@ -16,7 +16,8 @@ import {
   handleRespondToMyInvitation,
   handleLeaveProject,
   handleTransferLeadership,
-  handleUpdateProjectStatus
+  handleUpdateProjectStatus,
+  handleGetProject
 } from "./project.controllers.js";
 
 
@@ -33,6 +34,9 @@ projectRoute.post("/",
 
 // GET /api/v1/project - Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
+
+// GET /api/v1/project/:projectId - Fetch details for a specific project
+projectRoute.get("/:projectId", verifyAccess(), handleGetProject);
 
 // POST /api/v1/project/:projectId/leave - Leave from the project route
 projectRoute.post("/:projectId/leave", verifyAccess(), handleLeaveProject);
@@ -67,8 +71,7 @@ projectRoute.put("/invitation/:invitationId",
 // GET /api/v1/project/leader - Fetch all projects where the user is the leader
 // projectRoute.get("/leader", verifyAccess());
 
-// GET /api/v1/project/:projectId - Fetch details for a specific project
-// projectRoute.get("/:projectId", verifyAccess());
+
 
 // PUT /api/v1/project/:projectId - Update projects data
 // projectRoute.put("/:projectId")

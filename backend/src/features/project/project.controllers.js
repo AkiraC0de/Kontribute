@@ -204,3 +204,27 @@ export const handleUpdateProjectStatus = async (req, res) => {
       }
     })
 }
+
+export const handleGetProject = async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+
+  // check if the project was already archived
+  if(project.status === "archived"){
+    throw new ProjectNotFound();
+  }
+
+  // check if the user is a member
+  const userId = req.user._id;
+  if(!project.isMember(userId)){
+    throw new UnauthorizeError("You are not a member of this project.")
+  }
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: "Here is your project detials.",
+      data: {
+        project: project.toPublicJSON()
+      }
+    })
+}
