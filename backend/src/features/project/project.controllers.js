@@ -8,6 +8,7 @@ import { findUserById } from "../auth/auth.services.js";
 import { 
   createProject, 
   findActiveProjectById, 
+  getMyInvitaions, 
   getMyProjects, 
   inviteMember 
 } from "./project.services.js";
@@ -76,6 +77,14 @@ export const handleInviteMember = async (req, res) => {
   })
 }
 
-export const handleGetMyInvitations = (req, res) => {
+export const handleGetMyInvitations = async (req, res) => {
+  const statusFilter = req.query.status || "pending";
+  const result = await getMyInvitaions(req.user._id, statusFilter);
 
+  return res.status(200).json({
+    success: true,
+    message: result.message,
+    invitationsCount : result.invitationsCount,
+    invitations : result.invitations
+  })
 }

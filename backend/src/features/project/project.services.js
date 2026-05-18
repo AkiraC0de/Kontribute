@@ -56,12 +56,16 @@ export const getMyProjects = async (userId, statusFilter) => {
     ]
   })
   .sort({ deadline: 1 })
-  .populate("leader", "name email");
+  .populate("leader", "firstname lastname username");
 
   const projectsCount = projects.length;
 
   if(projectsCount == 0){
-    throw new GenericError(404, "No projects found.", ERROR_CODES.NOT_FOUND);
+    return {
+      message: "No projects have found.",
+      projectsCount,
+      projects : []
+    }
   }
 
   const sanitizedProjects = projects.map(p => p.toPublicJSON()) 
@@ -73,6 +77,7 @@ export const getMyProjects = async (userId, statusFilter) => {
   }
 } 
 
+// -- invitation services
 
 export const inviteMember = async (projectId, invitedBy, inviting) => {
   const conflictInvitation = await Invitation.findOne({projectId, inviting});
@@ -88,12 +93,35 @@ export const inviteMember = async (projectId, invitedBy, inviting) => {
   })    
 }
 
+export const getMyInvitaions = async (userId, statusFilter = "pending") => {
+  const invitations = await Invitation.find({inviting: userId, status: statusFilter})
+  .sort({ expiresAt: 1 })
+  .populate("invitedBy", "firstName lastName username")
+  .populate("projectId", "title description");
+
+  const invitationsCount = invitations.length;
+
+  if(invitationsCount == 0){
+    return {
+      message: `No ${statusFilter} invitation have found.`,
+      invitationsCount,
+      invitations : []
+    }
+  }
+
+  const sanitizedInvitations = invitations.map(i => i.toPublicJSON()) 
+  
+  return {
+    message: "These are your pending invitations.",
+    invitationsCount,
+    invitations : sanitizedInvitations
+  }
+}
+
 // -- helpers
 export const findActiveProjectById = async (projectId) => {
   const project = await Project.findOne({status: "active", _id: projectId});
-  if(!project) {
-    throw new ProjectNotFound();
-  }
 
+  
   return project;
 }

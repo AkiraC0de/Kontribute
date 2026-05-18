@@ -36,8 +36,20 @@ const invitationSchema = new Schema({
   respondedAt: Date
 });
 
+invitationSchema.methods.toPublicJSON = function(){
+  return{
+    _id: this._id,
+    project: this.projectId,
+    inviting: this.inviting,
+    status: this.status,
+    invitedBy: this.invitedBy,
+    invitedAt: this.invitedAt,
+    expiresAt: this.expiresAt,
+  }
+}
+
 invitationSchema.index({ projectId: 1, inviting: 1 }, { unique: true });
-invitationSchema.index({ inviting: 1 });
+invitationSchema.index({ inviting: 1, status: 1});
 
 const Invitation = model("Invitation", invitationSchema);
 

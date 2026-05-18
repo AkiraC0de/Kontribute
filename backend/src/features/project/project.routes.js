@@ -24,9 +24,6 @@ projectRoute.post("/", verifyAccess(), joiValidator(createProjectSchema), handle
 // Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 
-// Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
-
 // Fetch all projects where the user is the leader
 //projectRoute.get("/leader", verifyAccess());
 
@@ -46,6 +43,9 @@ projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMemb
 
 
 // -- project invitation routes
+
+// Send an invitation to someone to be part of the project.
+projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
 
 // fetch users pending project invitations
 projectRoute.get("/invitation", verifyAccess(), handleGetMyInvitations);
