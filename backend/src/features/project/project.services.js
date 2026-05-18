@@ -138,6 +138,26 @@ export const updateProjectStatus = async (project, status) => {
   return project.save() 
 }
 
+export const getMyLedProjects = async (userId, statusFilter) => {
+  const query = { leader: userId };
+
+  if (statusFilter) {
+    // If they ask for "active" or "completed", give them exactly that
+    query.status = statusFilter;
+  } else {
+    // If status is null/undefined, fetch everything EXCEPT "archived"
+    query.status = { $ne: "archived" };
+  }
+
+  const projects = await fetchProjects(query);
+
+  return {
+    message: projects.length ? "These are your projects led by you." : "No projects led by you  were found.",
+    projectsCount: projects.length,
+    projects: projects.map((p) => p.toPublicJSON()),
+  };
+}
+
 // -- helpers
 
 const fetchProjects = (query) =>

@@ -11,7 +11,8 @@ import {
   inviteMember ,
   findPendingInvitationById,
   respondToMyInvitation,
-  updateProjectStatus
+  updateProjectStatus,
+  getMyLedProjects
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
@@ -227,4 +228,26 @@ export const handleGetProject = async (req, res) => {
         project: project.toPublicJSON()
       }
     })
+}
+
+export const handleGetMyLedProjects = async (req, res) => {
+  const ALLOWED_STATUS = ["active", "completed"];
+  const statusFilter = req.query.status;
+
+  // If a status is provided, validate it against the allowed array
+  if (statusFilter && !ALLOWED_STATUS.includes(statusFilter)) {
+    throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
+  }
+
+  const result = await getMyLedProjects(req.user._id, statusFilter);
+
+  return res.status(200)
+    .json({
+      success : true,
+      message: result.message,
+      data: {
+        projectsCount: result.projectsCount,
+        projects: result.projects
+      }
+    });
 }
