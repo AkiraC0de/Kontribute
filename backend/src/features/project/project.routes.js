@@ -13,7 +13,8 @@ import {
   handleGetMyProjects,
   handleInviteMember,
   handleRespondToMyInvitation,
-  handleLeaveProject
+  handleLeaveProject,
+  handleTransferLeadership
 } from "./project.controllers.js";
 
 
@@ -27,8 +28,14 @@ projectRoute.post("/", verifyAccess(), joiValidator(createProjectSchema), handle
 // Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 
-// // leave from the project route
-projectRoute.post("/:projectId/leave", verifyAccess(), handleLeaveProject) ;
+// leave from the project route
+projectRoute.post("/:projectId/leave", verifyAccess(), handleLeaveProject);
+
+// transfer leadership of the project
+projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAccess(), handleTransferLeadership)
+
+// Send an invitation to someone to be part of the project.
+projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
 
 // Fetch all projects where the user is the leader
 //projectRoute.get("/leader", verifyAccess());
@@ -48,9 +55,6 @@ projectRoute.post("/:projectId/leave", verifyAccess(), handleLeaveProject) ;
 
 
 // -- project invitation routes
-
-// Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
 
 // fetch users pending project invitations
 projectRoute.get("/invitation", verifyAccess(), handleGetMyInvitations);

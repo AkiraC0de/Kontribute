@@ -122,7 +122,7 @@ export const handleLeaveProject = async (req, res) => {
   const project = await findActiveProjectById(req.params.projectId);
   const userId = req.user._id;
 
-  // check if the user is not a member
+  // check if the user is a member
   if(!project.isMember(userId)){
     throw new UnauthorizeError("You are not a member of this project.")
   }
@@ -140,5 +140,20 @@ export const handleLeaveProject = async (req, res) => {
     .json({
       success: true,
       message: `You have successfully leave the project ${project.title}`
+    })
+}
+
+export const handleTransferLeadership = async (req, res) => {
+  const project = await findActiveProjectById(req.params.projectId);
+  
+  const transferingFrom = req.user._id;
+  const transferingTo = req.params.userId;
+
+  await project.transferLeadership(transferingFrom, transferingTo).save();
+
+  res.status(200)
+    .json({
+      success: true,
+      message: "You have successfully transfer the leadership. You are now a member."
     })
 }

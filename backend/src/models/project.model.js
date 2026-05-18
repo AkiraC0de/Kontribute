@@ -154,15 +154,15 @@ projectSchema.methods.removeMember = function(userId) {
 };
 
 projectSchema.methods.transferLeadership = function(fromUserId, toUserId) {
-  // transferring leadership to yourself
-  if (fromUserId.toString() === toUserId.toString()) {
-    throw new GenericError(400, "You are already the leader of this project.", ERROR_CODES.REQUEST_ERROR);
-  }
-
   // Verify that the 'fromUser' is actually the current leader
   const currentLeader = this.members.find(m => m.userId.equals(fromUserId) && m.role === "leader");
   if (!currentLeader) {
     throw new GenericError(403, "You don't have the authority to transfer leadership.", ERROR_CODES.REQUEST_ERROR);
+  }
+
+  // transferring leadership to yourself
+  if (fromUserId.toString() === toUserId.toString()) {
+    throw new GenericError(400, "You are already the leader of this project.", ERROR_CODES.REQUEST_ERROR);
   }
 
   // Verify that the 'toUser' is an active member of this project
