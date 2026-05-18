@@ -7,7 +7,7 @@ import {
   createProjectSchema
 } from "./project.validation.js";
 import { 
-
+  handleGetMyInvitations,
   handleCreateProject,
   handleGetMyProjects,
   handleInviteMember
@@ -23,6 +23,9 @@ projectRoute.post("/", verifyAccess(), joiValidator(createProjectSchema), handle
 
 // Fetch all projects the user is a part of
 projectRoute.get("/", verifyAccess(), handleGetMyProjects);
+
+// Send an invitation to someone to be part of the project.
+projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
 
 // Fetch all projects where the user is the leader
 //projectRoute.get("/leader", verifyAccess());
@@ -40,13 +43,14 @@ projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 // projectRoute.delete("/:projectId", verifyAccess());
 
 
+
+
 // -- project invitation routes
 
-// fetch users pending invitations
-projectRoute.post("/invitations", verifyAccess(), handleGetMyInvitations);
+// fetch users pending project invitations
+projectRoute.get("/invitation", verifyAccess(), handleGetMyInvitations);
 
-// Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
+
 
 
 // -- Project member routes
