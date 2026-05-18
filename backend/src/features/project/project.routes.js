@@ -50,6 +50,9 @@ projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMemb
 // fetch users pending project invitations
 projectRoute.get("/invitation", verifyAccess(), handleGetMyInvitations);
 
+// Users resonse to their pending project invitations
+projectRoute.put("/invitation/:invitationId", verifyAccess(), handleGetMyInvitations);
+
 
 
 

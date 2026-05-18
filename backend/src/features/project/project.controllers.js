@@ -39,6 +39,7 @@ export const handleGetMyProjects = async (req, res) => {
 
 
 // -- invitation controllers
+
 export const handleInviteMember = async (req, res) => {
   const invitedByUserId = req.user._id;
   const invitingUserId = req.params.userId;
@@ -87,4 +88,11 @@ export const handleGetMyInvitations = async (req, res) => {
     invitationsCount : result.invitationsCount,
     invitations : result.invitations
   })
+}
+
+export const handleResponseToMyInvitation = async (req, res) => {
+  return res.status(200)
+    .json({
+      success: true
+    })
 }
