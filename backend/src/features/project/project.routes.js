@@ -9,7 +9,8 @@ import {
 import { 
 
   handleCreateProject,
-  handleGetMyProjects
+  handleGetMyProjects,
+  handleInviteMember
 } from "./project.controllers.js";
 
 
@@ -38,11 +39,16 @@ projectRoute.get("/", verifyAccess(), handleGetMyProjects);
 // Permanently delete a project
 // projectRoute.delete("/:projectId", verifyAccess());
 
+// -- project invitation routes
+
+// Send an invitation to someone to be part of the project.
+projectRoute.post("/:projectId/invite/:userId", verifyAccess(), handleInviteMember);
+
 
 // -- Project member routes
 
-// // get the project members
-// projectRoute.get("/:projectId/member". verifyAccess());
+// fetch the project members
+// projectRoute.get("/:projectId/member". verifyAccess(),  );
 
 // // add Member route
 // projectRoute.post("/:projectId/member/:userId". verifyAccess());

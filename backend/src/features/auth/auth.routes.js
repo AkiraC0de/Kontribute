@@ -65,7 +65,7 @@ authRoute.post("/verify/reset-password",
 authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchema, "body"), handleRequestResetPassword);
 
 // Reset user password. Requires SessionToken (type: resetPassword)
-authRoute.post("/password/reset", 
+authRoute.patch("/password/reset", 
   verifySessionToken("resetPassword"),
   joiValidator(resetPasswordSchema),
   handleResetPassword

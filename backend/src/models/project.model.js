@@ -7,7 +7,6 @@ const memberSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    index: true
   },
   role: {
     type: String,
@@ -26,6 +25,7 @@ const memberSchema = new Schema({
     default: Date.now
   }
 } , { _id: false });
+
 
 const settingsSchema = new Schema({
   allowMembersToInvite: {
@@ -62,7 +62,6 @@ const projectSchema = new Schema({
     type: String,
     enum: ["active", "completed", "archived"],
     default: "active",
-    index: true
   },
   deadline: {
     type: Date,
@@ -74,10 +73,8 @@ const projectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    index: true
   },
   members: [memberSchema],
-  
 
   // project settings
   settings: {
@@ -95,7 +92,6 @@ const projectSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    index: true
   },
   archivedAt: {
     type: Date,
@@ -121,17 +117,21 @@ projectSchema.methods.toPublicJSON = function() {
   }
 }
 
+projectSchema.methods.isMember = function (userId){
+  return this.members.some(m => m.userId.equals(userId));
+}
+
 projectSchema.methods.addMember = async function(userId) {
   // check if user already a member
   const alreadyMember = this.members.some(m => m.userId.equals(userId));
   if(alreadyMember){
-    throw new GenericError(400, "This user is already member of the group.", ERROR_CODES.REQUEST_ERROR);
+    throw new GenericError(400, "This user is already member of the project.", ERROR_CODES.REQUEST_ERROR);
   }
 
   // Check if group is full
-  const activeCount = this.members.filter(m => m.status === 'active').length;
+  const activeCount = this.members.filter(m => m.status === "active").length;
   if (activeCount >= this.settings.maxMembers) {
-    throw new GenericError(400, "The group is already full.");
+    throw new GenericError(400, "The project is already full.");
   }
 
   this.members.push({
@@ -180,6 +180,8 @@ projectSchema.methods.transferLeadership = function(fromUserId, toUserId) {
   return this;
 };
 
+projectSchema.index({ "members.userId": 1, "members.status": 1 });
+projectSchema.index({ leader: 1, status: 1 });
 
 const Project = model("Project", projectSchema);
 

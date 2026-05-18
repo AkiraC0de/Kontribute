@@ -1,5 +1,6 @@
 import ERROR_CODES from "../../config/errorCodes.js";
 import GenericError from "../../errors/GenericError.js";
+import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import Project from "../../models/project.model.js"
 import { generateCryptoToken } from "../../utils/utils.js";
 
@@ -7,7 +8,11 @@ export const createProject = async (userId, projectData) => {
   const { title, description, subject, deadline, settings } = projectData;
 
   const maxAmountProjects = 20;
-  const activeProjectsCount = await Project.countDocuments({ createdBy: userId,  status: "active"});
+  const activeProjectsCount = await Project.countDocuments({ 
+    leader: userId,  
+    status: "active"
+  }).limit(maxAmountProjects);
+  
   if(activeProjectsCount >= maxAmountProjects){
     throw GenericError(400, "You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.", ERROR_CODES.TOO_MANY_REQUEST);
   }
@@ -39,6 +44,8 @@ export const createProject = async (userId, projectData) => {
   }
 }
 
+
+
 export const getMyProjects = async (userId, statusFilter) => {
   const projects = await Project.find({
     status: statusFilter,
@@ -53,7 +60,7 @@ export const getMyProjects = async (userId, statusFilter) => {
   const projectsCount = projects.length;
 
   if(projectsCount == 0){
-    throw GenericError(404, "Not projects have found.", ERROR_CODES.NOT_FOUND);
+    throw GenericError(404, "No projects found.", ERROR_CODES.NOT_FOUND);
   }
 
   const sanitizedProjects = projects.map(p => p.toPublicJSON()) 
@@ -64,3 +71,13 @@ export const getMyProjects = async (userId, statusFilter) => {
     projects : sanitizedProjects
   }
 } 
+
+// -- helpers
+export const findProjectById = async (projectId) => {
+  const project = await Project.findById(projectId);
+  if(!project) {
+    throw new ProjectNotFound();
+  }
+
+  return project;
+}

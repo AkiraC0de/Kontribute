@@ -190,7 +190,7 @@ const issueVerificationTokens = (userId, verificationType) =>
 const createUserRecord = (userData, hashedPassword) =>
   User.create({ ...userData, password: hashedPassword });  
 
-const findUserById = async (userId) => {
+export const findUserById = async (userId) => {
   const user = await User.findById(userId);
   if(!user){
     throw new UserNotFound();
