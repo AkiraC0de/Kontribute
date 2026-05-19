@@ -11,6 +11,18 @@ export const MEMBER_STATUS = Object.freeze({
   KICKED : "kicked",
 })
 
+export const MEMBER_ACCESS = Object.freeze({
+  [MEMBER_ROLES.LEADER] : {
+    FETCH_PROJECT : "fetchProject",
+    FETCH_PROJECT : "fetchMembers",
+    UPDATE_PROJECT_STATUS : "updateProjectStatus",
+  },  
+  [MEMBER_ROLES.MEMBER] : {
+    FETCH_PROJECT : "fetchProject",
+    FETCH_PROJECT : "fetchMembers"
+  }
+})
+
 const memberSchema = new Schema({
   projectId: {
     type: Schema.Types.ObjectId,

@@ -1,0 +1,29 @@
+import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../models/member.model.js";
+
+const verifyProjectAccess = (requiredAccess) => 
+  async (req, res, next) => {
+    const { projectId } = req.params; 
+    const userId = req.user.id;      
+
+    const membership = await Member.findOne({ 
+      projectId, 
+      userId, 
+      status: "active" 
+    });
+
+    if (!membership) {
+      return next(new GenericError(403, "You are not an active member of this project."));
+    }
+
+    const allowedActions = ROLE_PERMISSIONS[membership.role] || [];
+
+    if (!allowedActions.includes(requiredAction)) {
+      return next(new GenericError(403, "Unauthorized. Your role lacks permission for this action."));
+    }
+
+    req.projectMembership = membership;
+    
+    next();
+  }
+
+export default verifyProjectAccess;

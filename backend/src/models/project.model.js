@@ -2,6 +2,31 @@ import { Schema, model } from "mongoose";
 
 export const MAX_LED_PROJECT_AMOUNT = 15;
 
+export const PROJECT_ACTIONS = Object.freeze({
+  // Project Read Actions 
+  FETCH_PROJECT: "project:read",
+  FETCH_MEMBERS: "project:members:read",
+  FETCH_TASKS: "project:tasks:read",
+
+  // Project Write / Meta Actions 
+  UPDATE_PROJECT_DETAILS: "project:update",
+  UPDATE_PROJECT_STATUS: "project:status:update",
+  UPDATE_PROJECT_SETTINGS: "project:settings:update",
+  ARCHIVE_PROJECT: "project:archive",
+  DELETE_PROJECT: "project:delete",
+
+  // Member Management Actions
+  INVITE_MEMBER: "project:members:invite",
+  KICK_MEMBER: "project:members:kick",
+  TRANSFER_LEADERSHIP: "project:leadership:transfer",
+
+  // Task Management Actions
+  CREATE_TASK: "project:tasks:create",
+  UPDATE_TASK: "project:tasks:update",
+  ASSIGN_TASK: "project:tasks:assign",
+  DELETE_TASK: "project:tasks:delete"
+});
+
 export const PROJECT_STATUS = Object.freeze({
   ACTIVE: "active",
   COMPLETED: "completed",
