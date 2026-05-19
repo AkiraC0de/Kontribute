@@ -98,7 +98,7 @@ export const handleVerifyToken = async (req, res) => {
 
 
 export const handleRequestResetPassword = async (req, res) => {
-  const result = await requestResetPassword(req.body.email);
+  const result = await requestResetPassword(req.body.identifier);
 
   return res.status(200)  
     .json({

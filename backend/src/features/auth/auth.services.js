@@ -81,11 +81,13 @@ export const loginUser = async (userData) => {
 export const requestResetPassword = async (identifier) => {
   const user = await findUserByIdentifier(identifier);
 
+  if (!user) throw new UserNotFound();
+
   if (!user.isEmailVerified) InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
   const [sessionToken, otp] = await issueVerificationTokens(user._id, "resetPasswordVerification");
 
-  sendVerificationCodeViaEmail(email, "Reset Password Verification", otp); // No await for advance response
+  sendVerificationCodeViaEmail(user.email, "Reset Password Verification", otp); // No await for advance response
 
   return {
     message: "PIN for verification has sent via email.",
