@@ -21,6 +21,7 @@ import {
   handleResetPasswordVerification,
   handleVerifyToken
 } from "./auth.controller.js";
+import { SESSION_TOKEN_TYPES } from "../../models/sessionToken.model.js";
 
 
 const authRoute = Router();
@@ -46,14 +47,14 @@ authRoute.post("/verify/token", handleVerifyToken);
 
 // POST /api/v1/auth/verify/email - Process email verification OTP to receive SessionToken (type: resetPassword). Requires SessionToken (type: emailVerification)
 authRoute.post("/verify/email", 
-  verifySessionToken("emailVerification"),  
+  verifySessionToken(SESSION_TOKEN_TYPES.EMAIL_VERIFICATION),  
   joiValidator(sixDigitPinVerificationSchema), 
   handleEmailVerification 
 );
 
 // POST /api/v1/auth/verify/reset-password - Verify the emailed OTP. Requires SessionToken (type: resetPasswordVerification)
 authRoute.post("/verify/reset-password", 
-  verifySessionToken("resetPasswordVerification"), 
+  verifySessionToken(SESSION_TOKEN_TYPES.RESET_PASS_VERIFICATION), 
   joiValidator(sixDigitPinVerificationSchema),
   handleResetPasswordVerification
 );
@@ -65,7 +66,7 @@ authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchem
 
 // PATCH /api/v1/auth/password/reset - Reset user password. Requires SessionToken (type: resetPassword)
 authRoute.patch("/password/reset", 
-  verifySessionToken("resetPassword"),
+  verifySessionToken(SESSION_TOKEN_TYPES.RESET_PASS),
   joiValidator(resetPasswordSchema),
   handleResetPassword
 );

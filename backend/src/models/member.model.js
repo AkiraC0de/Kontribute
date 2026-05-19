@@ -1,15 +1,15 @@
 import { Schema, model } from "mongoose";
 
-export const MEMBER_ROLES = {
+export const MEMBER_ROLES = Object.freeze({
   LEADER : "leader",
   MEMBER : "member"
-}
+})
 
-export const MEMBER_STATUS = {
+export const MEMBER_STATUS = Object.freeze({
   ACTIVE : "active",
   LEFT : "left",
   KICKED : "kicked",
-}
+})
 
 const memberSchema = new Schema({
   projectId: {

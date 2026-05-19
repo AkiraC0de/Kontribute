@@ -5,12 +5,14 @@ export const MAX_LED_PROJECT_AMOUNT = 15;
 export const PROJECT_STATUS = Object.freeze({
   ACTIVE: "active",
   COMPLETED: "completed",
-  ARCHIVED: "archived"
+  ARCHIVED: "archived",
+  DELETED : "deleted"
 });
 
 export const ALLOWED_TO_FETCH_PROJECT_STATUS = Object.freeze({
   ACTIVE: "active",
-  COMPLETED: "completed"
+  COMPLETED: "completed",
+  ARCHIVED: "archived"
 });
 
 const settingsSchema = new Schema({

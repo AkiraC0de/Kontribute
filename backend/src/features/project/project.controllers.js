@@ -35,7 +35,6 @@ export const handleGetMyProjects = async (req, res) => {
   const ALLOWED_STATUS = ["active", "completed"];
   const statusFilter = req.query.status;
 
-  // If a status is provided, validate it against the allowed array
   if (statusFilter && !ALLOWED_STATUS.includes(statusFilter)) {
     throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
   }

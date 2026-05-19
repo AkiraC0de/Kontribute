@@ -3,9 +3,10 @@ import GenericError from "../../errors/GenericError.js";
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
-import Invitation from "../../models/invitation.model.js";
 
-import Project, { ALLOWED_TO_FETCH_PROJECT_STATUS, MAX_LED_PROJECT_AMOUNT } from "../../models/project.model.js"
+import Invitation from "../../models/invitation.model.js";
+import Member, { MEMBER_ROLES } from "../../models/member.model.js";
+import Project, { ALLOWED_TO_FETCH_PROJECT_STATUS, MAX_LED_PROJECT_AMOUNT, PROJECT_STATUS } from "../../models/project.model.js"
 
 import { generateCryptoToken } from "../../utils/utils.js";
 
@@ -23,14 +24,11 @@ export const createProject = async (userId, projectData) => {
     leader: userId,
     createdBy: userId,
     shareToken: uniqueShareToken,
-    settings,
-    members: [ // Automatically add the creator as the first member with the "leader" role
-      {
-        userId: userId,
-        role: "leader",
-      }
-    ]
+    settings
   });
+
+  // Add the creator of the project as the leader of the group.
+  await addProjectMember(userId, newProject._id, MEMBER_ROLES.LEADER);
 
   return {
     message: "Your Project has been created.",
@@ -150,17 +148,29 @@ export const getMyLedProjects = async (userId, statusFilter) => {
 
 // -- helpers
 
+export const validateQueryProjectStatus = (statusFilter) => {
+  if (statusFilter && !Object.values(PROJECT_STATUS).includes(statusFilter)) 
+      throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
+}
+
 const checkUserLedProjectCount = async (userId) => {
   const projectCount = await Project.countDocuments({ 
     leader: userId,  
-    status: STATUS.ACTIVE
+    status: ALLOWED_TO_FETCH_PROJECT_STATUS.ACTIVE
   }).limit(MAX_LED_PROJECT_AMOUNT);
 
   if(projectCount >= MAX_LED_PROJECT_AMOUNT)
-    throw new TooManyRequest("You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.");
+    throw new TooManyRequest(`You have reached the maximum amount of allowed ${MAX_LED_PROJECT_AMOUNT} Projects. You may finish or delete inactive projects.`);
 
   return projectCount;
 }
+
+const addProjectMember = (userId, projectId, role = MEMBER_ROLES.MEMBER) => 
+  Member.create({
+    projectId,
+    userId,
+    role
+  });
 
 const fetchProjects = (query) =>
   Project.find(query)
