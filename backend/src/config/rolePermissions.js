@@ -1,5 +1,5 @@
 import { MEMBER_ROLES } from "../models/member.model.js";
-import { PROJECT_ACTIONS } from "../models/project.model";
+import { PROJECT_ACTIONS } from "../models/project.model.js";
 
 export const ROLE_PERMISSIONS = Object.freeze({
   [MEMBER_ROLES.LEADER]: Object.freeze([
@@ -17,7 +17,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     PROJECT_ACTIONS.CREATE_TASK,
     PROJECT_ACTIONS.UPDATE_TASK,
     PROJECT_ACTIONS.ASSIGN_TASK,
-    PROJECT_ACTIONS.DELETE_TASK
+    PROJECT_ACTIONS.DELETE_TASK,
   ]),
   
   [MEMBER_ROLES.MEMBER]: Object.freeze([
@@ -25,7 +25,8 @@ export const ROLE_PERMISSIONS = Object.freeze({
     PROJECT_ACTIONS.FETCH_MEMBERS,
     PROJECT_ACTIONS.FETCH_TASKS,
     PROJECT_ACTIONS.CREATE_TASK, 
-    PROJECT_ACTIONS.UPDATE_TASK  
+    PROJECT_ACTIONS.UPDATE_TASK,
+    PROJECT_ACTIONS.LEAVE  
   ])
 });
 

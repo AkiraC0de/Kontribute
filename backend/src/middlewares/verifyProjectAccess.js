@@ -1,9 +1,11 @@
 import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../models/member.model.js";
+import GenericError from "../errors/GenericError.js";
+import ROLE_PERMISSIONS from "../config/rolePermissions.js";
 
-const verifyProjectAccess = (requiredAccess) => 
+const verifyProjectAccess = (requiredAction) => 
   async (req, res, next) => {
     const { projectId } = req.params; 
-    const userId = req.user.id;      
+    const userId = req.user._id;      
 
     const membership = await Member.findOne({ 
       projectId, 

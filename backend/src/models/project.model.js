@@ -17,6 +17,7 @@ export const PROJECT_ACTIONS = Object.freeze({
 
   // Member Management Actions
   INVITE_MEMBER: "project:members:invite",
+  LEAVE: "project:leave",
   KICK_MEMBER: "project:members:kick",
   TRANSFER_LEADERSHIP: "project:leadership:transfer",
 
@@ -111,9 +112,7 @@ projectSchema.methods.toPublicJSON = function() {
     subject: this.subject,
     status: this.status,
     leader: this.leader,
-    settings: {
-      maxMembers: this.settings.maxMembers
-    },
+    settings: this.settings,
     createdAt: this.createdAt
   };
 };

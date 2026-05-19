@@ -42,13 +42,13 @@ projectRoute.get("/", verifyAuth, handleGetUserProjects);
 // GET /api/v1/project/leader - Fetch all projects where the user is the leader
 projectRoute.get("/leader", verifyAuth, handleGetUserLedProjects); 
 
+// GET /api/v1/project/:projectId - Fetch details for a specific project
+projectRoute.get("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.FETCH_PROJECT), handleGetProject);
+
 // ALL BELOW REQUIRES REFACTORING
 
-// GET /api/v1/project/:projectId - Fetch details for a specific project
-projectRoute.get("/:projectId", verifyAuth, handleGetProject); // REFACTORING
-
 // POST /api/v1/project/:projectId/leave - Leave from the project route
-projectRoute.post("/:projectId/leave", verifyAuth, handleLeaveProject);
+projectRoute.post("/:projectId/leave", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.LEAVE), handleLeaveProject);  // REFACTORING
 
 // POST /api/v1/project/:projectId/transfer-leadership/:userId - Transfer leadership of the project
 projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, handleTransferLeadership)
