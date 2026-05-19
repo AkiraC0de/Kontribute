@@ -60,7 +60,7 @@ projectRoute.patch("/:projectId/status",
 )
 
 // POST /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
-projectRoute.post("/:projectId/kick/:userId". verifyAccess(), handleKickMember);
+projectRoute.post("/:projectId/kick/:userId", verifyAccess(), handleKickMember);
 
 // -- project invitation routes
 

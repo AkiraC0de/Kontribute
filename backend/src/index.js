@@ -23,7 +23,12 @@ app.use("/api/v1/notification", notificationRoute);
 // Error handler
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () => {
-    connectToDB();
-    console.log(`The Server is running at PORT ${process.env.PORT}`);
+app.listen(process.env.PORT, async () => {
+    try {
+        await connectToDB();
+        console.log(`The Server is running at PORT ${process.env.PORT}`);
+    } catch (error) {
+        console.error("Failed to start server:", error.message);
+        process.exit(1);
+    }
 })

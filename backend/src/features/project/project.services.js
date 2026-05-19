@@ -152,7 +152,7 @@ export const getMyLedProjects = async (userId, statusFilter) => {
   const projects = await fetchProjects(query);
 
   return {
-    message: projects.length ? "These are your projects led by you." : "No projects led by you  were found.",
+    message: projects.length ? "These are your projects led by you." : "No projects led by you were found.",
     projectsCount: projects.length,
     projects: projects.map((p) => p.toPublicJSON()),
   };
