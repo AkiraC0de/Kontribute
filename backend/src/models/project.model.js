@@ -2,6 +2,19 @@ import { Schema, model} from "mongoose";
 import GenericError from "../errors/GenericError.js";
 import ERROR_CODES from "../config/errorCodes.js";
 
+export const MAX_LED_PROJECT_AMOUNT = 15;
+
+export const PROJECT_STATUS = {
+  ACTIVE : "active",
+  COMPLETED : "completed",
+  ARCHIVED : "archived"
+}
+
+export const ALLOWED_TO_FETCH_PROJECT_STATUS = {
+  ACTIVE : "active",
+  COMPLETED : "completed"
+}
+
 const memberSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
@@ -60,8 +73,8 @@ const projectSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["active", "completed", "archived"],
-    default: "active",
+    enum: Object.values(PROJECT_STATUS),
+    default: PROJECT_STATUS.ACTIVE,
   },
   deadline: {
     type: Date,

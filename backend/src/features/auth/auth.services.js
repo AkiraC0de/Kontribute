@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 import GenericError from "../../errors/GenericError.js";

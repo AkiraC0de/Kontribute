@@ -2,25 +2,19 @@ import ERROR_CODES from "../../config/errorCodes.js";
 import GenericError from "../../errors/GenericError.js";
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
+import TooManyRequest from "../../errors/TooManyRequest.js";
 import Invitation from "../../models/invitation.model.js";
-import Project from "../../models/project.model.js"
+
+import Project, { ALLOWED_TO_FETCH_PROJECT_STATUS, MAX_LED_PROJECT_AMOUNT } from "../../models/project.model.js"
+
 import { generateCryptoToken } from "../../utils/utils.js";
 
 export const createProject = async (userId, projectData) => {
   const { title, description, subject, deadline, settings } = projectData;
 
-  const maxAmountProjects = 20;
-  const activeProjectsCount = await Project.countDocuments({ 
-    leader: userId,  
-    status: "active"
-  }).limit(maxAmountProjects);
-
-  if(activeProjectsCount >= maxAmountProjects){
-    throw new GenericError(400, "You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.", ERROR_CODES.TOO_MANY_REQUEST);
-  }
+  await checkUserLedProjectCount(userId);
   
   const uniqueShareToken = generateCryptoToken();
-
   const newProject = await Project.create({
     title,
     description,
@@ -30,9 +24,7 @@ export const createProject = async (userId, projectData) => {
     createdBy: userId,
     shareToken: uniqueShareToken,
     settings,
-    
-    // Automatically add the creator as the first member with the "leader" role
-    members: [
+    members: [ // Automatically add the creator as the first member with the "leader" role
       {
         userId: userId,
         role: "leader",
@@ -45,7 +37,6 @@ export const createProject = async (userId, projectData) => {
     project: newProject.toPublicJSON()
   }
 }
-
 
 export const getMyProjects = async (userId, statusFilter) => {
   const query = {
@@ -76,9 +67,8 @@ export const getMyProjects = async (userId, statusFilter) => {
 
 export const inviteMember = async (projectId, invitedBy, inviting) => {
   const conflictInvitation = await Invitation.findOne({projectId, inviting, status: "pending"});
-  if(conflictInvitation){
-    throw new GenericError(400, "User already invited.", ERROR_CODES.REQUEST_ERROR);
-  }
+  
+  if(conflictInvitation) throw new GenericError(400, "User already invited.", ERROR_CODES.REQUEST_ERROR)
 
   return Invitation.create({
     projectId,
@@ -159,6 +149,18 @@ export const getMyLedProjects = async (userId, statusFilter) => {
 }
 
 // -- helpers
+
+const checkUserLedProjectCount = async (userId) => {
+  const projectCount = await Project.countDocuments({ 
+    leader: userId,  
+    status: STATUS.ACTIVE
+  }).limit(MAX_LED_PROJECT_AMOUNT);
+
+  if(projectCount >= MAX_LED_PROJECT_AMOUNT)
+    throw new TooManyRequest("You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.");
+
+  return projectCount;
+}
 
 const fetchProjects = (query) =>
   Project.find(query)
