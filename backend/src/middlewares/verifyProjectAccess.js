@@ -8,18 +8,16 @@ const verifyProjectAccess = (requiredAccess) =>
     const membership = await Member.findOne({ 
       projectId, 
       userId, 
-      status: "active" 
+      status: MEMBER_STATUS.ACTIVE
     });
 
-    if (!membership) {
+    if (!membership) 
       return next(new GenericError(403, "You are not an active member of this project."));
-    }
 
     const allowedActions = ROLE_PERMISSIONS[membership.role] || [];
 
-    if (!allowedActions.includes(requiredAction)) {
+    if (!allowedActions.includes(requiredAction)) 
       return next(new GenericError(403, "Unauthorized. Your role lacks permission for this action."));
-    }
 
     req.projectMembership = membership;
     

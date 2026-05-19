@@ -7,47 +7,43 @@ import {
   createProject, 
   findActiveProjectById, 
   getMyInvitaions, 
-  getMyProjects, 
+  fetchUserProjects, 
   inviteMember ,
   findPendingInvitationById,
   respondToMyInvitation,
   updateProjectStatus,
-  getMyLedProjects
+  getMyLedProjects,
+  validateQueryProjectStatus
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
 
 export const handleCreateProject = async (req, res) => {
-  const result = await createProject(req.user._id, req.body);
+  const project = await createProject(req.user._id, req.body);
 
   return res.status(200)
     .json({
       success : true,
-      message: result.message,
+      message: "Your Project has been created.",
       data: {
-        project: result.project
+        project: project.toPublicJSON()
       }
     });
 }
 
-export const handleGetMyProjects = async (req, res) => {
-  const ALLOWED_STATUS = ["active", "completed"];
-  const statusFilter = req.query.status;
+export const handleGetUserProjects = async (req, res) => {
+  validateQueryProjectStatus(req.query.status);
 
-  if (statusFilter && !ALLOWED_STATUS.includes(statusFilter)) {
-    throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
-  }
-
-  const result = await getMyProjects(req.user._id, statusFilter);
+  const projects = await fetchUserProjects(req.user._id, req.query.status);
 
   return res.status(200)
     .json({
       success : true,
-      message: result.message,
+      message: projects.length ? "These are your projects." : "No projects were found.",
       data: {
-        projectsCount: result.projectsCount,
-        projects: result.projects
+        projectsCount: projects.length,
+        projects
       }
     });
 }

@@ -11,7 +11,7 @@ import {
 import { 
   handleGetMyInvitations,
   handleCreateProject,
-  handleGetMyProjects,
+  handleGetUserProjects,
   handleInviteMember,
   handleRespondToMyInvitation,
   handleLeaveProject,
@@ -21,6 +21,8 @@ import {
   handleGetMyLedProjects,
   handleKickMember
 } from "./project.controllers.js";
+import verifyProjectAccess from "../../middlewares/verifyProjectAccess.js";
+import { PROJECT_ACTIONS } from "../../models/project.model.js";
 
 
 const projectRoute = Router();
@@ -34,13 +36,13 @@ projectRoute.post("/",
   handleCreateProject 
 );
 
+// GET /api/v1/project - Fetch all projects the user is a part of 
+projectRoute.get("/", verifyAuth, handleGetUserProjects); 
+
 // ALL BELOW REQUIRES REFACTORING
 
-// GET /api/v1/project - Fetch all projects the user is a part of 
-projectRoute.get("/", verifyAuth, handleGetMyProjects); // REFACTORING
-
 // GET /api/v1/project/leader - Fetch all projects where the user is the leader
-projectRoute.get("/leader", verifyAuth, handleGetMyLedProjects);
+projectRoute.get("/leader", verifyAuth, handleGetMyLedProjects); // REFACTORING
 
 // GET /api/v1/project/:projectId - Fetch details for a specific project
 projectRoute.get("/:projectId", verifyAuth, handleGetProject);

@@ -5,7 +5,7 @@ import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
 
 import Invitation from "../../models/invitation.model.js";
-import Member, { MEMBER_ROLES } from "../../models/member.model.js";
+import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../../models/member.model.js";
 import Project, { ALLOWED_TO_FETCH_PROJECT_STATUS, MAX_LED_PROJECT_AMOUNT, PROJECT_STATUS } from "../../models/project.model.js"
 
 import { generateCryptoToken } from "../../utils/utils.js";
@@ -30,36 +30,37 @@ export const createProject = async (userId, projectData) => {
   // Add the creator of the project as the leader of the group.
   await addProjectMember(userId, newProject._id, MEMBER_ROLES.LEADER);
 
-  return {
-    message: "Your Project has been created.",
-    project: newProject.toPublicJSON()
-  }
+  return newProject;
 }
 
-export const getMyProjects = async (userId, statusFilter) => {
-  const query = {
-    $or: [
-      { leader: userId },
-      { members: { $elemMatch: { userId: userId, status: "active" } } } // Updated to use $elemMatch as discussed earlier
-    ]
-  };
+export const fetchUserProjects = async (userId, statusFilter) => {
+  const memberships = await fetchUserMembershipByStatus(userId, MEMBER_STATUS.ACTIVE)
+    .select("projectId role")
+    .lean();
 
-  if (statusFilter) {
-    // If they ask for "active" or "completed", give them exactly that
-    query.status = statusFilter;
+  const userProjectIds = memberships.map(m => m.projectId);
+
+  let query = { _id: { $in: userProjectIds } };
+
+  if(statusFilter){
+    query.status = statusQuery 
   } else {
-    // If status is null/undefined, fetch everything EXCEPT "archived"
-    query.status = { $ne: "archived" };
+    query.status = { $ne: PROJECT_STATUS.DELETED } // exclude deleted projects at all times
   }
 
-  const projects = await fetchProjects(query);
+  const projects = await Project.find(query).limit(userProjectIds.length);
 
-  return {
-    message: projects.length ? "These are your projects." : "No projects were found.",
-    projectsCount: projects.length,
-    projects: projects.map((p) => p.toPublicJSON()),
-  };
+  return projects.map(project => {
+    const membership = memberships.find(m => m.projectId.equals(project._id));
+    return {
+      ...project.toPublicJSON(),
+      myRole: membership ? membership.role : "member"
+    };
+  });
 };
+
+export const fetchUserMembershipByStatus = (userId, statusFilter) => 
+  Member.find({userId, status: statusFilter})
 
 // -- invitation services
 
@@ -171,12 +172,7 @@ const addProjectMember = (userId, projectId, role = MEMBER_ROLES.MEMBER) =>
     userId,
     role
   });
-
-const fetchProjects = (query) =>
-  Project.find(query)
-    .sort({ deadline: 1 })
-    .populate("leader", "firstname lastname username");
-
+  
 const handleRejectedInvitation = async (invitation) => {
   return invitation.changeStatus("rejected").save();
 }

@@ -53,6 +53,7 @@ const memberSchema = new Schema({
 });
 
 memberSchema.index({ projectId: 1, userId: 1 }, { unique: true });
+memberSchema.index({ userId: 1, status: 1 });
 
 const Member = model("Member", memberSchema);
 
