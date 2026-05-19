@@ -11,7 +11,7 @@ const verifySessionToken = (sessionType) => {
     // validate the token if it does exist in the databsae
     const sessionToken = await validateSessionToken(token, sessionType);
 
-    req.user = sessionToken.userId; // populated user
+    req.user = { _id: sessionToken.userId._id, role: sessionToken.userId.role };
     next();
   }
 }
