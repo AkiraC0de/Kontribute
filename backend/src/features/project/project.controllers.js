@@ -18,6 +18,7 @@ import {
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
+import Member, { MEMBER_ROLES } from "../../models/member.model.js";
 
 export const handleCreateProject = async (req, res) => {
   const project = await createProject(req.user._id, req.body);
@@ -88,6 +89,36 @@ export const handleLeaveProject = async (req, res) => {
     .json({
       success: true,
       message: "You have successfully left the project"
+    })
+}
+
+export const handleTransferLeadership = async (req, res) => {
+  const currentLeader = req.projectMembership;
+  const targetMember = await Member.findById(req.params.userId);
+
+  if(!targetMember.projectId.equals(req.params.projectId))
+    throw new GenericError(400, "Target member is not part of the project.", ERROR_CODES.REQUEST_ERROR);
+
+  // switch the roles
+  targetMember = MEMBER_ROLES.LEADER;
+  currentLeader = MEMBER_ROLES.MEMBER;
+
+  await Promise.all([
+    targetMember.save(),
+    currentLeader.save()
+  ])
+
+  res.status(200)
+    .json({
+      success: true,
+      message: "You have successfully transfer the leadership. You are now a member.",
+      data: {
+        project: {
+          ...project.toPublicJSON(),
+          myRole: currentLeader.role,
+          joinedAt: currentLeader.joinedAt
+        }
+      }
     })
 }
 
@@ -162,24 +193,6 @@ export const handleRespondToMyInvitation = async (req, res) => {
     .json({
       success: true,
       message: result.message
-    })
-}
-
-export const handleTransferLeadership = async (req, res) => {
-  const project = await findActiveProjectById(req.params.projectId);
-
-  const transferingFrom = req.user._id;
-  const transferingTo = req.params.userId;
-
-  await project.transferLeadership(transferingFrom, transferingTo).save();
-
-  res.status(200)
-    .json({
-      success: true,
-      message: "You have successfully transfer the leadership. You are now a member.",
-      data: {
-        project: project.toPublicJSON()
-      }
     })
 }
 

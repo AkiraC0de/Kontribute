@@ -45,16 +45,16 @@ projectRoute.get("/leader", verifyAuth, handleGetUserLedProjects);
 // GET /api/v1/project/:projectId - Fetch details for a specific project
 projectRoute.get("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.FETCH_PROJECT), handleGetProject);
 
-// ALL BELOW REQUIRES REFACTORING
-
 // POST /api/v1/project/:projectId/leave - Leave from the project route
-projectRoute.post("/:projectId/leave", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.LEAVE), handleLeaveProject);  // REFACTORING
+projectRoute.post("/:projectId/leave", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.LEAVE), handleLeaveProject); 
 
 // POST /api/v1/project/:projectId/transfer-leadership/:userId - Transfer leadership of the project
-projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, handleTransferLeadership)
+projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.TRANSFER_LEADERSHIP), handleTransferLeadership) 
+
+// ALL BELOW REQUIRES REFACTORING
 
 // POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAuth, handleInviteMember);
+projectRoute.post("/:projectId/invite/:userId", verifyAuth, handleInviteMember);  // REFACTORING
 
 // PATCH /api/v1/project/:projectId/status - Update the projects status (active, completed, archived)
 projectRoute.patch("/:projectId/status", 
