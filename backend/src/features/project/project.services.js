@@ -16,7 +16,7 @@ export const createProject = async (userId, projectData) => {
   }).limit(maxAmountProjects);
 
   if(activeProjectsCount >= maxAmountProjects){
-    throw GenericError(400, "You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.", ERROR_CODES.TOO_MANY_REQUEST);
+    throw new GenericError(400, "You have reached the maximum amount of allowed 20 Projects. You may finish or delete inactive projects.", ERROR_CODES.TOO_MANY_REQUEST);
   }
   
   const uniqueShareToken = generateCryptoToken();

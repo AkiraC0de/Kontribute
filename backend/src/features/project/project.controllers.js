@@ -95,7 +95,7 @@ export const handleInviteMember = async (req, res) => {
 
 export const handleGetMyInvitations = async (req, res) => {
   const statusFilter = req.query.status || "pending";
-  if(statusFilter == "pending" || statusFilter == "completed"){
+  if(!(statusFilter == "pending" || statusFilter == "completed")){
     throw new GenericError(400, "Invalid status of project.")
   }
   const result = await getMyInvitaions(req.user._id, statusFilter);
