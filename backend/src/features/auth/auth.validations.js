@@ -108,17 +108,19 @@ export const loginSchema = Joi.object({
 });
 
 export const requestResetPasswordSchema = Joi.object({
-  email: Joi.string()
-    .required()
-    .trim()
-    .lowercase()
-    .email()
+  identifier: Joi.alternatives()
+    .try(
+      // Trim first, then check if it's an email, then lowercase it
+      Joi.string().trim().email().lowercase(),
+      // Trim first, then treat it as a standard username string
+      Joi.string().trim()
+    )
+    .required() 
     .messages({
-      "string.email" : "Please provide a valid email address.",
-      "string.empty" : "Email is required",
-      "any.required" : "Email is a required field."
+      "string.empty": "Email or username is required.",
+      "any.required": "Identifier is a required field."
     })
-})
+});
 
 export const resetPasswordSchema = Joi.object({
   newPassword: Joi.string()

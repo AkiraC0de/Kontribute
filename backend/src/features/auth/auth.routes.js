@@ -61,7 +61,7 @@ authRoute.post("/verify/reset-password",
 // -- Password reset 
 
 // POST /api/v1/auth/password/request-reset - Receive an OTP via email and SessionToken (type: requestResetPassword). Requires users in email.
-authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchema, "body"), handleRequestResetPassword);
+authRoute.post("/password/request-reset", joiValidator(requestResetPasswordSchema), handleRequestResetPassword);
 
 // PATCH /api/v1/auth/password/reset - Reset user password. Requires SessionToken (type: resetPassword)
 authRoute.patch("/password/reset", 

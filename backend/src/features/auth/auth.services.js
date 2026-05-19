@@ -14,6 +14,7 @@ import { generateCryptoToken, generateSixDigitCode } from "../../utils/utils.js"
 import Otp, { MAX_OTP_ATTEMPTS } from "../../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../../utils/mailer.js";
 import { generateTokens } from "../../utils/token.js";
+import InvalidCredentials from "../../errors/InvalidCredentials.js";
 
 // --- services
 
@@ -41,7 +42,6 @@ export const registerUser = async (userData) => {
 export const verifyUserEmail = async (userId, pin) => {
   const user = await findUserById(userId);
 
-  // verify the pin
   await verifyOtp(userId, pin, "emailVerification");
 
   // Verify the user
@@ -59,25 +59,14 @@ export const verifyUserEmail = async (userId, pin) => {
 export const loginUser = async (userData) => {
   const { identifier, password } = userData;
 
-  const user = await User.findOne({ 
-    $or: [
-      { username: identifier },
-      { email: identifier }
-    ]
-  }).select("+password");
+  const user = await findUserByIdentifier(identifier).select("+password");
 
-  if(!user){
-    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
-  }
+  if(!user) throw new InvalidCredentials("Email, Username, or password is incorrect");
 
-  if (!user.isEmailVerified) {
-    throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
-  }
+  if(!user.isEmailVerified) throw new InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
   const isPasswordValid = await user.comparePassword(password);
-  if(!isPasswordValid){
-    throw new GenericError(400, "Email, Username, or password is incorrect", ERROR_CODES.INVALID_CREDENTIALS);
-  }
+  if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect");
 
   const tokens = generateTokens(user);
 
@@ -89,13 +78,11 @@ export const loginUser = async (userData) => {
   }
 }
 
-export const requestResetPassword = async (email) => {
-  const user = await findUserByEmail(email);
-  if (!user.isEmailVerified) {
-    throw new  GenericError(401, "Your account is not verified. Please check your email for the verification pin.", ERROR_CODES.INVALID_CREDENTIALS);
-  }
+export const requestResetPassword = async (identifier) => {
+  const user = await findUserByIdentifier(identifier);
 
-  // create the session token and OTP for email verification
+  if (!user.isEmailVerified) InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
+
   const [sessionToken, otp] = await issueVerificationTokens(user._id, "resetPasswordVerification");
 
   sendVerificationCodeViaEmail(email, "Reset Password Verification", otp); // No await for advance response
@@ -142,6 +129,8 @@ export const resetUserPassword = async (userId, newPassword) => {
 
 // --- Helpers
 
+const findUserByIdentifier = (identifier) =>
+  User.findOne({ $or: [{ username : identifier }, { email : identifier }] });
 
 const findConflictingUser = ({ username, email }) =>
   User.findOne({ $or: [{ username }, { email }] });
