@@ -3,6 +3,7 @@ import GenericError from "../../errors/GenericError.js";
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
+import mongoose from "mongoose";
 
 import Invitation from "../../models/invitation.model.js";
 import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../../models/member.model.js";
@@ -34,33 +35,66 @@ export const createProject = async (userId, projectData) => {
 }
 
 export const fetchUserProjects = async (userId, statusFilter) => {
-  const memberships = await fetchUserMembershipByStatus(userId, MEMBER_STATUS.ACTIVE)
-    .select("projectId role")
-    .lean();
-
-  const userProjectIds = memberships.map(m => m.projectId);
-
-  let query = { _id: { $in: userProjectIds } };
-
-  if(statusFilter){
-    query.status = statusQuery 
-  } else {
-    query.status = { $ne: PROJECT_STATUS.DELETED } // exclude deleted projects at all times
-  }
-
-  const projects = await Project.find(query).limit(userProjectIds.length);
-
-  return projects.map(project => {
-    const membership = memberships.find(m => m.projectId.equals(project._id));
-    return {
-      ...project.toPublicJSON(),
-      myRole: membership ? membership.role : "member"
-    };
-  });
+  return await Member.aggregate([
+    { 
+      $match: { userId: new mongoose.Types.ObjectId(userId), status: MEMBER_STATUS.ACTIVE } },
+    {
+      $lookup: {
+        from: "projects",         
+        localField: "projectId",   
+        foreignField: "_id",       
+        as: "project"
+      }
+    },
+    { $unwind: "$project" },
+    {  $match: { "project.status" : statusFilter || { $ne: PROJECT_STATUS.DELETED }  }  },
+    {
+      $project: {
+        _id: "$project._id",
+        title: "$project.title",
+        description: "$project.description",
+        subject: "$project.subject",
+        status: "$project.status",
+        leader: "$project.leader",
+        settings: "$project.settings",
+        createdAt: "$project.createdAt",
+        myRole: "$role", 
+        joinedAt: "$joinedAt"
+      }
+    }
+  ]);
 };
 
-export const fetchUserMembershipByStatus = (userId, statusFilter) => 
-  Member.find({userId, status: statusFilter})
+export const fetchUserLedProjects = async (userId, statusFilter) => {
+  return await Member.aggregate([
+    { 
+      $match: { userId: new mongoose.Types.ObjectId(userId), role: MEMBER_ROLES.LEADER, status: MEMBER_STATUS.ACTIVE } },
+    {
+      $lookup: {
+        from: "projects",         
+        localField: "projectId",   
+        foreignField: "_id",       
+        as: "project"
+      }
+    },
+    { $unwind: "$project" },
+    {  $match: { "project.status" : statusFilter || { $ne: PROJECT_STATUS.DELETED }  }  },
+    {
+      $project: {
+        _id: "$project._id",
+        title: "$project.title",
+        description: "$project.description",
+        subject: "$project.subject",
+        status: "$project.status",
+        leader: "$project.leader",
+        settings: "$project.settings",
+        createdAt: "$project.createdAt",
+        myRole: "$role", 
+        joinedAt: "$joinedAt"
+      }
+    }
+  ]);
+}
 
 // -- invitation services
 
@@ -127,27 +161,14 @@ export const updateProjectStatus = async (project, status) => {
   return project.save() 
 }
 
-export const getMyLedProjects = async (userId, statusFilter) => {
-  const query = { leader: userId };
 
-  if (statusFilter) {
-    // If they ask for "active" or "completed", give them exactly that
-    query.status = statusFilter;
-  } else {
-    // If status is null/undefined, fetch everything EXCEPT "archived"
-    query.status = { $ne: "archived" };
-  }
-
-  const projects = await fetchProjects(query);
-
-  return {
-    message: projects.length ? "These are your projects led by you." : "No projects led by you were found.",
-    projectsCount: projects.length,
-    projects: projects.map((p) => p.toPublicJSON()),
-  };
-}
 
 // -- helpers
+export const fetchUserMembershipByRole = (userId, roleFiter) => 
+  Member.find({userId, role: roleFiter})
+
+export const fetchUserMembershipByStatus = (userId, statusFilter) => 
+  Member.find({userId, status: statusFilter})
 
 export const validateQueryProjectStatus = (statusFilter) => {
   if (statusFilter && !Object.values(PROJECT_STATUS).includes(statusFilter)) 

@@ -79,11 +79,6 @@ const projectSchema = new Schema({
     type: Date,
     required: true,
   }, 
-  leader: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
   settings: {
     type: settingsSchema,
     default: () => ({})
@@ -106,7 +101,7 @@ const projectSchema = new Schema({
   timestamps: true
 });
 
-projectSchema.index({ leader: 1, status: 1 });
+projectSchema.index({ status: 1 });
 
 projectSchema.methods.toPublicJSON = function() {
   return {

@@ -18,7 +18,7 @@ import {
   handleTransferLeadership,
   handleUpdateProjectStatus,
   handleGetProject,
-  handleGetMyLedProjects,
+  handleGetUserLedProjects,
   handleKickMember
 } from "./project.controllers.js";
 import verifyProjectAccess from "../../middlewares/verifyProjectAccess.js";
@@ -39,13 +39,13 @@ projectRoute.post("/",
 // GET /api/v1/project - Fetch all projects the user is a part of 
 projectRoute.get("/", verifyAuth, handleGetUserProjects); 
 
+// GET /api/v1/project/leader - Fetch all projects where the user is the leader
+projectRoute.get("/leader", verifyAuth, handleGetUserLedProjects); 
+
 // ALL BELOW REQUIRES REFACTORING
 
-// GET /api/v1/project/leader - Fetch all projects where the user is the leader
-projectRoute.get("/leader", verifyAuth, handleGetMyLedProjects); // REFACTORING
-
 // GET /api/v1/project/:projectId - Fetch details for a specific project
-projectRoute.get("/:projectId", verifyAuth, handleGetProject);
+projectRoute.get("/:projectId", verifyAuth, handleGetProject); // REFACTORING
 
 // POST /api/v1/project/:projectId/leave - Leave from the project route
 projectRoute.post("/:projectId/leave", verifyAuth, handleLeaveProject);

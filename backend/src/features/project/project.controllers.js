@@ -12,7 +12,7 @@ import {
   findPendingInvitationById,
   respondToMyInvitation,
   updateProjectStatus,
-  getMyLedProjects,
+  fetchUserLedProjects,
   validateQueryProjectStatus
 } from "./project.services.js";
 
@@ -48,6 +48,21 @@ export const handleGetUserProjects = async (req, res) => {
     });
 }
 
+export const handleGetUserLedProjects = async (req, res) => {
+  validateQueryProjectStatus(req.query.status);
+
+  const projects = await fetchUserLedProjects(req.user._id, req.query.status);
+
+  return res.status(200)
+    .json({
+      success : true,
+      message: projects.length ? "These are your leading projects." : "No leading projects were found.",
+      data: {
+        projectsCount: projects.length,
+        projects
+      }
+    });
+}
 
 // -- invitation controllers
 
@@ -225,27 +240,6 @@ export const handleGetProject = async (req, res) => {
     })
 }
 
-export const handleGetMyLedProjects = async (req, res) => {
-  const ALLOWED_STATUS = ["active", "completed"];
-  const statusFilter = req.query.status;
-
-  // If a status is provided, validate it against the allowed array
-  if (statusFilter && !ALLOWED_STATUS.includes(statusFilter)) {
-    throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
-  }
-
-  const result = await getMyLedProjects(req.user._id, statusFilter);
-
-  return res.status(200)
-    .json({
-      success : true,
-      message: result.message,
-      data: {
-        projectsCount: result.projectsCount,
-        projects: result.projects
-      }
-    });
-}
 
 export const handleKickMember = async (req, res) => {
   const project = await Project.findById(req.params.projectId);
