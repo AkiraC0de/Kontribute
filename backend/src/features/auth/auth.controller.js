@@ -3,7 +3,7 @@ import GenericError from "../../errors/GenericError.js";
 import UserNotFound from "../../errors/UserNotFound.js";
 import User from "../../models/user.model.js";
 
-import { generateTokens } from "../../utils/token.js";
+import { generateTokens, getTokenFromHeaders } from "../../utils/token.js";
 import ERROR_CODES from "../../config/errorCodes.js";
 import { verifyToken } from "../../utils/token.js";
 
@@ -79,15 +79,9 @@ export const handleRefresh = async (req, res) => {
 }
 
 export const handleVerifyToken = async (req, res) => {
-  const token = req?.query?.token;
-  if(!token) {
-    throw new GenericError(400, "'token' is required in the request query.", ERROR_CODES.REQUEST_ERROR);
-  }
+  const token = getTokenFromHeaders(req.headers);
 
-  const tokenType = req?.query?.type;
-  if(!tokenType) {
-    throw new GenericError(400, "'type' is required in the request query.", ERROR_CODES.REQUEST_ERROR);
-  }
+  const tokenType = req.query.type || "accessToken";
 
   await verifyToken(token, tokenType);
 
