@@ -8,13 +8,14 @@ import ERROR_CODES from "../../config/errorCodes.js";
 import UserNotFound from "../../errors/UserNotFound.js";
 
 import User from "../../models/user.model.js";
-import SessionToken from "../../models/sessionToken.model.js";
+import SessionToken, { SESSION_TOKEN_TYPES } from "../../models/sessionToken.model.js";
 
 import { generateCryptoToken, generateSixDigitCode } from "../../utils/utils.js";
-import Otp, { MAX_OTP_ATTEMPTS } from "../../models/otp.model.js";
+import Otp, { MAX_OTP_ATTEMPTS, OTP_TYPES } from "../../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../../utils/mailer.js";
 import { generateTokens } from "../../utils/token.js";
 import InvalidCredentials from "../../errors/InvalidCredentials.js";
+import TooManyRequest from "../../errors/TooManyRequest.js";
 
 // --- services
 
@@ -28,12 +29,12 @@ export const registerUser = async (userData) => {
   const hashedPassword = await User.hashPassword(password);
   const newUser = await createUserRecord({ firstName, lastName, middleInitial, username, email }, hashedPassword);
 
-  const [sessionToken, otp] = await issueVerificationTokens(newUser._id, "emailVerification");
+  const [sessionToken, otp] = await issueVerificationTokens(newUser._id, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
 
   sendVerificationCodeViaEmail(newUser.email, "Email Verification", otp); // No await for advance response
  
   return {
-    message: "Account has successfully created. PIN for verification has been sent via Email.",
+    message: "Account has been successfully created. PIN for verification has been sent via Email.",
     user: newUser.toPublicJSON(),
     sessionToken
   };
@@ -42,16 +43,16 @@ export const registerUser = async (userData) => {
 export const verifyUserEmail = async (userId, pin) => {
   const user = await findUserById(userId);
 
-  await verifyOtp(userId, pin, "emailVerification");
+  await verifyOtp(userId, pin, OTP_TYPES.EMAIL_VERIFICATION);
 
   // Verify the user
   user.isEmailVerified = true;
   await user.save();
 
-  await invalidateSessionAndOtp(userId, "emailVerification");
+  await invalidateSessionAndOtp(userId, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
 
   return {
-    message : "Your Email is now verified.", 
+    message : "Your email is now verified.", 
     user : user.toPublicJSON()
   };
 }
@@ -83,9 +84,9 @@ export const requestResetPassword = async (identifier) => {
 
   if (!user) throw new UserNotFound();
 
-  if (!user.isEmailVerified) InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
+  if (!user.isEmailVerified) throw new InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
-  const [sessionToken, otp] = await issueVerificationTokens(user._id, "resetPasswordVerification");
+  const [sessionToken, otp] = await issueVerificationTokens(user._id, SESSION_TOKEN_TYPES.RESET_PASS_VERIFICATION);
 
   sendVerificationCodeViaEmail(user.email, "Reset Password Verification", otp); // No await for advance response
 
@@ -96,14 +97,11 @@ export const requestResetPassword = async (identifier) => {
 }
 
 export const verifyResetPassword = async (userId, pin) => {
-  // verify the pin
-  await verifyOtp(userId, pin, "resetPasswordVerification");
+  await verifyOtp(userId, pin, OTP_TYPES.RESET_PASS_VERIFICATION);
 
-  // delete the old session token and OTP (type: resetPasswordVerification)
-  await invalidateSessionAndOtp(userId,  "resetPasswordVerification");
+  await invalidateSessionAndOtp(userId, SESSION_TOKEN_TYPES.RESET_PASS_VERIFICATION);
 
-  // Create a session token for resetting password
-  const sessionToken = await createSessionToken(userId, "resetPassword");
+  const sessionToken = await createSessionToken(userId, SESSION_TOKEN_TYPES.RESET_PASS);
 
   return {
     message: "Request for resetting password has been granted.",
@@ -120,10 +118,10 @@ export const resetUserPassword = async (userId, newPassword) => {
   await user.save();
 
   // delete the sessionToken for resetting the password
-  await SessionToken.deleteMany({userId, type: "resetPassword"})
+  await SessionToken.deleteMany({userId, type: SESSION_TOKEN_TYPES.RESET_PASS})
 
   return {
-    message: "Password was successfully changed."
+    message: "Password has successfully changed."
   }  
 }
 
@@ -165,9 +163,9 @@ const handleUnverifiedConflict = async (existingUser, { username, email }) => {
 }
 
 const resolveConflict = async (existingUser, { username, email }) => {
-  if(existingUser.isEmailVerified){
+  if (existingUser.isEmailVerified){
     throwIfVerifiedConflict(existingUser, { username, email });
-  }{
+  } else {
     await handleUnverifiedConflict(existingUser, { username, email })
   }
 }
@@ -183,17 +181,17 @@ const createUserRecord = (userData, hashedPassword) =>
 
 export const findUserById = async (userId) => {
   const user = await User.findById(userId);
-  if(!user){
-    throw new UserNotFound();
-  }
+
+  if (!user) throw new UserNotFound();
+
   return user;
 }
 
 const findUserByEmail = async (email) => {
   const user = await User.findOne({email});
-  if(!user){
-    throw new UserNotFound();
-  }
+
+  if (!user) throw new UserNotFound();
+
   return user;
 }
 
@@ -206,13 +204,10 @@ const invalidateSessionAndOtp = (userId, sessionType) =>
 const createSessionToken = async (userId, sessionType) => {
   const existingSessionToken = await SessionToken.findOne({ userId, type: sessionType, });
 
-  if(existingSessionToken && existingSessionToken.isOnCooldown()){
-    throw new GenericError(429, "Please wait for a few moments before requesting for new session.", ERROR_CODES.TOO_MANY_REQUEST);
-  }
+  if(existingSessionToken && existingSessionToken.isOnCooldown()) 
+    throw new TooManyRequest("Please wait for a few moments before requesting for new session.");
 
-  if (existingSessionToken) {
-    await SessionToken.deleteMany({ userId,type: sessionType });
-  }
+  if (existingSessionToken) await SessionToken.deleteMany({ userId,type: sessionType });
 
   const rawToken = generateCryptoToken();
 
@@ -233,13 +228,11 @@ const createSessionToken = async (userId, sessionType) => {
 const createOtp = async (userId, otpType) => {
   const existingOtp = await Otp.findOne({ userId, type: otpType, });
 
-  if(existingOtp && existingOtp.isOnCooldown()){
-    throw new GenericError(429, "Please wait for a few moments before requesting for new OTP.", ERROR_CODES.TOO_MANY_REQUEST);
-  }
+  if(existingOtp && existingOtp.isOnCooldown()) 
+    throw new TooManyRequest("Please wait for a few moments before requesting for new OTP.");
 
-  if (existingOtp) {
-    await Otp.deleteMany({ userId,type: otpType });
-  }
+  if (existingOtp) await Otp.deleteMany({ userId,type: otpType });
+
 
   const rawPin = generateSixDigitCode();
 
@@ -260,13 +253,11 @@ const createOtp = async (userId, otpType) => {
 export const verifyOtp = async ( userId, pin, otpType ) => {
   // Check for OTP if it exist
   const otp = await Otp.findOne({userId, type: otpType});
-  if(!otp){
-    throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
-  }
+  if(!otp) throw new GenericError(400, "OTP has expired. Try again.", ERROR_CODES.EXPIRED);
 
   // Check and Compare the input PIN from the one in the database
   if(!(otp.isValidPin(pin))) {
-    await otp.incrementAttempt(); // record attempt
+    await otp.incrementAttempt().save(); // increament the attempt
 
     const hasAttemptsRemaining =
             otp.attempts < MAX_OTP_ATTEMPTS;

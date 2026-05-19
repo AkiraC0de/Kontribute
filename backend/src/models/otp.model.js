@@ -3,6 +3,12 @@ import crypto from "crypto";
 
 export const MAX_OTP_ATTEMPTS = 10;
 
+export const OTP_TYPES = {
+  EMAIL_VERIFICATION : "emailVerification",
+  RESET_PASS_VERIFICATION : "resetPasswordVerification"
+}
+
+
 const otpSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
@@ -20,7 +26,7 @@ const otpSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["emailVerification", "resetPasswordVerification"],
+    enum: Object.values(OTP_TYPES),
     required: true,
     index: true,
   },
@@ -55,11 +61,12 @@ otpSchema.methods.isOnCooldown = function() {
   return Date.now() < cooldownEndTime;
 };
 
-otpSchema.methods.incrementAttempt = async function(){
+otpSchema.methods.incrementAttempt = function(){
   if(this.attempts < MAX_OTP_ATTEMPTS){
     this.attempts += 1;
-    await this.save();
   }
+
+  return this;
 }
 
 const Otp = model("Otp", otpSchema);

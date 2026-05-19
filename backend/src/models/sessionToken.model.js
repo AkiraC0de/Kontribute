@@ -1,5 +1,11 @@
 import { mongo, Schema, model } from "mongoose";
 
+export const SESSION_TOKEN_TYPES = {
+  EMAIL_VERIFICATION : "emailVerification",
+  RESET_PASS_VERIFICATION : "resetPasswordVerification",
+  RESET_PASS : "resetPassword"
+}
+
 const sessionTokenSchema = new Schema({
   userId: {
       type: Schema.Types.ObjectId,
@@ -14,7 +20,7 @@ const sessionTokenSchema = new Schema({
       type: String,
       required: true,
       index: true,
-      enum: ["emailVerification", "resetPasswordVerification" ,"resetPassword"]
+      enum: Object.values(SESSION_TOKEN_TYPES)
   },
   updatedAt: {
       type: Date,
