@@ -16,7 +16,8 @@ import {
   fetchProjectMembers,
   findProjectByStatus,
   switchMemberRole,
-  validateQueryInvitationStatus
+  validateQueryInvitationStatus,
+  updateProject
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
@@ -216,4 +217,23 @@ export const handleKickMember = async (req, res) => {
       success: true,
       message: "You have successfully kick the member from the project."
     })
+}
+
+export const handleUpdateProject = async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+
+  if (!project) throw new ProjectNotFound();
+
+  if (project.status === PROJECT_STATUS.ARCHIVED) throw new ProjectNotFound();
+
+  const result = await updateProject(project, req.body);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: result.message,
+      data: {
+        project: result.project.toPublicJSON()
+      }
+    });
 } 

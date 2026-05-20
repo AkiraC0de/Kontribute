@@ -61,3 +61,40 @@ export const updateProjectStatusSchema = Joi.object({
       "any.required": "Status is a required field."
     })
 })
+
+export const updateProjectSchema = Joi.object({
+  title: Joi.string()
+    .trim()
+    .max(256)
+    .messages({
+      "string.empty": "Project title cannot be empty.",
+      "string.max": "Project title cannot exceed 256 characters."
+    }),
+
+  description: Joi.string()
+    .trim()
+    .max(512)
+    .allow("", null),
+
+  subject: Joi.string()
+    .trim()
+    .max(256)
+    .allow("", null),
+
+  deadline: Joi.date()
+    .greater("now")
+    .messages({
+      "date.base": "A valid deadline date is required.",
+      "date.greater": "The deadline must be a future date."
+    }),
+
+  settings: Joi.object({
+    allowMembersToInvite: Joi.boolean(),
+    maxMembers: Joi.number()
+      .integer()
+      .min(2)
+      .max(50)
+  })
+}).min(1).messages({
+  "object.min": "At least one field must be provided to update."
+})

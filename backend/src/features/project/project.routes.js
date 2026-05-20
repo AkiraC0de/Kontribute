@@ -6,7 +6,8 @@ import joiValidator from "../../middlewares/joiValidator.js"
 import { 
   createProjectSchema,
   respondToMyInvitationSchema,
-  updateProjectStatusSchema
+  updateProjectStatusSchema,
+  updateProjectSchema
 } from "./project.validation.js";
 import { 
   handleGetInvitations,
@@ -19,7 +20,8 @@ import {
   handleUpdateProjectStatus,
   handleGetProject,
   handleGetUserLedProjects,
-  handleKickMember
+  handleKickMember,
+  handleUpdateProject
 } from "./project.controllers.js";
 import verifyProjectAccess from "../../middlewares/verifyProjectAccess.js";
 import { PROJECT_ACTIONS } from "../../models/project.model.js";
@@ -69,7 +71,7 @@ projectRoute.post("/:projectId/kick/:userId", verifyAuth, verifyProjectAccess(PR
 // -- Future implementation (commented out)
 
 // PUT /api/v1/project/:projectId - Update projects data
-// projectRoute.put("/:projectId")
+projectRoute.put("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_DETAILS), joiValidator(updateProjectSchema), handleUpdateProject );
 
 // DELETE /api/v1/project/:projectId - Permanently delete a project
 // projectRoute.delete("/:projectId", verifyAuth);

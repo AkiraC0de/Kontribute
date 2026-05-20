@@ -205,6 +205,26 @@ export const fetchProjectMembers = (projectId, statusFilter) =>
   Member.find({projectId, status: statusFilter})
 
 
+export const updateProject = async (project, updateData) => {
+  const { title, description, subject, deadline, settings } = updateData;
+
+  if (title) project.title = title;
+  if (description) project.description = description;
+  if (subject) project.subject = subject;
+  if (deadline) project.deadline = new Date(deadline);
+  if (settings) {
+    if (settings.allowMembersToInvite !== undefined) project.settings.allowMembersToInvite = settings.allowMembersToInvite;
+    if (settings.maxMembers !== undefined) project.settings.maxMembers = settings.maxMembers;
+  }
+
+  await project.save();
+
+  return {
+    message: "Project updated successfully.",
+    project
+  };
+}
+
 export const findProjectByStatus = async (projectId, statusFilter) => {
   const project = await Project.findOne({status: statusFilter, _id: projectId});
 
