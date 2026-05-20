@@ -240,9 +240,9 @@ export const handleUpdateProject = async (req, res) => {
 } 
 
 export const handleDeleteProject = async (req, res) => {
-  const projectId = req.params.projectId;
+  const project = await Project.findById( req.params.projectId)
 
-  await softDeleteProject(projectId);
+  await softDeleteProject(project);
 
   return res.status(200)
     .json({
