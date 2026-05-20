@@ -117,6 +117,27 @@ export const handleTransferLeadership = async (req, res) => {
     })
 }
 
+export const handleUpdateProjectStatus = async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+
+  // check if the project was already archived
+  if(project.status === PROJECT_STATUS.ARCHIVED)
+    throw new ProjectNotFound();
+
+  const newStatus = req.body.status;
+  await updateProjectStatus(project, newStatus);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: `The project status has been changed to ${newStatus}`,
+      data: {
+        project: project.toPublicJSON()
+      }
+    })
+}
+
+
 export const handleInviteMember = async (req, res) => {
   const invitedByUserId = req.user._id;
   const invitingUserId = req.params.userId;
@@ -181,40 +202,7 @@ export const handleRespondToMyInvitation = async (req, res) => {
     })
 }
 
-export const handleUpdateProjectStatus = async (req, res) => {
-  const project = await Project.findById(req.params.projectId);
 
-  // check if the project was already archived
-  if(project.status === "archived"){
-    throw new ProjectNotFound();
-  }
-
-  const userId = req.user._id;
-  const status = req.body.status;
-  const newStatus = status === "deleted" ? "archived" : status;
-
-  // check if the user is a member
-  if(!project.isMember(userId)){
-    throw new UnauthorizeError("You are not a member of this project.")
-  }
-
-  // check if the user is the leader
-  const isLeader = project.leader.equals(userId);
-  if(!isLeader){
-    throw new UnauthorizeError("Only leader is allowed to update the project status.")
-  }
-
-  await updateProjectStatus(project, newStatus);
-
-  return res.status(200)
-    .json({
-      success: true,
-      message: `The project status has been changed to ${status}`,
-      data: {
-        project: status === "deleted" ? null : project.toPublicJSON()
-      }
-    })
-}
 
 
 export const handleKickMember = async (req, res) => {

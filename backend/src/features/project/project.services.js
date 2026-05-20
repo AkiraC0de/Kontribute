@@ -162,13 +162,13 @@ export const respondToMyInvitation = async (invitation, response) => {
   }
 }
 
-export const updateProjectStatus = async (project, status) => {
+export const updateProjectStatus = async (project, newStatus) => {
   // check if the current status is same as the new status
-  if(project.status === status){
+  if(project.status === newStatus){
     throw new GenericError(400, "Current status of the project is same as you want to change into.", ERROR_CODES.REQUEST_ERROR);
   }
 
-  project.status = status;
+  project.status = newStatus;
   return project.save() 
 }
 
@@ -211,13 +211,11 @@ export const fetchProjectMembers = (projectId, statusFilter) =>
 const handleRejectedInvitation = async (invitation) =>
    invitation.changeStatus("rejected").save();
 
-
 const handleAcceptedInvitation = async (invitation) => {
   // add the user to projects member
   const project = await findProjectByStatus(invitation.projectId, PROJECT_STATUS.ACTIVE);
   await project.addMember(invitation.inviting).save();
 
-  // set the invitation as accepted
   await invitation.changeStatus("accepted").save()
 }
 

@@ -54,7 +54,7 @@ export const respondToMyInvitationSchema = Joi.object({
 export const updateProjectStatusSchema = Joi.object({
   status: Joi.string()
     .required()
-    .valid("active", "completed", "deleted")
+    .valid("active", "completed", "archived")
     .messages({
       "string.base": "Status must be a valid text string.",
       "any.only": "Status must be either 'active', 'completed', or 'deleted'.",

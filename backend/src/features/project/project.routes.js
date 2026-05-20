@@ -51,25 +51,23 @@ projectRoute.post("/:projectId/leave", verifyAuth, verifyProjectAccess(PROJECT_A
 // POST /api/v1/project/:projectId/transfer-leadership/:userId - Transfer leadership of the project
 projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.TRANSFER_LEADERSHIP), handleTransferLeadership) 
 
+
 // ALL BELOW REQUIRES REFACTORING
 
-// POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.INVITE_MEMBER), handleInviteMember);  // REFACTORING
-
 // PATCH /api/v1/project/:projectId/status - Update the projects status (active, completed, archived)
-projectRoute.patch("/:projectId/status", 
-  verifyAuth, 
-  joiValidator(updateProjectStatusSchema), 
-  handleUpdateProjectStatus
-)
+projectRoute.patch("/:projectId/status", verifyAuth, joiValidator(updateProjectStatusSchema), verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_STATUS), handleUpdateProjectStatus); // REFACTORING
 
 // POST /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
 projectRoute.post("/:projectId/kick/:userId", verifyAuth, handleKickMember);
 
+ // REFACTORED
+// POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
+projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.INVITE_MEMBER), handleInviteMember); 
+
 // -- project invitation routes
 
 // GET /api/v1/project/invitation - Fetch users pending project invitations
-projectRoute.get("/invitation", verifyAuth, handleGetMyInvitations);
+projectRoute.get("/invitation", verifyAuth, handleGetMyInvitations); 
 
 // PUT /api/v1/project/invitation/:invitationId - Users respond to their pending project invitations
 projectRoute.put("/invitation/:invitationId", 
