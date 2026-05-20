@@ -5,7 +5,7 @@ import ERROR_CODES from "../../config/errorCodes.js";
 
 import { 
   createProject, 
-  getMyInvitaions, 
+  fetchInvitaionsByStatus, 
   fetchUserProjects, 
   inviteMember ,
   findPendingInvitationById,
@@ -15,7 +15,8 @@ import {
   validateQueryProjectStatus,
   fetchProjectMembers,
   findProjectByStatus,
-  switchMemberRole
+  switchMemberRole,
+  validateQueryInvitationStatus
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
@@ -37,7 +38,6 @@ export const handleCreateProject = async (req, res) => {
 
 export const handleGetUserProjects = async (req, res) => {
   validateQueryProjectStatus(req.query.status);
-
   const projects = await fetchUserProjects(req.user._id, req.query.status);
 
   return res.status(200)
@@ -53,7 +53,6 @@ export const handleGetUserProjects = async (req, res) => {
 
 export const handleGetUserLedProjects = async (req, res) => {
   validateQueryProjectStatus(req.query.status);
-
   const projects = await fetchUserLedProjects(req.user._id, req.query.status);
 
   return res.status(200)
@@ -65,6 +64,39 @@ export const handleGetUserLedProjects = async (req, res) => {
         projects
       }
     });
+}
+
+
+export const handleGetInvitations = async (req, res) => {
+  validateQueryInvitationStatus(req.query.status)
+  const invitations = await fetchInvitaionsByStatus(req.user._id, req.query.status);
+
+  return res.status(200).json({
+    success: true,
+    message: invitations.length ? "These are your invitations." : "No invitation have found.",
+    data: {
+      invitationsCount : invitations.length,
+      invitations : invitations.map(i => i.toPublicJSON())
+    }
+  })
+}
+
+export const handleRespondToMyInvitation = async (req, res) => {
+  const invitation = await findPendingInvitationById(req.params.invitationId);
+
+  // verify if the invitation belongs to the user
+  if(!invitation.inviting.equals(req.user._id)){
+    throw new InvitationNotFound();
+  }
+
+  // process the users response to invitation
+  const result = await respondToMyInvitation(invitation, req.body.response);  
+  
+  return res.status(200)
+    .json({
+      success: true,
+      message: result.message
+    })
 }
 
 export const handleGetProject = async (req, res) => {
@@ -137,7 +169,6 @@ export const handleUpdateProjectStatus = async (req, res) => {
     })
 }
 
-
 export const handleInviteMember = async (req, res) => {
   const invitedByUserId = req.user._id;
   const invitingUserId = req.params.userId;
@@ -153,7 +184,7 @@ export const handleInviteMember = async (req, res) => {
   const isMemberAllowedToInvite = project.settings.allowMembersToInvite;
 
   if(!isMemberAllowedToInvite && !isLeader) 
-    throw new UnauthorizeError("Only leader is allowed to invite new member.")
+    throw new UnauthorizeError("Project is set to only allowed the leader to invite a member.")
 
   const isInvitingAlreadyMember = await Member.findOne({projectId, userId: invitingUserId, status : MEMBER_STATUS.ACTIVE});
   if(isInvitingAlreadyMember)
@@ -167,53 +198,16 @@ export const handleInviteMember = async (req, res) => {
   })
 }
 
-export const handleGetMyInvitations = async (req, res) => {
-  const statusFilter = req.query.status || "pending";
-  if(!(statusFilter == "pending" || statusFilter == "completed")){
-    throw new GenericError(400, "Invalid status of project.")
-  }
-  const result = await getMyInvitaions(req.user._id, statusFilter);
-
-  return res.status(200).json({
-    success: true,
-    message: result.message,
-    data: {
-      invitationsCount : result.invitationsCount,
-      invitations : result.invitations
-    }
-  })
-}
-
-export const handleRespondToMyInvitation = async (req, res) => {
-  const invitation = await findPendingInvitationById(req.params.invitationId);
-
-  // verify if the invitation belongs to the user
-  if(!invitation.inviting.equals(req.user._id)){
-    throw new InvitationNotFound();
-  }
-
-  // process the users response to invitation
-  const result = await respondToMyInvitation(invitation, req.body.response);  
-  
-  return res.status(200)
-    .json({
-      success: true,
-      message: result.message
-    })
-}
-
-
-
-
 export const handleKickMember = async (req, res) => {
   const project = await Project.findById(req.params.projectId);
-  const userId = req.user._id;
-  const kickUserId = req.params.userId;
 
-  // check if the project was already archived
+  // check if the project was already deleted
   if(project.status === "archived"){
     throw new ProjectNotFound();
   }
+
+  const userId = req.user._id;
+  const kickUserId = req.params.userId;
 
   if(!project.isMember(userId)){
     throw new UnauthorizeError("You are not a member of this project.")

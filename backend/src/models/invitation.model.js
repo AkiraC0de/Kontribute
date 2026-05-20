@@ -2,6 +2,13 @@ import { Schema, model}  from "mongoose";
 
 const INVITATION_EXPIRATION = 7 * 24 * 60 * 60 * 1000 // 7 days
 
+export const INVITATION_STATUS = Object.freeze({
+  PENDING : "pending",
+  ACCEPTED : "accepted",
+  REJECTED : "rejected",
+  EXPIRED: "expired"
+})
+
 // Invitation Schema
 const invitationSchema = new Schema({
   projectId: {
@@ -16,8 +23,8 @@ const invitationSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "rejected", "expired"],
-    default: "pending"
+    enum: Object.values(INVITATION_STATUS),
+    default: INVITATION_STATUS.PENDING
   },
   invitedBy: {
     type: Schema.Types.ObjectId,
@@ -31,7 +38,6 @@ const invitationSchema = new Schema({
   expiresAt: {
     type: Date,
     default: () => new Date(Date.now() + INVITATION_EXPIRATION),
-    expires: 0 // MongoDB will auto-delete the doc when this time is reached
   },
   respondedAt: Date
 });

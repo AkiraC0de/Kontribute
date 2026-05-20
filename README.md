@@ -1,6 +1,9 @@
 **TASK
 
 refactor the html on mailer.js => sendVerificationCodeViaEmail | pending
+add cron job for expired invitation
+add notification when user is invited, kicked
+add notification to members if new user has been added to or leave their projects
 
 ## Authentication API Reference
 

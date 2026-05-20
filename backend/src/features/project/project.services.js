@@ -5,7 +5,7 @@ import ProjectNotFound from "../../errors/ProjectNotFound.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
 import mongoose from "mongoose";
 
-import Invitation from "../../models/invitation.model.js";
+import Invitation, { INVITATION_STATUS } from "../../models/invitation.model.js";
 import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../../models/member.model.js";
 import Project, { ALLOWED_TO_FETCH_PROJECT_STATUS, MAX_LED_PROJECT_AMOUNT, PROJECT_STATUS } from "../../models/project.model.js"
 
@@ -122,29 +122,15 @@ export const inviteMember = async (projectId, invitedBy, inviting) => {
   })    
 }
 
-export const getMyInvitaions = async (userId, statusFilter = "pending") => {
-  const invitations = await Invitation.find({inviting: userId, status: statusFilter})
-  .sort({ expiresAt: 1 })
-  .populate("invitedBy", "firstName lastName username")
-  .populate("projectId", "title description");
+export const fetchInvitaionsByStatus = (userId, statusFilter) => {
+  const query = statusFilter 
+    ? {inviting: userId, status: statusFilter } 
+    : {inviting: userId}
 
-  const invitationsCount = invitations.length;
-
-  if(invitationsCount == 0){
-    return {
-      message: `No ${statusFilter} invitation have found.`,
-      invitationsCount,
-      invitations : []
-    }
-  }
-
-  const sanitizedInvitations = invitations.map(i => i.toPublicJSON()) 
-  
-  return {
-    message: "These are your pending invitations.",
-    invitationsCount,
-    invitations : sanitizedInvitations
-  }
+  return Invitation.find(query)
+    .sort({ expiresAt: 1 })
+    .populate("invitedBy", "firstName lastName username")
+    .populate("projectId", "title description");
 }
 
 export const respondToMyInvitation = async (invitation, response) => {
@@ -182,7 +168,12 @@ export const fetchUserMembershipByStatus = (userId, statusFilter) =>
   Member.find({userId, status: statusFilter})
 
 export const validateQueryProjectStatus = (statusFilter) => {
-  if (statusFilter && !Object.values(PROJECT_STATUS).includes(statusFilter)) 
+  if (statusFilter && !Object.values(ALLOWED_TO_FETCH_PROJECT_STATUS).includes(statusFilter)) 
+      throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
+}
+
+export const validateQueryInvitationStatus = (statusFilter) => {
+  if (statusFilter && !Object.values(INVITATION_STATUS).includes(statusFilter)) 
       throw new GenericError( 400, `Invalid project status. Allowed statuses are: ${ALLOWED_STATUS.join(", ")}.`,  ERROR_CODES.REQUEST_ERROR);
 }
 
