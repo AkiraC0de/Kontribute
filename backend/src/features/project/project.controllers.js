@@ -1,11 +1,10 @@
 import GenericError from "../../errors/GenericError.js";
 import UnauthorizeError from "../../errors/UnauthorizeError.js";
-import Project from "../../models/project.model.js";
+import Project, { PROJECT_STATUS } from "../../models/project.model.js";
 import ERROR_CODES from "../../config/errorCodes.js";
 
 import { 
   createProject, 
-  findActiveProjectById, 
   getMyInvitaions, 
   fetchUserProjects, 
   inviteMember ,
@@ -13,12 +12,15 @@ import {
   respondToMyInvitation,
   updateProjectStatus,
   fetchUserLedProjects,
-  validateQueryProjectStatus
+  validateQueryProjectStatus,
+  fetchProjectMembers,
+  findProjectByStatus,
+  switchMemberRole
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
 import ProjectNotFound from "../../errors/ProjectNotFound.js";
-import Member, { MEMBER_ROLES } from "../../models/member.model.js";
+import Member, { MEMBER_ROLES, MEMBER_STATUS } from "../../models/member.model.js";
 
 export const handleCreateProject = async (req, res) => {
   const project = await createProject(req.user._id, req.body);
@@ -99,14 +101,7 @@ export const handleTransferLeadership = async (req, res) => {
   if(!targetMember.projectId.equals(req.params.projectId))
     throw new GenericError(400, "Target member is not part of the project.", ERROR_CODES.REQUEST_ERROR);
 
-  // switch the roles
-  targetMember = MEMBER_ROLES.LEADER;
-  currentLeader = MEMBER_ROLES.MEMBER;
-
-  await Promise.all([
-    targetMember.save(),
-    currentLeader.save()
-  ])
+  switchMemberRole(currentLeader, targetMember);
 
   res.status(200)
     .json({
@@ -122,42 +117,32 @@ export const handleTransferLeadership = async (req, res) => {
     })
 }
 
-// -- invitation controllers
-
 export const handleInviteMember = async (req, res) => {
   const invitedByUserId = req.user._id;
   const invitingUserId = req.params.userId;
+  const projectId = req.params.projectId;
 
-  if(invitedByUserId === invitingUserId){
+  if(invitedByUserId === invitingUserId) 
     throw new GenericError(400, "You cannot invite youself", ERROR_CODES.REQUEST_ERROR);
-  }
 
-  const project = await findActiveProjectById(req.params.projectId);
-
-  // verify if the invitedByUser is a member of this project
-  if(!project.isMember(invitedByUserId)){
-    throw new UnauthorizeError("You are not a member of this project.")
-  }
+  const project = await findProjectByStatus(projectId, PROJECT_STATUS.ACTIVE);
 
   // verify if the project allowed the members to sent an invitation.
-  const isLeader = project.leader.equals(invitedByUserId);
+  const isLeader = req.projectMembership.role === MEMBER_ROLES.LEADER;
   const isMemberAllowedToInvite = project.settings.allowMembersToInvite;
-  if(!isMemberAllowedToInvite && !isLeader){
-    throw new UnauthorizeError("Only leader is allowed to invite new member.")
-  }
-  
-  // check if the user is already a member
-  if(project.isMember(invitingUserId)){
-    throw new GenericError(400, "User is already a member of this project.", ERROR_CODES.REQUEST_ERROR);
-  }
-  
-  const invitation = await inviteMember(project._id, invitedByUserId, invitingUserId);
 
-  const responseMessage = `Project invitation has been sent.`
+  if(!isMemberAllowedToInvite && !isLeader) 
+    throw new UnauthorizeError("Only leader is allowed to invite new member.")
+
+  const isInvitingAlreadyMember = await Member.findOne({projectId, userId: invitingUserId, status : MEMBER_STATUS.ACTIVE});
+  if(isInvitingAlreadyMember)
+    throw new GenericError(400, "The you user you want to invite is already a member.", ERROR_CODES.REQUEST_ERROR);
+
+  await inviteMember(project._id, invitedByUserId, invitingUserId);
 
   return res.status(200).json({
     success: true,
-    message: responseMessage
+    message: "Project invitation has been sent"
   })
 }
 

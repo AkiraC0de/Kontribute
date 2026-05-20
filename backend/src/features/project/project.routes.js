@@ -54,7 +54,7 @@ projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, verifyP
 // ALL BELOW REQUIRES REFACTORING
 
 // POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
-projectRoute.post("/:projectId/invite/:userId", verifyAuth, handleInviteMember);  // REFACTORING
+projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.INVITE_MEMBER), handleInviteMember);  // REFACTORING
 
 // PATCH /api/v1/project/:projectId/status - Update the projects status (active, completed, archived)
 projectRoute.patch("/:projectId/status", 

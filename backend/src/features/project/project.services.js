@@ -96,6 +96,17 @@ export const fetchUserLedProjects = async (userId, statusFilter) => {
   ]);
 }
 
+export const switchMemberRole = (member1, member2) => {
+  const temptRole = member1.role;
+  member1.role = member2.role;
+  member2.role = temptRole;
+
+  return Promise.all([
+    member1.save(),
+    member2.save()
+  ])
+}
+
 // -- invitation services
 
 export const inviteMember = async (projectId, invitedBy, inviting) => {
@@ -187,29 +198,31 @@ const checkUserLedProjectCount = async (userId) => {
   return projectCount;
 }
 
-const addProjectMember = (userId, projectId, role = MEMBER_ROLES.MEMBER) => 
+export const addProjectMember = (userId, projectId, role = MEMBER_ROLES.MEMBER) => 
   Member.create({
     projectId,
     userId,
     role
   });
+
+export const fetchProjectMembers = (projectId, statusFilter) =>
+  Member.find({projectId, status: statusFilter})
   
-const handleRejectedInvitation = async (invitation) => {
-  return invitation.changeStatus("rejected").save();
-}
+const handleRejectedInvitation = async (invitation) =>
+   invitation.changeStatus("rejected").save();
+
 
 const handleAcceptedInvitation = async (invitation) => {
   // add the user to projects member
-  const project = await findActiveProjectById(invitation.projectId);
+  const project = await findProjectByStatus(invitation.projectId, PROJECT_STATUS.ACTIVE);
   await project.addMember(invitation.inviting).save();
 
   // set the invitation as accepted
   await invitation.changeStatus("accepted").save()
 }
 
-
-export const findActiveProjectById = async (projectId) => {
-  const project = await Project.findOne({status: "active", _id: projectId});
+export const findProjectByStatus = async (projectId, statusFilter) => {
+  const project = await Project.findOne({status: statusFilter, _id: projectId});
 
   if(!project){
     throw new ProjectNotFound();

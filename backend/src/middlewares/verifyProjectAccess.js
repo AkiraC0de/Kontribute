@@ -14,12 +14,12 @@ const verifyProjectAccess = (requiredAction) =>
     });
 
     if (!membership) 
-      return next(new GenericError(403, "You are not an active member of this project."));
+      throw new GenericError(403, "You are not an active member of this project.");
 
     const allowedActions = ROLE_PERMISSIONS[membership.role] || [];
 
     if (!allowedActions.includes(requiredAction)) 
-      return next(new GenericError(403, "Unauthorized. Your role lacks permission for this action."));
+      throw new GenericError(403, "Unauthorized. Your role lacks permission for this action.");
 
     req.projectMembership = membership;
     
