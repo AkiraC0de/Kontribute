@@ -119,7 +119,7 @@ export const handleGetProject = async (req, res) => {
 }
 
 export const handleLeaveProject = async (req, res) => {
-  await req.projectMembership.changeStatus(MEMBER_STATUS.LEFT);
+  await req.projectMembership.changeStatus(MEMBER_STATUS.LEFT).save();
 
   return res.status(200)
     .json({
@@ -209,7 +209,7 @@ export const handleKickMember = async (req, res) => {
   if(!targetUser)
     throw new UnauthorizeError("Target user is not a member of this project.");
 
-  targetUser.changeStatus(MEMBER_STATUS.KICKED);
+  await targetUser.changeStatus(MEMBER_STATUS.KICKED).save();
 
   return res.status(200)
     .json({

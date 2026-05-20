@@ -56,7 +56,8 @@ memberSchema.index({ projectId: 1, userId: 1 }, { unique: true });
 memberSchema.index({ userId: 1, status: 1 });
 
 memberSchema.methods.changeStatus = function(newStatus) {
-  return (this.status = newStatus)
+  this.status = newStatus
+  return this;
 }
 
 const Member = model("Member", memberSchema);
