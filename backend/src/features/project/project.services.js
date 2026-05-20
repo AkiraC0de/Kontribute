@@ -217,11 +217,17 @@ export const updateProject = async (project, updateData) => {
     if (settings.maxMembers !== undefined) project.settings.maxMembers = settings.maxMembers;
   }
 
+  return project.save();
+}
+
+export const softDeleteProject = async (project) => {
+  project.status = PROJECT_STATUS.DELETED;
+  project.deletedAt = new Date();
   await project.save();
 
   return {
-    message: "Project updated successfully.",
-    project
+    message: "Project has been deleted (soft-delete).",
+    project: project.toPublicJSON()
   };
 }
 

@@ -21,7 +21,8 @@ import {
   handleGetProject,
   handleGetUserLedProjects,
   handleKickMember,
-  handleUpdateProject
+  handleUpdateProject,
+  handleDeleteProject
 } from "./project.controllers.js";
 import verifyProjectAccess from "../../middlewares/verifyProjectAccess.js";
 import { PROJECT_ACTIONS } from "../../models/project.model.js";
@@ -68,15 +69,11 @@ projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(
 // POST /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
 projectRoute.post("/:projectId/kick/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.KICK_MEMBER), handleKickMember); // refactoring
 
-// -- Future implementation (commented out)
-
 // PUT /api/v1/project/:projectId - Update projects data
 projectRoute.put("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_DETAILS), joiValidator(updateProjectSchema), handleUpdateProject );
 
-// DELETE /api/v1/project/:projectId - Permanently delete a project
-// projectRoute.delete("/:projectId", verifyAuth);
-
-// -- Project member routes
+// DELETE /api/v1/project/:projectId - soft delete a project
+projectRoute.delete("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.DELETE_PROJECT), handleDeleteProject );
 
 // GET /api/v1/project/:projectId/member - Fetch the project members
 // projectRoute.get("/:projectId/member". verifyAuth,  );

@@ -17,7 +17,8 @@ import {
   findProjectByStatus,
   switchMemberRole,
   validateQueryInvitationStatus,
-  updateProject
+  updateProject,
+  softDeleteProject
 } from "./project.services.js";
 
 import InvitationNotFound from "../../errors/InvitationNotFound.js";
@@ -226,14 +227,26 @@ export const handleUpdateProject = async (req, res) => {
 
   if (project.status === PROJECT_STATUS.ARCHIVED) throw new ProjectNotFound();
 
-  const result = await updateProject(project, req.body);
+  const updatedProject = await updateProject(project, req.body);
 
   return res.status(200)
     .json({
       success: true,
-      message: result.message,
+      message: "Project updated successfully.",
       data: {
-        project: result.project.toPublicJSON()
+        project: updatedProject.toPublicJSON()
       }
     });
 } 
+
+export const handleDeleteProject = async (req, res) => {
+  const projectId = req.params.projectId;
+
+  await softDeleteProject(projectId);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: "Your project has been deleted.",
+    });
+}
