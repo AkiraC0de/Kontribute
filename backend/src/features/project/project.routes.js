@@ -45,7 +45,6 @@ projectRoute.get("/leader", verifyAuth, handleGetUserLedProjects);
 // GET /api/v1/project/invitation - Fetch users project invitations
 projectRoute.get("/invitation", verifyAuth, handleGetInvitations); 
 
-// NEEDS REFACTORING
 // PUT /api/v1/project/invitation/:invitationId - Users respond to their pending project invitations
 projectRoute.put("/invitation/:invitationId",  verifyAuth, joiValidator(respondToMyInvitationSchema), handleRespondToInvitation);
 
@@ -58,14 +57,12 @@ projectRoute.post("/:projectId/leave", verifyAuth, verifyProjectAccess(PROJECT_A
 // POST /api/v1/project/:projectId/transfer-leadership/:userId - Transfer leadership of the project
 projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.TRANSFER_LEADERSHIP), handleTransferLeadership) 
 
-
 // PATCH /api/v1/project/:projectId/status - Update the projects status (active, completed, archived)
 projectRoute.patch("/:projectId/status", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_STATUS), joiValidator(updateProjectStatusSchema), handleUpdateProjectStatus); // REFACTORING
 
 // POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
 projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.INVITE_MEMBER), handleInviteMember); 
 
-// NEEDS REFACTORING
 // POST /api/v1/project/:projectId/member/:userId - Remove a member from the group ONLY for LEADER
 projectRoute.post("/:projectId/kick/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.KICK_MEMBER), handleKickMember); // refactoring
 

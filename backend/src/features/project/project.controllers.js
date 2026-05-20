@@ -119,7 +119,7 @@ export const handleGetProject = async (req, res) => {
 }
 
 export const handleLeaveProject = async (req, res) => {
-  await req.projectMembership.deleteOne();
+  await req.projectMembership.changeStatus(MEMBER_STATUS.LEFT);
 
   return res.status(200)
     .json({
@@ -201,32 +201,15 @@ export const handleInviteMember = async (req, res) => {
 }
 
 export const handleKickMember = async (req, res) => {
-  const project = await Project.findById(req.params.projectId);
-
-  // check if the project was already deleted
-  if(project.status === "archived"){
-    throw new ProjectNotFound();
-  }
-
   const userId = req.user._id;
-  const kickUserId = req.params.userId;
+  const targetUserId = req.params.userId;
 
-  if(!project.isMember(userId)){
-    throw new UnauthorizeError("You are not a member of this project.")
-  }
+  const targetUser = await Member.findOne({projectId: req.params.projectId, userId: targetUserId, status: MEMBER_STATUS.ACTIVE});
 
-  // Check if the user is the leader
-  const isLeader = project.leader.equals(userId);
-  if(!isLeader){
-    throw new UnauthorizeError("You are not a the leader of this project to kick someone.")
-  }
+  if(!targetUser)
+    throw new UnauthorizeError("Target user is not a member of this project.");
 
-  if(!project.isMember(kickUserId)){
-    throw new UnauthorizeError("User is not a member of this project.")
-  }
-
-  // remove the user as a member of the project.
-  await project.removeMember(kickUserId).save();
+  targetUser.changeStatus(MEMBER_STATUS.KICKED);
 
   return res.status(200)
     .json({
