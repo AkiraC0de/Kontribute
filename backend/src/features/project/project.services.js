@@ -133,19 +133,27 @@ export const fetchInvitaionsByStatus = (userId, statusFilter) => {
     .populate("projectId", "title description");
 }
 
-export const respondToMyInvitation = async (invitation, response) => {
+export const respondToInvitation = async (invitation, response) => {
   if(response === "accept"){
     await handleAcceptedInvitation(invitation)
   } else if(response === "reject"){
     await handleRejectedInvitation(invitation);
   } 
 
-  const responseMessage = response === "accept" 
-                            ? "You have accepted the invitation. You are now part of the project."
-                            : "You have rejected the invitation."
-  return {
-    message: responseMessage
-  }
+  return invitation;
+}
+
+const handleRejectedInvitation = async (invitation) =>
+   invitation.changeStatus("rejected").save();
+
+const handleAcceptedInvitation = async (invitation) => {
+  // add the user to projects member
+  await Member.create({
+    projectId : invitation.projectId,
+    userId : invitation.inviting,
+  })
+
+  await invitation.changeStatus("accepted").save()
 }
 
 export const updateProjectStatus = async (project, newStatus) => {
@@ -158,9 +166,6 @@ export const updateProjectStatus = async (project, newStatus) => {
   return project.save() 
 }
 
-
-
-// -- helpers
 export const fetchUserMembershipByRole = (userId, roleFiter) => 
   Member.find({userId, role: roleFiter})
 
@@ -198,17 +203,7 @@ export const addProjectMember = (userId, projectId, role = MEMBER_ROLES.MEMBER) 
 
 export const fetchProjectMembers = (projectId, statusFilter) =>
   Member.find({projectId, status: statusFilter})
-  
-const handleRejectedInvitation = async (invitation) =>
-   invitation.changeStatus("rejected").save();
 
-const handleAcceptedInvitation = async (invitation) => {
-  // add the user to projects member
-  const project = await findProjectByStatus(invitation.projectId, PROJECT_STATUS.ACTIVE);
-  await project.addMember(invitation.inviting).save();
-
-  await invitation.changeStatus("accepted").save()
-}
 
 export const findProjectByStatus = async (projectId, statusFilter) => {
   const project = await Project.findOne({status: statusFilter, _id: projectId});

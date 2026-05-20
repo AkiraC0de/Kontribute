@@ -13,7 +13,7 @@ import {
   handleCreateProject,
   handleGetUserProjects,
   handleInviteMember,
-  handleRespondToMyInvitation,
+  handleRespondToInvitation,
   handleLeaveProject,
   handleTransferLeadership,
   handleUpdateProjectStatus,
@@ -42,16 +42,12 @@ projectRoute.get("/", verifyAuth, handleGetUserProjects);
 // GET /api/v1/project/leader - Fetch all projects where the user is the leader
 projectRoute.get("/leader", verifyAuth, handleGetUserLedProjects); 
 
-// GET /api/v1/project/invitation - Fetch users pending project invitations
+// GET /api/v1/project/invitation - Fetch users project invitations
 projectRoute.get("/invitation", verifyAuth, handleGetInvitations); 
 
 // NEEDS REFACTORING
 // PUT /api/v1/project/invitation/:invitationId - Users respond to their pending project invitations
-projectRoute.put("/invitation/:invitationId", 
-  verifyAuth, 
-  joiValidator(respondToMyInvitationSchema), 
-  handleRespondToMyInvitation
-);
+projectRoute.put("/invitation/:invitationId",  verifyAuth, joiValidator(respondToMyInvitationSchema), handleRespondToInvitation);
 
 // GET /api/v1/project/:projectId - Fetch details for a specific project
 projectRoute.get("/:projectId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.FETCH_PROJECT), handleGetProject);
@@ -64,7 +60,7 @@ projectRoute.post("/:projectId/transfer-leadership/:userId", verifyAuth, verifyP
 
 
 // PATCH /api/v1/project/:projectId/status - Update the projects status (active, completed, archived)
-projectRoute.patch("/:projectId/status", verifyAuth, joiValidator(updateProjectStatusSchema), verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_STATUS), handleUpdateProjectStatus); // REFACTORING
+projectRoute.patch("/:projectId/status", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.UPDATE_PROJECT_STATUS), joiValidator(updateProjectStatusSchema), handleUpdateProjectStatus); // REFACTORING
 
 // POST /api/v1/project/:projectId/invite/:userId - Send an invitation to someone to be part of the project.
 projectRoute.post("/:projectId/invite/:userId", verifyAuth, verifyProjectAccess(PROJECT_ACTIONS.INVITE_MEMBER), handleInviteMember); 

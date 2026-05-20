@@ -9,7 +9,7 @@ import {
   fetchUserProjects, 
   inviteMember ,
   findPendingInvitationById,
-  respondToMyInvitation,
+  respondToInvitation,
   updateProjectStatus,
   fetchUserLedProjects,
   validateQueryProjectStatus,
@@ -81,21 +81,23 @@ export const handleGetInvitations = async (req, res) => {
   })
 }
 
-export const handleRespondToMyInvitation = async (req, res) => {
+export const handleRespondToInvitation = async (req, res) => {
   const invitation = await findPendingInvitationById(req.params.invitationId);
 
   // verify if the invitation belongs to the user
-  if(!invitation.inviting.equals(req.user._id)){
+  if(!invitation.inviting.equals(req.user._id))
     throw new InvitationNotFound();
-  }
 
-  // process the users response to invitation
-  const result = await respondToMyInvitation(invitation, req.body.response);  
+  await respondToInvitation(invitation, req.body.response);  
+
+  const responseMessage = req.body.response === "accept" 
+                            ? "You have accepted the invitation. You are now part of the project."
+                            : "You have rejected the invitation."
   
   return res.status(200)
     .json({
       success: true,
-      message: result.message
+      message: responseMessage
     })
 }
 
