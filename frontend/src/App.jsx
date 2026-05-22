@@ -11,13 +11,11 @@ function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth/:state" element={<Auth />} />
-      <Route path="/home" element={
-        <ProtectedRoute>
-          <Home />
-        </ProtectedRoute>
-      }/>
-
       
+
+      <Route element={<ProtectedRoute/>}>
+        <Route path="/home" element={<Home />}/>
+      </Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>
