@@ -12,7 +12,6 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/auth/:state" element={<Auth />} />
       
-
       <Route element={<ProtectedRoute/>}>
         <Route path="/home" element={<Home />}/>
       </Route>
