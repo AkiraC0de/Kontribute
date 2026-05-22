@@ -8,6 +8,7 @@ import ERROR_CODES from "../../config/errorCodes.js";
 import { verifyToken } from "../../utils/token.js";
 
 import { 
+  findUserById,
   loginUser, 
   registerUser, 
   requestResetPassword, 
@@ -15,6 +16,17 @@ import {
   verifyResetPassword, 
   verifyUserEmail 
 } from "./auth.services.js"
+
+export const handleMe = async (req, res) => {
+  const user = await findUserById(req.user._id);
+
+  return res.status(200)
+    .json({
+      success: true,
+      message: "Login success.",
+      user: user.toPublicJSON()
+    })
+}
 
 export const handleRegister = async (req, res) => {
   const result = await registerUser(req.body);

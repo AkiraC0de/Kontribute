@@ -14,10 +14,10 @@ const AuthProvider = () => {
       if (token) {
         try {
           // Verify token with backend
-          const res = await apiRequest.get("/api/v1/me", {
+          const res = await apiRequest.get("/api/v1/auth/me", {
             headers: { Authorization: `Bearer ${token}` }
           });
-          
+
           setUser(res.data.user);
         } catch (error) {
           // If token is invalid/expired, remove it
