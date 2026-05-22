@@ -1,16 +1,19 @@
 import { createContext, useState, useEffect } from "react";
-import apiRequest from "../api/api";
+import apiRequest from "../api/server";
 
 export const AuthContext = createContext();
 
-const AuthProvider = () => {
+const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkLoggedIn = async () => {
+      localStorage.setItem("accessToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2YTA4NDEzYjE2OGVkZTU0ODUwNmIzMGUiLCJyb2xlIjoidXNlciIsImlhdCI6MTc3OTQ2NTI1OSwiZXhwIjoxNzc5NDY2MTU5fQ._UfcdMnNehaapOhy6tZgAC4qFTulQ7yHIlxVmaAFyGQ")
       const token = localStorage.getItem("accessToken");
+
       
+
       if (token) {
         try {
           // Verify token with backend
@@ -18,21 +21,24 @@ const AuthProvider = () => {
             headers: { Authorization: `Bearer ${token}` }
           });
 
-          setUser(res.data.user);
+          console.log(res)
+
+          //setUser(res.data.user);
         } catch (error) {
+          console.log(error);
           // If token is invalid/expired, remove it
           localStorage.removeItem("accessToken");
           setUser(null);
         }
       }
-      setLoading(false);
+      setIsLoading(false);
     };
     checkLoggedIn();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}> 
-
+    <AuthContext.Provider value={{ user, isLoading }}> 
+      {children}
     </AuthContext.Provider>
   )
 }

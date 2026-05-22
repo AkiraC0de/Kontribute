@@ -4,13 +4,20 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth/:state" element={<Auth />} />
-      <Route path="/home" element={<Home />}/>
+      <Route path="/home" element={
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      }/>
+
+      
 
       <Route path="*" element={<NotFound />} />
     </Routes>

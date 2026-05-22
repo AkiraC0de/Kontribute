@@ -1,8 +1,11 @@
-const BASE_URL = process.env.SERVER_URL;
+const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const apiRequest = {
   async request(endpoint, options = {}) {
     const url = BASE_URL + endpoint;
+
+    // Add this inside apiRequest.request right before: const response = await fetch(url, config);
+console.log("CRITICAL CHECK - Absolute Fetch URL:", url);
     
     const config = {
       ...options,
