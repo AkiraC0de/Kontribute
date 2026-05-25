@@ -1,11 +1,13 @@
 import { Outlet } from "react-router";
+import Header from "./header";
 
 const PublicLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <main className="flex flex-col min-h-screen w-full">
+      <Header/>
       <h1>PUBLIC VIEW</h1>
       <Outlet/>
-    </div>
+    </main>
   )
 }
 export default PublicLayout
