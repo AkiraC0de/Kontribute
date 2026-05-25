@@ -19,7 +19,7 @@ function App() {
 
       <Route path="/main"
         element={
-          <CheckAuth>
+          <CheckAuth isAuthenticated={false}>
             <MainLayout />
           </CheckAuth>
         }
