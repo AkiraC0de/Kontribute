@@ -5,7 +5,9 @@ const PublicLayout = () => {
   return (
     <main className="flex flex-col min-h-screen w-full">
       <Header/>
-      <Outlet/>
+      <div className="px-10 pt-20">
+        <Outlet/>
+      </div>
     </main>
   )
 }

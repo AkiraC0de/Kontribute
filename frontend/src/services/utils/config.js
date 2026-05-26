@@ -12,3 +12,16 @@ export const publicNavControls = [
     destination: "/about"
   }
 ]
+
+export const publicLoginControls = [
+  {
+    label: "Username or email",
+    type: "text",
+    placeholder: "Input your username or email"
+  },
+  {
+    label: "Password",
+    type: "password",
+    placeholder: "Input your password"
+  },
+]

@@ -5,14 +5,14 @@ import {ChevronRight} from "lucide-react"
 
 const Hero = () => {
   return (
-    <section className="relative flex flex-col items-center gap-4 text-center py-15">
+    <section className="relative flex flex-col items-center gap-6 text-center py-15">
       <p className="rounded-4xl bg-white text-sm border px-6 py-1.5">
         Project Management
       </p>
-      <h1 className="text-6xl font-bold text-primary font-sans max-w-180">
+      <h1 className="text-7xl font-bold text-primary font-sans max-w-220">
         Prove Your Progress Without the Paperwork.
       </h1>
-      <h2 className="max-w-200 font-medium">
+      <h2 className="text-lg max-w-200 font-medium">
         Spend less time writing status reports and more time building. Members log daily tasks in seconds, giving professors a direct window into individual contributions.
       </h2>
       <PrimaryButton className="mt-5">
