@@ -22,6 +22,7 @@ const Form = () => {
       }
       <PrimaryButton
         className="w-full mt-10"
+        type="submit"
       >
         Log in
       </PrimaryButton>
