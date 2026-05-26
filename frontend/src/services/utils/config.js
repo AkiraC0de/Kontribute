@@ -17,11 +17,13 @@ export const publicLoginControls = [
   {
     label: "Username or email",
     type: "text",
+    name: "identifier",
     placeholder: "Input your username or email"
   },
   {
     label: "Password",
     type: "password",
+    name: "password",
     placeholder: "Input your password"
   },
 ]
