@@ -6,7 +6,7 @@ const PasswordInput = ({ label, id, error, className, ...props }) => {
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`}>
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-gray-700 tracking-wide">
+        <label htmlFor={id} className="font-medium text-gray-700 tracking-wide">
           {label}
         </label>
       )}
@@ -16,7 +16,7 @@ const PasswordInput = ({ label, id, error, className, ...props }) => {
           id={id}
           type={showPassword ? "text" : "password"}
           className={`
-            block w-full rounded-lg border py-2.5 pr-11 text-gray-900 
+            block w-full rounded-lg border px-4 py-2.5 text-gray-900 
             placeholder-gray-400 transition-colors duration-200
             focus:outline-none focus:ring-2
             disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500
@@ -78,7 +78,7 @@ const Input = ({
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`}>
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-gray-700 tracking-wide">
+        <label htmlFor={id} className="font-medium text-gray-700 tracking-wide">
           {label}
         </label>
       )}
