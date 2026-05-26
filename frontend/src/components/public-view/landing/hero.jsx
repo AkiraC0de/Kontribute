@@ -1,7 +1,6 @@
-import { Link } from "react-router"
-import PrimaryButton from "../../ui/PrimaryButton"
-import {ChevronRight} from "lucide-react"
-
+import { Link } from "react-router";
+import PrimaryButton from "../../ui/PrimaryButton";
+import { ChevronRight } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -13,19 +12,20 @@ const Hero = () => {
         Prove Your Progress Without the Paperwork.
       </h1>
       <h2 className="text-lg max-w-200 font-medium">
-        Spend less time writing status reports and more time building. Members log daily tasks in seconds, giving professors a direct window into individual contributions.
+        Spend less time writing status reports and more time building. Members
+        log daily tasks in seconds, giving professors a direct window into
+        individual contributions.
       </h2>
-      <PrimaryButton className="mt-5">
-        <Link 
-          className="flex items-center gap-1"
-          to={"/auth/register"}>
-            Get Started 
+      <Link to={"/auth/register"}>
+        <PrimaryButton className="mt-5 flex items-center gap-1">
+          Get Started
           <ChevronRight />
-        </Link>
-      </PrimaryButton>
+        </PrimaryButton>
+      </Link>
+      
       {/* Grid background */}
       <div className="absolute inset-0 -z-10 h-full w-ful bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_40%,transparent_100%)]"></div>
     </section>
-  )
-}
-export default Hero
+  );
+};
+export default Hero;
