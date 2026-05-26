@@ -1,19 +1,18 @@
-import { Link } from "react-router";
-import Form from "../../components/public-view/login/form";
-import Hero from "../../components/public-view/login/hero";
-import Input from "../../components/ui/Input";
-import Header from "../../components/public-view/login/header";
-import Footer from "../../components/public-view/login/footer";
+import LoginForm from "../../../components/public-view/auth/loginForm"
+import AuthHero from "../../../components/public-view/auth/hero";
+import AuthHeader from "../../../components/public-view/auth/header";
+import AuthFooter from "../../../components/public-view/auth/footer";
 
 const Login = () => {
+  const mode = "login";
   return (
     <div className="flex-1 flex justify-center items-start mt-20">
       <div className="flex bg-white rounded-md shadow-[0_5px_30px_5px_rgba(0,0,0,0.15)] animate-fade-up duration-300">
-        <Hero />
+        <AuthHero mode={mode}/>
         <div className="flex-1 px-15 py-18 xl:w-140">
-          <Header/>
-          <Form />
-          <Footer/>
+          <AuthHeader mode={mode}/>
+          <LoginForm />
+          <AuthFooter mode={mode}/>
         </div>
       </div>
       {/* Grid background */}

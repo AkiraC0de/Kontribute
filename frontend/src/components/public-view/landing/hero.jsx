@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import PrimaryButton from "../../ui/PrimaryButton";
 import { ChevronRight } from "lucide-react";
 
-const Hero = () => {
+const LandingHero = () => {
   return (
     <section className="relative flex flex-col items-center gap-6 text-center py-15">
       <p className="rounded-4xl bg-white text-sm border px-6 py-1.5">
@@ -28,4 +28,4 @@ const Hero = () => {
     </section>
   );
 };
-export default Hero;
+export default LandingHero;

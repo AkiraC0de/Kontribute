@@ -7,8 +7,8 @@ import MainLayout from "./components/main-view/Layout";
 import Dashboard from "./pages/main-view/Dashboard";
 import { Navigate } from "react-router";
 import CheckAuth from "./components/common/CheckAuth";
-import Login from "./pages/public-view/Login";
-import Register from "./pages/public-view/Register";
+import Login from "./pages/public-view/auth/Login";
+import Register from "./pages/public-view/auth/Register";
 
 function App() {
   return (

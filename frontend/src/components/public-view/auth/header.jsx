@@ -1,0 +1,26 @@
+
+// mode can be either "login" or "register"
+const AuthHeader = ({ mode = "login" }) => {
+  const isLoginMode = mode === "login";
+
+  const titleText = isLoginMode 
+    ? "Welcome Back!" 
+    : "Create Account";
+
+  const subtitleText = isLoginMode 
+    ? "Your projects are waiting for you" 
+    : "Join Kontribute and start collaborating";
+
+  return (
+    <div className="text-center space-y-2 mb-15">
+      <h1 className="text-5xl font-medium text-primary tracking-tight">
+        {titleText}
+      </h1>
+      <h2 className="text-lg text-gray-600">
+        {subtitleText}
+      </h2>
+    </div>
+  );
+};
+
+export default AuthHeader;

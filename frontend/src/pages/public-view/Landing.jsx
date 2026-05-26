@@ -1,9 +1,9 @@
-import Hero from "../../components/public-view/landing/hero"
+import LandingHero from "../../components/public-view/landing/hero"
 
 const Landing = () => {
   return (
     <div>
-      <Hero/>
+      <LandingHero/>
     </div>
   )
 }

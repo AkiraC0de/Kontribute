@@ -25,3 +25,21 @@ export const publicLoginControls = [
     placeholder: "Input your password"
   },
 ]
+
+export const publicRegisterControls = [
+  {
+    label: "Email",
+    type: "text",
+    placeholder: "Input your email"
+  },
+  {
+    label: "Password",
+    type: "password",
+    placeholder: "Input your password"
+  },
+  {
+    label: "Confirm password",
+    type: "password",
+    placeholder: "Confirm your password"
+  },
+]

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import PrimaryButton from "../../ui/PrimaryButton";
-import { publicLoginControls } from "../../../services/utils/config";
+import { publicLoginControls, publicRegisterControls } from "../../../services/utils/config";
 import Input from "../../ui/Input";
 import { Link } from "react-router";
 
-const Form = () => {
+const RegisterForm = () => {
   const [formData, setFormData] = useState({});
 
   return (
     <form className="min-w-100">
-      {publicLoginControls.map((control) => (
+      {publicRegisterControls.map((control) => (
         <Input
           key={control.label}
           id={control.label}
@@ -23,9 +23,9 @@ const Form = () => {
         <Link to="auth/forgot-password">Forgot password?</Link>
       </div>
       <PrimaryButton className="w-full mt-5" type="submit">
-        Log in
+        Create Account
       </PrimaryButton>
     </form>
   );
 };
-export default Form;
+export default RegisterForm;
