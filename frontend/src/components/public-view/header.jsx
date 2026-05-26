@@ -1,16 +1,23 @@
+import { Link } from "react-router"
 import PrimaryButton from "../ui/PrimaryButton"
+import SecondaryButton from "../ui/SecondayButton"
 import Nav from "./nav"
 
 const Header = () => {
   return (
-    <header className="px-10 py-5 flex justify-between items-center h-20">
+    <header className="px-10 py-5 flex justify-between items-center bg-white h-20">
       <div>
-        <h1 className="text-main text-2xl font-extrabold tracking-tight">Kontribute</h1>
+        <Link to={"/"}>
+          <h1 className="text-primary bg-white text-2xl font-extrabold tracking-tight">Kontribute</h1>
+        </Link>
       </div>
       <Nav/>
-      <div>
+      <div className="space-x-4">
+        <SecondaryButton>
+          Login
+        </SecondaryButton>
         <PrimaryButton>
-          Get Started
+          Register
         </PrimaryButton>
       </div>
     </header>

@@ -1,0 +1,30 @@
+import { Link } from "react-router"
+import PrimaryButton from "../ui/PrimaryButton"
+import {ChevronRight} from "lucide-react"
+
+
+const Hero = () => {
+  return (
+    <section className="relative flex flex-col items-center gap-4 text-center pt-15 pb-20">
+      <p className="rounded-4xl text-sm border px-6 py-1.5">
+        Project Management
+      </p>
+      <h1 className="text-6xl font-bold text-primary font-sans max-w-180">
+        Prove Your Progress Without the Paperwork.
+      </h1>
+      <h2 className="max-w-200 font-medium">
+        Spend less time writing status reports and more time building. Members log daily tasks in seconds, giving professors a direct window into individual contributions.
+      </h2>
+      <PrimaryButton className="mt-5">
+        <Link 
+          className="flex items-center gap-1"
+          to={"/auth/register"}>
+            Get Started 
+          <ChevronRight />
+        </Link>
+      </PrimaryButton>
+      <div className="absolute inset-0 -z-10 h-full w-ful bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_40%,transparent_100%)]"></div>
+    </section>
+  )
+}
+export default Hero

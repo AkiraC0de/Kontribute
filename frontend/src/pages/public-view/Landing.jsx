@@ -1,6 +1,10 @@
+import Hero from "../../components/public-view/hero"
+
 const Landing = () => {
   return (
-    <div>Landing</div>
+    <div>
+      <Hero/>
+    </div>
   )
 }
 export default Landing
