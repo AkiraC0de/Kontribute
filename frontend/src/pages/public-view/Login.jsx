@@ -2,7 +2,8 @@ import { Link } from "react-router";
 import Form from "../../components/public-view/login/form";
 import Hero from "../../components/public-view/login/hero";
 import Input from "../../components/ui/Input";
-import SecondaryButton from "../../components/ui/SecondayButton";
+import Header from "../../components/public-view/login/header";
+import Footer from "../../components/public-view/login/footer";
 
 const Login = () => {
   return (
@@ -10,21 +11,9 @@ const Login = () => {
       <div className="flex bg-white rounded-md shadow-[0_5px_30px_5px_rgba(0,0,0,0.15)] animate-fade-up duration-300">
         <Hero />
         <div className="flex-1 px-15 py-18 xl:w-140">
-          <div className="text-center space-y-2 mb-20">
-            <h1 className="text-5xl font-medium text-primary">Welcome Back!</h1>
-            <h2 className="text-lg">Your projects are waiting for you</h2>
-          </div>
+          <Header/>
           <Form />
-          <div className="mt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="h-0.5 flex-1 bg-gray-300" />
-              <span>Don't have an account? </span>
-              <div className="h-0.5 flex-1 bg-gray-300" />
-            </div>
-            <SecondaryButton className="w-full">
-              <Link to="/auth/register">Create an account</Link>
-            </SecondaryButton>
-          </div>
+          <Footer/>
         </div>
       </div>
       {/* Grid background */}
