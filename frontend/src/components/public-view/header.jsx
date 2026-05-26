@@ -14,10 +14,14 @@ const Header = () => {
       <Nav/>
       <div className="space-x-4">
         <SecondaryButton>
-          Login
+          <Link to="/auth/login">
+            Login
+          </Link>
         </SecondaryButton>
         <PrimaryButton>
-          Register
+          <Link to="/auth/register">
+            Register
+          </Link>
         </PrimaryButton>
       </div>
     </header>

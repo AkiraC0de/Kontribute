@@ -1,12 +1,12 @@
 import { Link } from "react-router"
-import PrimaryButton from "../ui/PrimaryButton"
+import PrimaryButton from "../../ui/PrimaryButton"
 import {ChevronRight} from "lucide-react"
 
 
 const Hero = () => {
   return (
-    <section className="relative flex flex-col items-center gap-4 text-center pt-15 pb-20">
-      <p className="rounded-4xl text-sm border px-6 py-1.5">
+    <section className="relative flex flex-col items-center gap-4 text-center py-15">
+      <p className="rounded-4xl bg-white text-sm border px-6 py-1.5">
         Project Management
       </p>
       <h1 className="text-6xl font-bold text-primary font-sans max-w-180">

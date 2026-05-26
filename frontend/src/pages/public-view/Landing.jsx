@@ -1,4 +1,4 @@
-import Hero from "../../components/public-view/hero"
+import Hero from "../../components/public-view/landing/hero"
 
 const Landing = () => {
   return (
