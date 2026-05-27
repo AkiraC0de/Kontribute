@@ -3,10 +3,15 @@ import { ValidationError, ApiError } from "./errorClasses";
 const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || '';
 
 const configureOptions = ({ method = "GET", body, headers, ...restOptions }) => {
+  const accessToken = localStorage.getItem("accessToken");
+
   const config = {
     method,
     credentials: "include",
-    headers: { ...headers },
+    headers: { 
+      "Authorization" : `Bearer ${accessToken}`,
+      ...headers 
+    },
     ...restOptions,
   };
 

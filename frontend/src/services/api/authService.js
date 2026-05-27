@@ -2,8 +2,11 @@ import apiRequest from './index';
 
 const authService = {
   login: async (credentials) => {
-    // apiRequest automatically stringifies 'credentials' and injects application/json headers
-    return await apiRequest.post("/v1/auth/login", credentials);
+    const data = await apiRequest.post("/v1/auth/login", credentials);
+
+    localStorage.setItem("accessToken", data.accessToken);
+
+    return data.user;  
   },
 
   register: async (userData) => {

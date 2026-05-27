@@ -1,17 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import apiRequest from "../api/index";
 
 const initialState = {
-  isAuthenticated: false,
-  isLoading : true,
+  isAuthenticating : true,
   user: null
 }
+
+export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, thunkAPI) => {
+  try {
+    const data = await apiRequest.get("/v1/auth/me"); 
+    return data.user; 
+  } catch (error) {
+    console.log(error.message)
+    return thunkAPI.rejectWithValue(null);
+  }
+});
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser : (state, action) => {
+    setLogin : (state, action) => {
       state.user = action.payload;
+      state.isAuthenticated = true;
     },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
@@ -19,8 +30,19 @@ const authSlice = createSlice({
     setIsAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload;
     }
-  }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isAuthenticating = false;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.user = null;
+        state.isAuthenticating = false;
+      });
+  },
 })
 
-export const { setUser, setIsLoading, setIsAuthenticated} = authSlice.actions;
+export const { setLogin, setIsLoading, setIsAuthenticated} = authSlice.actions;
 export default authSlice.reducer;

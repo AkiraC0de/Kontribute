@@ -2,12 +2,17 @@ import { useState } from "react";
 import PrimaryButton from "../../ui/PrimaryButton";
 import { publicLoginControls } from "../../../services/utils/config";
 import Input from "../../ui/Input";
-import { Link } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import authService from "../../../services/api/authService";
 import Spinner from "../../common/Spinner";
 import { formatValidationErrors, isValidString } from "../../../services/utils/utils";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../../services/store/authSlice";
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
@@ -30,14 +35,13 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError("");
-
     const isFormValid = validateForm();
     if (!isFormValid) return;
-
     setIsLoading(true);
     try {  
-      const data = await authService.login(formData);
-      //console.log(data);
+      const user = await authService.login(formData);
+      dispatch(setLogin(user))
+      navigate("/main")
     } catch (error) {
       if (error.name === "ApiError") {
         setGlobalError(error.message);
