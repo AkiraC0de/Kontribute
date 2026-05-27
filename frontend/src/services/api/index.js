@@ -1,13 +1,6 @@
-const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || '';
+import { ValidationError, ApiError } from "./errorClasses";
 
-class ApiError extends Error {
-  constructor(message, status, data) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.data = data;
-  }
-}
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || '';
 
 const configureOptions = ({ method = "GET", body, headers, ...restOptions }) => {
   const config = {
@@ -36,19 +29,28 @@ const request = async (rawRoute, rawOptions = {}) => {
   const route = `${SERVER_BASE_URL}/api${rawRoute}`;
   const config = configureOptions(rawOptions);
 
-  const response = await fetch(route, config);
+  const response = await fetch(route, config).catch((error) => {
+    throw new Error("Network error or server is unreachable.");
+  });
 
-  // Safely extract text first to avoid SyntaxErrors on empty JSON bodies (204/304 status responses)
   const responseText = await response.text();
   const isJson = response.headers.get("content-type")?.includes("application/json");
+  
   const data = (isJson && responseText) ? JSON.parse(responseText) : null;
 
-  if (!response.ok) {
-    throw new ApiError(
-      data?.message || `Request failed with status code ${response.status}.`,
-      response.status,
-      data
-    );
+  if (!response.ok || (data && !data.success)) {
+    const message = data?.message || response.statusText || "An error occurred";
+    const status = data?.status || response.status;
+    const errorCode = data?.code || "UNKNOWN_ERROR";
+
+    switch(data.code){
+      case "VALIDATION_ERROR":
+        throw new ValidationError(message, status, data.errors);
+        break;
+      default:
+        throw new ApiError(message, status, errorCode, data);
+        break;
+    }
   }
 
   return data;

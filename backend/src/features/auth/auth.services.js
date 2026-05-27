@@ -66,7 +66,7 @@ export const loginUser = async (userData) => {
   if(!user.isEmailVerified) throw new InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
   const isPasswordValid = await user.comparePassword(password);
-  if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect");
+  if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect 222");
 
   const tokens = generateTokens(user);
 

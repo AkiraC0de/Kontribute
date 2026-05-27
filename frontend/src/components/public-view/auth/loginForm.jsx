@@ -4,19 +4,44 @@ import { publicLoginControls } from "../../../services/utils/config";
 import Input from "../../ui/Input";
 import { Link } from "react-router";
 import authService from "../../../services/api/authService";
+import Spinner from "../../common/Spinner";
+import { formatValidationErrors, isValidString } from "../../../services/utils/utils";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [globalError, setGlobalError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  
+  const requiredFields = ["identifier", "password"];
+
+  const validateForm = () => {
+    const errors = {};
+    publicLoginControls.forEach((control) => {
+      if (control.required && !isValidString(formData[control.name])) {
+        errors[control.name] = `${control.label} is required.`;
+      }
+    });
+    setFieldErrors(errors);
+    
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
+    setGlobalError("");
+
+    const isFormValid = validateForm();
+    if (!isFormValid) return;
+
+    setIsLoading(true);
+    try {  
       const data = await authService.login(formData);
-      console.log(data);
+      //console.log(data);
     } catch (error) {
-      console.log("error: ", error.message);
+      if (error.name === "ApiError") {
+        setGlobalError(error.message);
+      }  
     } finally {
       setIsLoading(false);
     }
@@ -27,8 +52,11 @@ const LoginForm = () => {
       ...prev,
       [e.target.name]: e.target.value,
     }));
-
-    console.log(formData);
+    setFieldErrors(prev => ({
+      ...prev,
+      [e.target.name] : ""
+    }))
+    setGlobalError("")
   };
 
   return (
@@ -45,13 +73,15 @@ const LoginForm = () => {
           value={formData[control.name] || ""}
           onChange={handleOnChange}
           disabled={isLoading}
+          error={fieldErrors[control.name]}
         />
       ))}
       <div className="mt-5 text-end">
         <Link to="auth/forgot-password">Forgot password?</Link>
       </div>
-      <PrimaryButton disabled={isLoading} className="w-full mt-5" type="submit">
-        {isLoading ? "Logging in..." : "Log in"}
+      {globalError && <p className="text-red-500 text-center my-4">{globalError}</p>}
+      <PrimaryButton disabled={isLoading} className="w-full mt-5 h-13 flex justify-center items-center" type="submit">
+        {isLoading ? <Spinner color="bg-white"/> : "Log in"}
       </PrimaryButton>
     </form>
   );
