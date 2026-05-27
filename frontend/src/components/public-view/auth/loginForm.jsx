@@ -43,9 +43,7 @@ const LoginForm = () => {
       dispatch(setLogin(user))
       navigate("/main")
     } catch (error) {
-      if (error.name === "ApiError") {
-        setGlobalError(error.message);
-      }  
+      setGlobalError(error.message);
     } finally {
       setIsLoading(false);
     }

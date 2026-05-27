@@ -6,11 +6,12 @@ import PublicLayout from "./components/public-view/layout";
 import MainLayout from "./components/main-view/Layout";
 import Dashboard from "./pages/main-view/Dashboard";
 import { Navigate } from "react-router";
-import CheckAuth from "./components/common/CheckAuth";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import Login from "./pages/public-view/auth/Login";
 import Register from "./pages/public-view/auth/Register";
 import { useDispatch } from "react-redux";
 import { checkAuth } from "./services/store/authSlice";
+import GuessRoute from "./components/common/GuessRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -22,7 +23,11 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<PublicLayout />}>
+      <Route path="/" element={
+        <GuessRoute>
+          <PublicLayout />
+        </GuessRoute>
+      }>
         <Route index element={<Landing />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
@@ -30,9 +35,9 @@ function App() {
 
       <Route path="/main"
         element={
-          <CheckAuth isAuthenticated={false}>
+          <ProtectedRoute>
             <MainLayout />
-          </CheckAuth>
+          </ProtectedRoute>
         }
       >
         <Route index element={<Navigate to="dashboard" replace />} />

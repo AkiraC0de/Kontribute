@@ -22,17 +22,16 @@ const authSlice = createSlice({
   reducers: {
     setLogin : (state, action) => {
       state.user = action.payload;
-      state.isAuthenticated = true;
     },
-    setIsLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
-    setIsAuthenticated: (state, action) => {
-      state.isAuthenticated = action.payload;
+    setIsAuthenticating: (state, action) => {
+      state.isAuthenticating = action.payload;
     }
   },
   extraReducers: (builder) => {
     builder
+      .addCase(checkAuth.pending, (state) => {
+        state.isAuthenticating = true;
+      })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isAuthenticating = false;
@@ -44,5 +43,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { setLogin, setIsLoading, setIsAuthenticated} = authSlice.actions;
+export const { setLogin, setIsAuthenticating} = authSlice.actions;
 export default authSlice.reducer;
