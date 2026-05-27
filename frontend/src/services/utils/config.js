@@ -34,16 +34,22 @@ export const publicRegisterControls = [
   {
     label: "Email",
     type: "text",
-    placeholder: "Input your email"
+    name: "email",
+    placeholder: "Input your email",
+    required: true
   },
   {
     label: "Password",
     type: "password",
-    placeholder: "Input your password"
+    name: "password",
+    placeholder: "Input your password",
+    required: true
   },
   {
     label: "Confirm password",
     type: "password",
-    placeholder: "Confirm your password"
+    name: "confirmPassword",
+    placeholder: "Confirm your password",
+    required: true
   },
 ]

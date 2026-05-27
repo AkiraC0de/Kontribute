@@ -7,7 +7,7 @@ import authService from "../../../services/api/authService";
 import Spinner from "../../common/Spinner";
 import { formatValidationErrors, isValidString } from "../../../services/utils/utils";
 import { useDispatch } from "react-redux";
-import { setLogin } from "../../../services/store/authSlice";
+import { setUser } from "../../../services/store/authSlice";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -17,8 +17,6 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
-  
-  const requiredFields = ["identifier", "password"];
 
   const validateForm = () => {
     const errors = {};
@@ -40,7 +38,7 @@ const LoginForm = () => {
     setIsLoading(true);
     try {  
       const user = await authService.login(formData);
-      dispatch(setLogin(user))
+      dispatch(setUser(user))
       navigate("/main")
     } catch (error) {
       setGlobalError(error.message);

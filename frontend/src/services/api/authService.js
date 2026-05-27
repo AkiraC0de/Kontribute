@@ -10,7 +10,9 @@ const authService = {
   },
 
   register: async (userData) => {
-    return await apiRequest.post("/v1/auth/register", userData);
+    const data = await apiRequest.post("/v1/auth/register", userData);
+
+    return data.user;
   },
 
   /**

@@ -20,3 +20,9 @@ export const isValidString = (value) => {
 
   return value.trim().length > 0;
 };
+
+export const isValidEmail = (value) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailRegex.test(value);
+};
