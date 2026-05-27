@@ -19,14 +19,13 @@ import TooManyRequest from "../../errors/TooManyRequest.js";
 // --- services
 
 export const registerUser = async (userData) => {
-  const { firstName, lastName, middleInitial, username, email, password} = userData;
-  const credentials = { username, email};
+  const { email, password} = userData;
 
-  const existingUser = await findConflictingUser(credentials);
-  if (existingUser) await resolveConflict(existingUser, credentials);
+  const existingUser = await findConflictingUser(email);
+  if (existingUser) await resolveConflict(existingUser, email);
   
   const hashedPassword = await User.hashPassword(password);
-  const newUser = await createUserRecord({ firstName, lastName, middleInitial, username, email }, hashedPassword);
+  const newUser = await createUserRecord({ email }, hashedPassword);
 
   const [sessionToken, otp] = await issueVerificationTokens(newUser._id, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
 
@@ -38,6 +37,38 @@ export const registerUser = async (userData) => {
     sessionToken
   };
 }
+
+const findUserByIdentifier = (identifier) =>
+  User.findOne({ $or: [{ username : identifier }, { email : identifier }] });
+
+const findConflictingUser = (email) =>
+  User.findOne({ email });
+
+const throwIfVerifiedConflict = () => {
+    throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED);
+};
+
+const handleUnverifiedConflict = async (existingUser, email) => {
+  const isSameEmail = existingUser.email === email;
+
+  if (isSamePerson) {
+    // Re-registration attempt — wipe stale unverified records so they can start fresh
+    await Promise.all([
+      existingUser.deleteOne(),
+      SessionToken.deleteMany({ userId: existingUser._id }),
+      Otp.deleteMany({ userId: existingUser._id }),
+    ]);
+  } 
+}
+
+const resolveConflict = async (existingUser, email) => {
+  if (existingUser.isEmailVerified){
+    throwIfVerifiedConflict();
+  } else {
+    await handleUnverifiedConflict(existingUser, email)
+  }
+}
+
 
 export const verifyUserEmail = async (userId, pin) => {
   const user = await findUserById(userId);
@@ -128,46 +159,6 @@ export const resetUserPassword = async (userId, newPassword) => {
 
 // --- Helpers
 
-const findUserByIdentifier = (identifier) =>
-  User.findOne({ $or: [{ username : identifier }, { email : identifier }] });
-
-const findConflictingUser = ({ username, email }) =>
-  User.findOne({ $or: [{ username }, { email }] });
-
-
-const throwIfVerifiedConflict = (existingUser, { username, email }) => {
-  if (existingUser.email === email) {
-    throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED);
-  }
-  if (existingUser.username === username) {
-    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN);
-  }
-};
-
-const handleUnverifiedConflict = async (existingUser, { username, email }) => {
-  const isSamePerson = existingUser.email === email;
-  const isDifferentPerson = existingUser.username === username;
-
-  if (isSamePerson) {
-    // Re-registration attempt — wipe stale unverified records so they can start fresh
-    await Promise.all([
-      existingUser.deleteOne(),
-      SessionToken.deleteMany({ userId: existingUser._id }),
-      Otp.deleteMany({ userId: existingUser._id }),
-    ]);
-  } else if (isDifferentPerson) {
-    // Someone else trying to claim an unverified username, block them
-    throw new GenericError(400, "The username has already been taken.", ERROR_CODES.USERNAME_ALREADY_TAKEN);
-  }
-}
-
-const resolveConflict = async (existingUser, { username, email }) => {
-  if (existingUser.isEmailVerified){
-    throwIfVerifiedConflict(existingUser, { username, email });
-  } else {
-    await handleUnverifiedConflict(existingUser, { username, email })
-  }
-}
 
 const issueVerificationTokens = (userId, verificationType) =>
   Promise.all([

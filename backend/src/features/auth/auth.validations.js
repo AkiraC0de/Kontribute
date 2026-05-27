@@ -1,40 +1,6 @@
 import Joi from "joi";
 
 export const registerSchema = Joi.object({
-  firstName: Joi.string()
-    .trim()
-    .min(1)
-    .required()
-    .messages({
-      "string.empty": "First name is required.",
-      "any.required": "First name is a required field."
-    }),
-
-  lastName: Joi.string()
-    .trim()
-    .min(1)
-    .required()
-    .messages({
-      "string.empty": "Last name is required.",
-      "any.required": "Last name is a required field."
-    }),
-
-  middleInitial: Joi.string()
-    .trim()
-    .max(3) 
-    .optional()
-    .allow("", null),
-
-  username: Joi.string()
-    .trim()
-    .required()
-    .min(3)
-    .messages({
-      "string.min": "Username must be at least 3 characters long.",
-      "string.empty": "Username is required.",
-      "any.required": "Username is a required field."
-    }),
-
   email: Joi.string()
     .trim()
     .lowercase()
@@ -58,7 +24,7 @@ export const registerSchema = Joi.object({
       "any.required": "Password is a required field."
     }),
 
-  passwordConfirm: Joi.string()
+  confirmPassword: Joi.string()
     .trim()
     .required()
     .valid(Joi.ref("password"))

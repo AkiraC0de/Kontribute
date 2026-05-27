@@ -4,13 +4,11 @@ import bcrypt from "bcryptjs";
 const userSchema = new Schema({
     firstName: {
         type: String,
-        required: true,
         trim: true,
         minlength: 1
     },
     lastName: {
         type: String,
-        required: true,
         trim: true,
         minlength: 1
     },
@@ -21,7 +19,6 @@ const userSchema = new Schema({
     },
     username: {
         type: String,
-        required: true,
         unique: true,
         minlength: 3,
         trim: true
@@ -49,6 +46,10 @@ const userSchema = new Schema({
     isEmailVerified: {
         type: Boolean,
         default: false
+    },
+    isSetUpDone : {
+        type: Boolean,
+        default: false,
     },
     isBlocked: {
         type: Boolean,
