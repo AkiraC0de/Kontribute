@@ -5,7 +5,7 @@ import {
   publicRegisterControls,
 } from "../../../services/utils/config";
 import Input from "../../ui/Input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import authService from "../../../services/api/authService";
 import {
   formatValidationErrors,
@@ -13,8 +13,13 @@ import {
   isValidString,
 } from "../../../services/utils/utils";
 import Spinner from "../../common/Spinner"
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../services/store/authSlice";
 
 const RegisterForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
@@ -42,14 +47,20 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError("");
+
     const isFormValid = validateForm();
     if (!isFormValid) return;
     if (!formData.agreedToTerms){
       return setFieldErrors(prev => ({...prev, agreedToTerms: "Please agree to the Terms and Conditions to continue."}))
     }
+
     setIsLoading(true);
     try {
-      const user = await authService.register(formData);
+      const data = await authService.register(formData);
+      console.log(data);
+      dispatch(setUser({email: data.user.email}));
+      navigate(`/auth/email-verification/${data.sessionToken}`, { state: { isValidSession: true } })
+
     } catch (error) {
       if(error.errors){
         const structuredErrors = formatValidationErrors(error.errors);

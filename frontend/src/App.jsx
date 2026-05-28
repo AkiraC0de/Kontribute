@@ -3,6 +3,10 @@ import { Route, Routes, Navigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { checkAuth } from "./services/store/authSlice";
 
+// Guards
+import GuessRoute from "./components/common/GuessRoute";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+
 // Layouts
 import PublicLayout from "./components/public-view/layout";
 import MainLayout from "./components/main-view/Layout";
@@ -14,10 +18,8 @@ import Register from "./pages/public-view/auth/Register";
 import Dashboard from "./pages/main-view/Dashboard";
 import Settings from "./pages/main-view/Settings";
 import NotFound from "./pages/public-view/NotFound";
+import EmailVerification from "./pages/public-view/auth/EmailVerification";
 
-// Guards
-import GuessRoute from "./components/common/GuessRoute";
-import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -40,7 +42,7 @@ function App() {
       > 
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
-        
+          <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
       </Route>
 
       <Route path="/main" element={

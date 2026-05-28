@@ -10,14 +10,9 @@ const authService = {
   },
 
   register: async (userData) => {
-    const data = await apiRequest.post("/v1/auth/register", userData);
-    return data.user;
+    return await apiRequest.post("/v1/auth/register", userData);
   },
 
-  /**
-   * Logs out the current user by clearing refresh token cookies.
-   * Note: Since apiRequest uses credentials: "include", cookies are handled automatically.
-   */
   logout: async () => {
     await apiRequest.post("/v1/auth/logout");
 
@@ -26,9 +21,14 @@ const authService = {
     return;
   },
 
-  /**
-   * Fetches the currently authenticated user based on existing cookies/sessions.
-   */
+  verifySessionToken: async (sessionToken) => {
+    return await apiRequest.post("/v1/auth/verify/token?type=sessionToken", {}, {
+      headers: {
+        "Authorization" : `Bearer ${sessionToken}`,
+      }
+    })
+  },
+
   getCurrentUser: async () => {
     return await apiRequest.get('/auth/me');
   }
