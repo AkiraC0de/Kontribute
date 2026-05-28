@@ -8,7 +8,7 @@ const LandingHero = () => {
       <p className="text-xs rounded-4xl bg-white border px-6 py-1.5">
         Project Management
       </p>
-      <h1 className="text-5xl font-bold text-primary font-sans max-w-160">
+      <h1 className="text-5xl font-bold text-headline font-sans max-w-160">
         Prove Your Progress Without the Paperwork.
       </h1>
       <h2 className="text-sm max-w-170 font-medium">

@@ -36,12 +36,12 @@ const Header = () => {
           <path
             d="M423.6,346.736c-16.38,2.921-36.228,21.484-35.249,38.094,1.811,30.683,5.866,76.528,14.341,91.4,13.141,23.063-6.758,62.154-6.758,62.154l-4.681,4.681,4.965,2.035,158.2,20.584s-13.679-61.5-5.124-76.61,29.3-60.777,10.785-78.646l-18.1-63.694-31.134-9.182Z"
             transform="translate(360 90)"
-            className="fill-primary-light"
+            className="fill-secondary"
           />
           <path
             d="M514.05,343.728,503.267,348l57.522,112.344,119.079,81.169L697.032,512.5,606.388,434.2l-36.29-69.6a44.665,44.665,0,0,0-56.049-20.878Z"
             transform="translate(360 90)"
-            className="fill-primary"
+            className="fill-secondary"
           />
           <path
             d="M723.647,574.429a17.981,17.981,0,0,1-17.08-21.405L632.36,502.768l8.854-23.943,87.7,60.334a17.956,17.956,0,0,1-5.267,35.27Z"
@@ -78,7 +78,7 @@ const Header = () => {
             cy="33.539"
             r="33.539"
             transform="translate(992.359 556.854)"
-            className="fill-primary-light"
+            className="fill-secondary"
           />
           <circle
             cx="71.685"
@@ -105,11 +105,11 @@ const Header = () => {
           <path
             d="M405.109,363.073h0a13.6,13.6,0,0,0-17.382,3.06L313.272,470.262l69,98,27-29-42-66,55.818-53.145a44.665,44.665,0,0,0-17.982-57.043Z"
             transform="translate(360 90)"
-            className="fill-primary-light"
+            className="fill-secondary"
           />
         </g>
       </svg>
-      <h1 className="text-3xl font-medium mt-5 mb-2 text-primary tracking-tight">
+      <h1 className="text-3xl font-medium mt-5 mb-2 text-headline tracking-tight">
         Verify your email
       </h1>
       <h2 className="text-gray-600 text-center">

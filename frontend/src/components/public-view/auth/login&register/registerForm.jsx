@@ -106,7 +106,7 @@ const RegisterForm = () => {
       <div className="flex mt-8 items-center gap-2 text-sm">
         <input 
           type="checkbox" 
-          className="w-5 h-5 accent-secondary"
+          className="w-5 h-5 accent-green-700"
           onChange={handleAgreeOnChange}
         />
         <p>

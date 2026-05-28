@@ -1,9 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #490b3d;
-  --color-primary-light: #bd1e51;
-  --color-secondary: #f1b81d;
+  --color-primary: #0075c3;
+  --color-secondary: #d8f3ff;
+  --color-tertiary: #ef4565;
+
+  --color-headline: #3d4856;
+
+  --color-button: #0075c3;
+  --color-button-text: #fffffe;
+
+  --font-poppins: "Poppins", sans-serif;
 
   --shadow-custom: 0 5px 30px 5px rgba(0, 0, 0, 0.15);
 
@@ -24,8 +32,8 @@
 
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
+  --text: #5f6c7b;
+  --text-h: #094067;
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
@@ -39,8 +47,9 @@
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+  --poppins:  "Poppins", sans-serif;
 
-  font: 18px/145% var(--sans);
+  font: 18px/145% var(--poppins);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);

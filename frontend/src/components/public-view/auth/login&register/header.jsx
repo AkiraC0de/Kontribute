@@ -17,7 +17,7 @@ const AuthHeader = ({ mode = "login" }) => {
 
   return (
     <div className="text-center space-y-2 mb-12">
-      <h1 className="text-4xl font-medium text-primary tracking-tight">
+      <h1 className="text-4xl font-medium text-headline tracking-tight">
         {titleText}
       </h1>
       <h2 className="text-gray-600">

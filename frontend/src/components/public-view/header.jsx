@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Menu, X } from "lucide-react";
+import { LogIn, Menu, PenLine, X } from "lucide-react";
 import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondayButton";
 import { motion, AnimatePresence, scale } from "motion/react";
@@ -29,7 +29,7 @@ const Header = () => {
       <header className="fixed top-0 w-full z-100 px-5 py-5 flex items-center justify-between bg-white h-18 shadow-sm">
         <div className="flex-1 flex">
           <Link to={"/"} onClick={closeMenu}>
-            <h1 className="text-primary bg-white text-2xl font-extrabold tracking-tight">
+            <h1 className="text-primary bg-white text-xl font-extrabold font-poppins tracking-tight">
               Kontribute
             </h1>
           </Link>
@@ -75,22 +75,21 @@ const Header = () => {
               initial="closed"
               animate="open"
               exit="closed"
-              className="absolute top-18 overflow-hidden left-0 w-full bg-white flex flex-col p-5 pt-2 border-b shadow-md rounded-b-2xl lg:hidden"
+              className="absolute top-18 overflow-hidden left-0 w-full bg-white flex flex-col p-5 pt-1 border-b shadow-md rounded-b-2xl lg:hidden"
             >
               <div className="flex flex-col w-full">
                 <div onClick={closeMenu}>
                   <Nav />
                 </div>
 
-                <div className="h-0.5 w-full my-4 bg-gray-300" />
-
-                <div className="flex gap-3">
-                  <Link to="/auth/login" className="flex-1" onClick={closeMenu}>
-                    <SecondaryButton className="w-full">Login</SecondaryButton>
+                <div className="flex flex-col mt-4 text-sm">
+                  <Link to="/auth/login" className="flex gap-2 text-black py-3 group" onClick={closeMenu}>
+                    <LogIn className="group-hover:scale-120 transition-all duration-200" size={22}/>
+                    <span>Login</span>
                   </Link>
-
-                  <Link to="/auth/register" className="flex-1" onClick={closeMenu}>
-                    <PrimaryButton className="w-full">Register</PrimaryButton>
+                  <Link to="/auth/register" className="flex gap-2 text-black py-3" onClick={closeMenu}>
+                    <PenLine size={22}/>
+                    <span>Register</span>
                   </Link>
                 </div>
               </div>

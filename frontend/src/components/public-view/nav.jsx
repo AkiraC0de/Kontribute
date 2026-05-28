@@ -6,15 +6,15 @@ const Nav = () => {
 
   return (
     <nav>
-      <ul className="flex flex-col lg:flex-row gap-3">
+      <ul className="flex flex-col lg:flex-row">
         {publicNavControls.map(({ label, destination }) => {
           const isActive = pathname === destination;
 
           const linkStyle = `
-            tracking-wider cursor-pointer transition-all duration-200 hover:scale-105 text-sm
-            text-center lg:text-normal w-full
-            border lg:border-0
-            hover:bg-gray-100 lg:px-6 py-2 rounded-md
+            tracking-wider cursor-pointer transition-all duration-200 lg:hover:scale-105 text-sm
+            w-full
+            border-t-1 border-gray-300 lg:border-none text-black
+            hover:bg-gray-100 lg:px-6 py-3 lg:py-2 lg:rounded-md
             ${isActive ? "font-bold" : "font-normal"}
           `.trim();
 
