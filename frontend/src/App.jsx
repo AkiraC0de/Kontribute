@@ -12,6 +12,7 @@ import Register from "./pages/public-view/auth/Register";
 import { useDispatch } from "react-redux";
 import { checkAuth } from "./services/store/authSlice";
 import GuessRoute from "./components/common/GuessRoute";
+import Settings from "./pages/main-view/Settings";
 
 function App() {
   const dispatch = useDispatch();
@@ -40,8 +41,9 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route index element={<Navigate to="dashboard" />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

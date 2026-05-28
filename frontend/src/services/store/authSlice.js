@@ -12,7 +12,6 @@ export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, thunkAPI) 
     const data = await apiRequest.get("/v1/auth/me"); 
     return data.user; 
   } catch (error) {
-    console.log(error.message)
     return thunkAPI.rejectWithValue(null);
   }
 });

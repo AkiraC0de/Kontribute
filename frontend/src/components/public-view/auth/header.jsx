@@ -1,11 +1,15 @@
+import { useLocation } from "react-router";
 
 // mode can be either "login" or "register"
 const AuthHeader = ({ mode = "login" }) => {
   const isLoginMode = mode === "login";
+  const location = useLocation();
 
-  const titleText = isLoginMode 
-    ? "Welcome Back!" 
-    : "Create Account";
+  const titleText = location.state?.from 
+    ? "Login to continue" 
+    : isLoginMode 
+      ? "Welcome Back!" 
+      : "Create Account";
 
   const subtitleText = isLoginMode 
     ? "Your projects are waiting for you" 

@@ -34,14 +34,14 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError("");
+
     const isFormValid = validateForm();
     if (!isFormValid) return;
+
     setIsLoading(true);
     try {  
       const user = await authService.login(formData);
       dispatch(loginUser(user))
-      const fromUrl = location.state?.from || "/main/dashboard";
-      navigate(fromUrl, { replace: true });
     } catch (error) {
       setGlobalError(error.message);
     } finally {

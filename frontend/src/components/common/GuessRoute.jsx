@@ -1,18 +1,20 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router"; // <-- Import useLocation
 
-const GuessRoute = ({children}) => {
+const GuessRoute = ({ children }) => {
   const { isAuthenticating, isAuthenticated } = useSelector((state) => state.auth);
+  const location = useLocation(); 
 
   if (isAuthenticating) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; 
   }
 
-  // already logged in
   if (isAuthenticated) {
-    return <Navigate to="/main" replace />;
+    const fromUrl = location.state?.from || "/main/dashboard";
+    return <Navigate to={fromUrl} replace />;
   }
 
   return children;
-}
+};
+
 export default GuessRoute;
