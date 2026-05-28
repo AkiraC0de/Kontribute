@@ -27,7 +27,7 @@ const Header = () => {
   return (
     <>
       <header className="fixed top-0 w-full z-100 px-5 py-5 flex items-center justify-between bg-white h-18 shadow-sm">
-        <div className="flex-1">
+        <div className="flex-1 flex">
           <Link to={"/"} onClick={closeMenu}>
             <h1 className="text-primary bg-white text-2xl font-extrabold tracking-tight">
               Kontribute
@@ -75,19 +75,21 @@ const Header = () => {
               initial="closed"
               animate="open"
               exit="closed"
-              className="absolute top-18 overflow-hidden left-0 w-full bg-white flex flex-col p-5 border-b shadow-md rounded-b-2xl lg:hidden"
+              className="absolute top-18 overflow-hidden left-0 w-full bg-white flex flex-col p-5 pt-2 border-b shadow-md rounded-b-2xl lg:hidden"
             >
               <div className="flex flex-col w-full">
-                <div className="mb-6" onClick={closeMenu}>
+                <div onClick={closeMenu}>
                   <Nav />
                 </div>
 
-                <div className="flex flex-col space-y-3">
-                  <Link to="/auth/login" onClick={closeMenu}>
+                <div className="h-0.5 w-full my-4 bg-gray-300" />
+
+                <div className="flex gap-3">
+                  <Link to="/auth/login" className="flex-1" onClick={closeMenu}>
                     <SecondaryButton className="w-full">Login</SecondaryButton>
                   </Link>
 
-                  <Link to="/auth/register" onClick={closeMenu}>
+                  <Link to="/auth/register" className="flex-1" onClick={closeMenu}>
                     <PrimaryButton className="w-full">Register</PrimaryButton>
                   </Link>
                 </div>

@@ -7,7 +7,7 @@ import RegisterForm from "../../../components/public-view/auth/registerForm";
 const Register = () => {
   const mode = "register";
   return (
-    <div className="flex-1 flex justify-center items-start mt-10">
+    <div className="flex-1 flex justify-center items-start my-10">
       <div className="flex w-full lg:w-240 bg-white rounded-md shadow-custom animate-fade-up duration-300">
         <AuthHero mode={mode}/>
         <div className="flex-1 px-8 py-12">
