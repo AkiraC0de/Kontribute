@@ -21,7 +21,7 @@ import TooManyRequest from "../../errors/TooManyRequest.js";
 export const registerUser = async (userData) => {
   const { email, password} = userData;
 
-  const existingUser = await findConflictingUser(email);
+  const existingUser = await User.findOne({email});
   if (existingUser) await resolveConflict(existingUser, email);
   
   const hashedPassword = await User.hashPassword(password);
@@ -41,31 +41,24 @@ export const registerUser = async (userData) => {
 const findUserByIdentifier = (identifier) =>
   User.findOne({ $or: [{ username : identifier }, { email : identifier }] });
 
-const findConflictingUser = (email) =>
-  User.findOne({ email });
-
 const throwIfVerifiedConflict = () => {
     throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED);
 };
 
-const handleUnverifiedConflict = async (existingUser, email) => {
-  const isSameEmail = existingUser.email === email;
-
-  if (isSamePerson) {
-    // Re-registration attempt — wipe stale unverified records so they can start fresh
-    await Promise.all([
-      existingUser.deleteOne(),
-      SessionToken.deleteMany({ userId: existingUser._id }),
-      Otp.deleteMany({ userId: existingUser._id }),
-    ]);
-  } 
+const handleUnverifiedConflict = async (existingUser) => {
+  // Re-registration attempt — wipe stale unverified records so they can start fresh
+  await Promise.all([
+    existingUser.deleteOne(),
+    SessionToken.deleteMany({ userId: existingUser._id }),
+    Otp.deleteMany({ userId: existingUser._id }),
+  ]);
 }
 
 const resolveConflict = async (existingUser, email) => {
   if (existingUser.isEmailVerified){
     throwIfVerifiedConflict();
   } else {
-    await handleUnverifiedConflict(existingUser, email)
+    await handleUnverifiedConflict(existingUser)
   }
 }
 
@@ -97,7 +90,7 @@ export const loginUser = async (userData) => {
   if(!user.isEmailVerified) throw new InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
   const isPasswordValid = await user.comparePassword(password);
-  if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect 222");
+  if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect.");
 
   const tokens = generateTokens(user);
 
