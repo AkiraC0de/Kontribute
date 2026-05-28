@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 
 const LandingHero = () => {
   return (
-    <section className="relative flex flex-col items-center gap-6 text-center py-10">
+    <section className="relative flex flex-col items-center gap-6 text-center py-8">
       <p className="text-xs rounded-4xl bg-white border px-6 py-1.5">
         Project Management
       </p>

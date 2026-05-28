@@ -19,6 +19,8 @@ import Dashboard from "./pages/main-view/Dashboard";
 import Settings from "./pages/main-view/Settings";
 import NotFound from "./pages/public-view/NotFound";
 import EmailVerification from "./pages/public-view/auth/EmailVerification";
+import About from "./pages/public-view/About";
+import Features from "./pages/public-view/Features";
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/features" element={<Features />} />
       </Route>
 
       <Route element={

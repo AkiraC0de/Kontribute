@@ -5,7 +5,7 @@ export const publicNavControls = [
   },
   {
     label: "Features",
-    destination: "/featues"
+    destination: "/features"
   },
   {
     label: "About",
