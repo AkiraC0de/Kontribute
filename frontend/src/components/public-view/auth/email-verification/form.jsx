@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Countdown from "../../../../components/public-view/auth/email-verification/countdown"
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Spinner from "../../../common/Spinner";
 
@@ -62,6 +63,7 @@ const Form = () => {
           />
         ))}
       </div>
+      <Countdown/>
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Verify"}
       </PrimaryButton>
