@@ -1,5 +1,5 @@
 import { ChevronRight, ChevronLeft } from "lucide-react";
-import SecondaryButton from "../../ui/SecondayButton";
+import SecondaryButton from "../../../ui/SecondayButton";
 import { Link } from "react-router";
 
 // mode can be either "login" or "register"

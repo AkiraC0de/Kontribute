@@ -1,13 +1,15 @@
 import { useState } from "react";
-import PrimaryButton from "../../ui/PrimaryButton";
-import { publicLoginControls } from "../../../services/utils/config";
-import Input from "../../ui/Input";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
-import authService from "../../../services/api/authService";
-import Spinner from "../../common/Spinner";
-import { formatValidationErrors, isValidString } from "../../../services/utils/utils";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../../services/store/authSlice";
+
+import PrimaryButton from "../../../ui/PrimaryButton";
+import Input from "../../../ui/Input";
+import Spinner from "../../../common/Spinner"
+
+import { formatValidationErrors, isValidString } from "../../../../services/utils/utils";
+import { publicLoginControls } from "../../../../services/utils/config";
+import authService from "../../../../services/api/authService";
+import { loginUser } from "../../../../services/store/authSlice";
 
 const LoginForm = () => {
   const dispatch = useDispatch();

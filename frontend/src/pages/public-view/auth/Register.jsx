@@ -1,8 +1,8 @@
-import LoginForm from "../../../components/public-view/auth/loginForm"
-import AuthHeader from "../../../components/public-view/auth/header";
-import AuthFooter from "../../../components/public-view/auth/footer";
-import AuthHero from "../../../components/public-view/auth/hero";
-import RegisterForm from "../../../components/public-view/auth/registerForm";
+import LoginForm from "../../../components/public-view/auth/login&register/loginForm"
+import AuthHeader from "../../../components/public-view/auth/login&register/header";
+import AuthFooter from "../../../components/public-view/auth/login&register/footer";
+import AuthHero from "../../../components/public-view/auth/login&register/hero";
+import RegisterForm from "../../../components/public-view/auth/login&register/registerForm";
 
 const Register = () => {
   const mode = "register";
