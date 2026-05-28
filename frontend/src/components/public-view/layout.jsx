@@ -5,7 +5,7 @@ const PublicLayout = () => {
   return (
     <main className="flex flex-col w-full min-h-screen">
       <Header/>
-      <div className="flex flex-col flex-1 px-10 pt-20">
+      <div className="flex flex-col flex-1 px-5 pt-15">
         <Outlet/>
       </div>
     </main>

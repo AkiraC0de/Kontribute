@@ -5,7 +5,7 @@ import Nav from "./nav";
 
 const Header = () => {
   return (
-    <header className="fixed inset-0 px-10 py-5 flex justify-between items-center bg-white h-20">
+    <header className="fixed inset-0 z-100 px-5 py-5 flex justify-between items-center bg-white h-20">
       <div>
         <Link to={"/"}>
           <h1 className="text-primary bg-white text-2xl font-extrabold tracking-tight">

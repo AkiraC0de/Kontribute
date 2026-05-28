@@ -93,7 +93,7 @@ const RegisterForm = () => {
     }));
   }
   return (
-    <form className="min-w-100" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       {publicRegisterControls.map((control) => (
         <Input
           key={control.label}
@@ -108,10 +108,7 @@ const RegisterForm = () => {
           error={fieldErrors[control.name]}
         />
       ))}
-      <div className="my-5 text-end">
-        <Link to="auth/forgot-password">Forgot password?</Link>
-      </div>
-      <div className="flex items-center gap-2 ">
+      <div className="flex mt-8 items-center gap-2 text-sm">
         <input 
           type="checkbox" 
           className="w-5 h-5 accent-secondary"

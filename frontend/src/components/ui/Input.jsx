@@ -4,7 +4,7 @@ const PasswordInput = ({ label, id, error, className = "", ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className={`flex flex-col gap-1.5 w-full ${className}`}>
+    <div className={`text-sm flex flex-col gap-1.5 w-full ${className}`}>
       {label && (
         <label htmlFor={id} className="font-medium text-gray-700 tracking-wide">
           {label}
@@ -54,7 +54,7 @@ const PasswordInput = ({ label, id, error, className = "", ...props }) => {
 
 const CheckboxRadioInput = ({ label, id, type, error, className = "", ...props }) => {
   return (
-    <div className={`flex flex-col gap-1 w-full ${className}`}>
+    <div className={`text-sm flex flex-col gap-1 w-full ${className}`}>
       <div className="flex items-center gap-2">
         <input
           id={id}
@@ -81,7 +81,7 @@ const CheckboxRadioInput = ({ label, id, type, error, className = "", ...props }
 
 const StandardInput = ({ label, id, type, error, className = "", ...props }) => {
   return (
-    <div className={`flex flex-col gap-1.5 w-full ${className}`}>
+    <div className={` text-sm flex flex-col gap-1.5 w-full ${className}`}>
       {label && (
         <label htmlFor={id} className="font-medium text-gray-700 tracking-wide">
           {label}

@@ -16,11 +16,11 @@ const AuthHeader = ({ mode = "login" }) => {
     : "Join Kontribute and start collaborating";
 
   return (
-    <div className="text-center space-y-2 mb-15">
-      <h1 className="text-5xl font-medium text-primary tracking-tight">
+    <div className="text-center space-y-2 mb-12">
+      <h1 className="text-4xl font-medium text-primary tracking-tight">
         {titleText}
       </h1>
-      <h2 className="text-lg text-gray-600">
+      <h2 className="text-gray-600">
         {subtitleText}
       </h2>
     </div>

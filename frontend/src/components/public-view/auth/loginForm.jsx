@@ -62,7 +62,7 @@ const LoginForm = () => {
   };
 
   return (
-    <form className="min-w-100" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       {publicLoginControls.map((control) => (
         <Input
           key={control.label}
@@ -78,7 +78,7 @@ const LoginForm = () => {
           error={fieldErrors[control.name]}
         />
       ))}
-      <div className="mt-5 text-end">
+      <div className="mt-5 text-end text-sm">
         <Link to="auth/forgot-password">Forgot password?</Link>
       </div>
       {globalError && <p className="text-red-500 text-center my-4">{globalError}</p>}

@@ -5,7 +5,7 @@ const AuthHero = ({ mode = "login" }) => {
   const isLoginMode = mode === "login";
 
   return (
-    <div className="bg-gray-50 w-140 hidden xl:flex xl:flex-col xl:justify-center xl:items-center p-8 select-none">
+    <div className="bg-gray-50 flex-1 hidden lg:flex lg:justify-center lg:items-center p-8 select-none">
       {isLoginMode ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"

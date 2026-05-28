@@ -20,7 +20,7 @@ const AuthFooter = ({ mode = "login" }) => {
 
   return (
     <div className="mt-6 space-y-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center text-sm gap-2">
         <div className="h-0.5 flex-1 bg-gray-300" />
         <span className="text-gray-500 whitespace-nowrap">{dividerText}</span>
         <div className="h-0.5 flex-1 bg-gray-300" />

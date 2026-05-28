@@ -8,9 +8,8 @@ const EmailVerification = () => {
   const navigate = useNavigate();
 
   const isInternalFlow = location.state?.isValidSession;
-
   const [isValidating, setIsValidating] = useState(!isInternalFlow);
-  console.log("REST")
+  const [pin, setpin] = useState(["", "", "", "", "", ""]);
 
   useEffect(() => {
     if (isInternalFlow) {
@@ -26,15 +25,19 @@ const EmailVerification = () => {
       }
     };
 
-    verifyTokenOnFirstLoad();
+    //verifyTokenOnFirstLoad();
   }, [sessionToken, isInternalFlow, navigate]);
 
-  if(isValidating){
-    return <div>Loading...</div>
-  }
+  // if(isValidating){
+  //   return <div>Loading...</div>
+  // }
 
   return (
-    <div>EmailVerification</div>
+    <div className="flex justify-center mt-15">
+      <div className="bg-white w-full lg:w-120  rounded-md shadow-custom animate-fade-up duration-300">
+        aa
+      </div>
+    </div>
   )
 }
 export default EmailVerification

@@ -5,6 +5,8 @@
   --color-primary-light: #bd1e51;
   --color-secondary: #f1b81d;
 
+  --shadow-custom: 0 5px 30px 5px rgba(0, 0, 0, 0.15);
+
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @keyframes fade-up {
