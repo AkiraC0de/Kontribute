@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import authService from "../../../services/api/authService";
+import Header from "../../../components/public-view/auth/email-verification/header";
+import Form from "../../../components/public-view/auth/email-verification/form";
 
 const EmailVerification = () => {
   const { sessionToken } = useParams();
@@ -9,7 +11,6 @@ const EmailVerification = () => {
 
   const isInternalFlow = location.state?.isValidSession;
   const [isValidating, setIsValidating] = useState(!isInternalFlow);
-  const [pin, setpin] = useState(["", "", "", "", "", ""]);
 
   useEffect(() => {
     if (isInternalFlow) {
@@ -34,8 +35,9 @@ const EmailVerification = () => {
 
   return (
     <div className="flex-1 flex justify-center items-start my-10">
-      <div className="flex w-full lg:w-240 p-4 bg-white rounded-md shadow-custom animate-fade-up duration-300">
-        
+      <div className="flex flex-col w-full max-w-110 px-5 py-8 bg-white overflow-hidden rounded-xl shadow-custom animate-fade-up duration-300">
+        <Header/>
+        <Form/>
       </div>
       {/* Grid background */}
       <div className="absolute inset-0 -z-10 h-full w-ful bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_40%,transparent_100%)]"></div>
