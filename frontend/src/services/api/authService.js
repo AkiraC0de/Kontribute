@@ -19,7 +19,11 @@ const authService = {
    * Note: Since apiRequest uses credentials: "include", cookies are handled automatically.
    */
   logout: async () => {
-    return await apiRequest.post("/v1/auth/logout");
+    await apiRequest.post("/v1/auth/logout");
+
+    localStorage.removeItem("accessToken");
+
+    return;
   },
 
   /**

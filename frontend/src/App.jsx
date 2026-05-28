@@ -1,18 +1,23 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router";
-import Landing from "./pages/public-view/Landing";
-import NotFound from "./pages/public-view/NotFound";
-import PublicLayout from "./components/public-view/layout";
-import MainLayout from "./components/main-view/Layout";
-import Dashboard from "./pages/main-view/Dashboard";
-import { Navigate } from "react-router";
-import ProtectedRoute from "./components/common/ProtectedRoute";
-import Login from "./pages/public-view/auth/Login";
-import Register from "./pages/public-view/auth/Register";
+import { Route, Routes, Navigate } from "react-router"; 
 import { useDispatch } from "react-redux";
 import { checkAuth } from "./services/store/authSlice";
-import GuessRoute from "./components/common/GuessRoute";
+
+// Layouts
+import PublicLayout from "./components/public-view/layout";
+import MainLayout from "./components/main-view/Layout";
+
+// Pages 
+import Landing from "./pages/public-view/Landing";
+import Login from "./pages/public-view/auth/Login";
+import Register from "./pages/public-view/auth/Register";
+import Dashboard from "./pages/main-view/Dashboard";
 import Settings from "./pages/main-view/Settings";
+import NotFound from "./pages/public-view/NotFound";
+
+// Guards
+import GuessRoute from "./components/common/GuessRoute";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,24 +29,26 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={
-        <GuessRoute>
-          <PublicLayout />
-        </GuessRoute>
-      }>
-        <Route index element={<Landing />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Landing />} />
       </Route>
 
-      <Route path="/main"
-        element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="dashboard" />} />
+      <Route element={
+        <GuessRoute>
+          <PublicLayout /> 
+        </GuessRoute>}
+      > 
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+        
+      </Route>
+
+      <Route path="/main" element={
+        <ProtectedRoute>
+          <MainLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="settings" element={<Settings />} />
       </Route>
