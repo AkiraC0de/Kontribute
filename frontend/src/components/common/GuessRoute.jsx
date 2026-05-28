@@ -2,14 +2,14 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router";
 
 const GuessRoute = ({children}) => {
-  const { isAuthenticating, user } = useSelector((state) => state.auth);
+  const { isAuthenticating, isAuthenticated } = useSelector((state) => state.auth);
 
   if (isAuthenticating) {
     return <div>Loading...</div>;
   }
 
   // already logged in
-  if (user) {
+  if (isAuthenticated) {
     return <Navigate to="/main" replace />;
   }
 

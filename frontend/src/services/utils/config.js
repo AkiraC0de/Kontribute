@@ -33,7 +33,7 @@ export const publicLoginControls = [
 export const publicRegisterControls = [
   {
     label: "Email",
-    type: "text",
+    type: "email",
     name: "email",
     placeholder: "Input your email",
     required: true

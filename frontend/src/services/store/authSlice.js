@@ -3,6 +3,7 @@ import apiRequest from "../api/index";
 
 const initialState = {
   isAuthenticating : true,
+  isAuthenticated: false,
   user: null
 }
 
@@ -20,6 +21,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    loginUser : (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+    },
     setUser : (state, action) => {
       state.user = action.payload;
     },
@@ -34,6 +39,7 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.isAuthenticated = true;
         state.isAuthenticating = false;
       })
       .addCase(checkAuth.rejected, (state) => {
@@ -43,5 +49,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { setUser, setIsAuthenticating} = authSlice.actions;
+export const { setUser, setIsAuthenticating, loginUser} = authSlice.actions;
 export default authSlice.reducer;
