@@ -2,9 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiRequest from "../api/index";
 
 const initialState = {
-  isAuthenticating : true,
-  isAuthenticated: false,
-  user: null
+  user: null,
+  isAuthenticated: false, 
+  isAuthenticating: true,
 }
 
 export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, thunkAPI) => {
@@ -28,15 +28,9 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
-    setIsAuthenticated : (state, action) => {
-      state.isAuthenticated = action.payload;
-    },
     setUser : (state, action) => {
       state.user = action.payload;
     },
-    setIsAuthenticating: (state, action) => {
-      state.isAuthenticating = action.payload;
-    }
   },
   extraReducers: (builder) => {
     builder
@@ -45,8 +39,8 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload;
-        state.isAuthenticated = true;
         state.isAuthenticating = false;
+        state.isAuthenticated = true;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.user = null;
@@ -55,5 +49,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { setUser, setIsAuthenticating, loginUser, setIsAuthenticated, logoutUser} = authSlice.actions;
+export const { setUser, loginUser, logoutUser} = authSlice.actions;
 export default authSlice.reducer;

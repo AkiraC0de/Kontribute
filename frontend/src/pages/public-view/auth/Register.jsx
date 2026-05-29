@@ -3,9 +3,21 @@ import AuthHeader from "../../../components/public-view/auth/login&register/head
 import AuthFooter from "../../../components/public-view/auth/login&register/footer";
 import AuthHero from "../../../components/public-view/auth/login&register/hero";
 import RegisterForm from "../../../components/public-view/auth/login&register/registerForm";
+import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Register = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const navigate = useNavigate();
   const mode = "register";
+
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate("/main/dashboard", {replace: true})
+    }
+  }, []);
+
   return (
     <div className="flex-1 flex justify-center items-start my-10">
       <div className="flex w-full max-w-110 lg:max-w-none lg:w-240 bg-white rounded-xl overflow-hidden shadow-custom animate-fade-up duration-300">

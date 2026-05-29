@@ -2,9 +2,22 @@ import LoginForm from "../../../components/public-view/auth/login&register/login
 import AuthHero from "../../../components/public-view/auth/login&register/hero";
 import AuthHeader from "../../../components/public-view/auth/login&register/header";
 import AuthFooter from "../../../components/public-view/auth/login&register/footer";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 const Login = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const navigate = useNavigate();
+
   const mode = "login";
+
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate("/main/dashboard", {replace: true})
+    }
+  }, [])
+
   return (
     <div className="flex-1 flex justify-center items-start my-10">
       <div className="flex  w-full max-w-110 lg:max-w-none lg:w-240 bg-white rounded-xl overflow-hidden shadow-custom animate-fade-up duration-300">

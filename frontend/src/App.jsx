@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router"; 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "./services/store/authSlice";
 
 // Guards
-import GuessRoute from "./components/common/GuessRoute";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 // Layouts
@@ -21,9 +20,11 @@ import NotFound from "./pages/public-view/NotFound";
 import EmailVerification from "./pages/public-view/auth/EmailVerification";
 import About from "./pages/public-view/About";
 import Features from "./pages/public-view/Features";
+import FullPageSpinner from "./components/common/FullPageSpinner";
 
 
 function App() {
+  const isAuthenticating = useSelector((state) => state.auth.isAuthenticating);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,22 +32,19 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
+  if(isAuthenticating){
+    return <FullPageSpinner/>
+  }
+
   return (
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
-      </Route>
-
-      <Route element={
-        <GuessRoute>
-          <PublicLayout /> 
-        </GuessRoute>}
-      > 
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-          <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
       </Route>
 
       <Route path="/main" element={
