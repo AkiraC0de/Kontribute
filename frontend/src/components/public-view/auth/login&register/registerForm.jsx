@@ -9,7 +9,7 @@ import Spinner from "../../../common/Spinner"
 import { publicRegisterControls } from "../../../../services/utils/config";
 import { formatValidationErrors, isValidEmail,isValidString } from "../../../../services/utils/utils";
 import authService from "../../../../services/api/authService";
-import { setUser } from "../../../../services/store/authSlice";
+import { setIsAuthenticated, setUser } from "../../../../services/store/authSlice";
 
 const RegisterForm = () => {
   const dispatch = useDispatch();
@@ -53,7 +53,8 @@ const RegisterForm = () => {
     try {
       const data = await authService.register(formData);
       dispatch(setUser({email: data.user.email}));
-      navigate(`/auth/email-verification/${data.sessionToken}`, { state: { isValidSession: true } })
+      dispatch(setIsAuthenticated(true));
+      navigate(`/auth/email-verification/${data.sessionToken}`)
     } catch (error) {
       if(error.errors){
         const structuredErrors = formatValidationErrors(error.errors);

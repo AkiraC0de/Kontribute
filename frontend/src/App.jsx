@@ -21,6 +21,7 @@ import EmailVerification from "./pages/public-view/auth/EmailVerification";
 import About from "./pages/public-view/About";
 import Features from "./pages/public-view/Features";
 import FullPageSpinner from "./components/common/FullPageSpinner";
+import SetUp from "./pages/main-view/account/SetUp";
 
 
 function App() {
@@ -42,9 +43,11 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
         <Route path="/features" element={<Features />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
-        <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
+        <Route path="auth">
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
+        </Route>
       </Route>
 
       <Route path="/main" element={
@@ -55,7 +58,17 @@ function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="account">
+          {/* <Route path="set-up" element={<SetUp />} /> */}
+        </Route>
       </Route>
+
+      
+      <Route path="/main/account/set-up" element={
+        <ProtectedRoute>
+          <SetUp />
+        </ProtectedRoute>
+      }/>
 
       <Route path="*" element={<NotFound />} />
     </Routes>

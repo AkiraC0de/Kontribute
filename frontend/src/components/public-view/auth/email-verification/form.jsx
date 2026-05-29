@@ -3,7 +3,7 @@ import Countdown from "../../../../components/public-view/auth/email-verificatio
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Spinner from "../../../common/Spinner";
 import authService from "../../../../services/api/authService";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../../services/store/authSlice";
 
@@ -13,6 +13,8 @@ const Form = () => {
   const [error, setError] = useState("");
 
   const { sessionToken } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const handleChange = (e, index) => {
     setError("")
@@ -55,7 +57,8 @@ const Form = () => {
     setIsLoading(true);
     try {
       const data = await authService.verifyEmail(pins, sessionToken);
-      useDispatch(setUser(data.user));
+      dispatch(setUser(data.user));
+      navigate("/main/account/set-up", { replace: true });
     } catch (error) {
       setError(error.message)
     } finally {

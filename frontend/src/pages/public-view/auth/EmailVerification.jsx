@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import authService from "../../../services/api/authService";
 import Header from "../../../components/public-view/auth/email-verification/header";
 import Form from "../../../components/public-view/auth/email-verification/form";
@@ -7,28 +7,30 @@ import FullPageSpinner from "../../../components/common/FullPageSpinner"
 
 const EmailVerification = () => {
   const { sessionToken } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const isInternalFlow = location.state?.isValidSession;
-  const [isValidating, setIsValidating] = useState(!isInternalFlow);
+  const [isValidating, setIsValidating] = useState(true);
 
   useEffect(() => {
-    if (isInternalFlow) {
-      return;
-    }
     const verifyTokenOnFirstLoad = async () => {
+      const [navigation] = performance.getEntriesByType('navigation');
+      if (navigation && navigation.type !== 'reload') {
+        setIsValidating(false);
+        return;
+      } 
+
       try {
         await authService.verifySessionToken(sessionToken);
-        setIsValidating(false);
       } catch (error) {
         console.error("Invalid token on first load:", error.message);
         navigate("/auth/register", { replace: true });
+      } finally {
+        setIsValidating(false);
       }
     };
 
     verifyTokenOnFirstLoad();
-  }, [sessionToken, isInternalFlow, navigate]);
+  }, [sessionToken, navigate]);
 
   if(isValidating){
     return <FullPageSpinner/>
