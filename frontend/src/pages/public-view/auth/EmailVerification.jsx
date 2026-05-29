@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import authService from "../../../services/api/authService";
 import Header from "../../../components/public-view/auth/email-verification/header";
 import Form from "../../../components/public-view/auth/email-verification/form";
+import FullPageSpinner from "../../../components/common/FullPageSpinner"
 
 const EmailVerification = () => {
   const { sessionToken } = useParams();
@@ -22,7 +23,7 @@ const EmailVerification = () => {
         setIsValidating(false);
       } catch (error) {
         console.error("Invalid token on first load:", error.message);
-        navigate("/auth/login", { replace: true });
+        navigate("/auth/register", { replace: true });
       }
     };
 
@@ -30,7 +31,7 @@ const EmailVerification = () => {
   }, [sessionToken, isInternalFlow, navigate]);
 
   if(isValidating){
-    return <div>Loading...</div>
+    return <FullPageSpinner/>
   }
 
   return (

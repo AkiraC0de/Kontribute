@@ -2,13 +2,20 @@ import { useEffect, useState } from "react";
 import Countdown from "../../../../components/public-view/auth/email-verification/countdown"
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Spinner from "../../../common/Spinner";
+import authService from "../../../../services/api/authService";
+import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../../services/store/authSlice";
 
 const Form = () => {
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const { sessionToken } = useParams();
+
   const handleChange = (e, index) => {
+    setError("")
     const value = e.target.value;
   
     if (!/^\d{1,2}$/.test(value)) return;
@@ -38,8 +45,22 @@ const Form = () => {
     }
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const pins = pin.join("");
+    const isPinsValid = pins.length == 6;
+    if (!isPinsValid) return setError("Complete the 6 digit pin.");
+
+    setIsLoading(true);
+    try {
+      const data = await authService.verifyEmail(pins, sessionToken);
+      useDispatch(setUser(data.user));
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setIsLoading(false);
+    }
   } 
 
   return (
@@ -56,12 +77,15 @@ const Form = () => {
             autoFocus={index == 0 ? true : false}
             onKeyDown={e => handleKeyDown(e, index)}
             onChange={e => handleChange(e, index)}
-            className="border-2 text-xl lg:text-2xl text-center font-extrabold w-10 h-14 lg:w-12 lg:h-15 rounded-md border-gray-300"
+            className={`
+              border-2 text-xl lg:text-2xl text-center font-extrabold w-10 h-14 lg:w-12 lg:h-15 rounded-md
+              ${error ? "border-red-500" : "border-gray-300"}
+            `}
           />
         ))}
       </div>
       <Countdown setError={setError}/>
-      {error && <p className="text-red-500 text-center my-4">{error}</p>}
+      {error && <p className="text-red-500 text-sm text-center my-4">{error}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Verify"}
       </PrimaryButton>

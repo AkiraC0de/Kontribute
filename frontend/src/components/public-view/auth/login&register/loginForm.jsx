@@ -84,7 +84,7 @@ const LoginForm = () => {
       <div className="mt-5 text-end text-sm">
         <Link to="auth/forgot-password">Forgot password?</Link>
       </div>
-      {globalError && <p className="text-red-500 text-center my-4">{globalError}</p>}
+      {globalError && <p className="text-red-500 text-sm text-center my-4">{globalError}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Log in"}
       </PrimaryButton>
