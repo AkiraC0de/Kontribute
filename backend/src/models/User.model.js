@@ -19,6 +19,7 @@ const userSchema = new Schema({
     },
     username: {
         type: String,
+        sparse: true,
         unique: true,
         minlength: 3,
         trim: true

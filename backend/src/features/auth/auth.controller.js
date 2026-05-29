@@ -56,13 +56,13 @@ export const handleEmailVerification = async (req, res) => {
 }
 
 export const handleEmailVerificationResend = async (req, res) => {
-  const user = await findUserById(rqe.user._id);
-  console.log(user)
-  await invalidateSessionAndOtp(user._id, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
+  const user = await findUserById(req.user._id);
 
+  await invalidateSessionAndOtp(user._id, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
+  
   const [sessionToken, otp]  = await issueVerificationTokens(user._id, SESSION_TOKEN_TYPES.EMAIL_VERIFICATION);
 
-  sendVerificationCodeViaEmail(user.email, "Reset Password Verification", otp);
+  sendVerificationCodeViaEmail(user.email, "New OTP email verificaton", otp);
 
   return res.status(200)
     .json({

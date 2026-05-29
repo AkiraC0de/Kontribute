@@ -21,7 +21,7 @@ import e from "express";
 
 export const registerUser = async (userData) => {
   const { email, password} = userData;
-
+  
   const existingUser = await User.findOne({email});
   if (existingUser) await resolveConflict(existingUser, email);
   
