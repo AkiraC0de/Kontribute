@@ -26,12 +26,12 @@ const EmailVerification = () => {
       }
     };
 
-    //verifyTokenOnFirstLoad();
+    verifyTokenOnFirstLoad();
   }, [sessionToken, isInternalFlow, navigate]);
 
-  // if(isValidating){
-  //   return <div>Loading...</div>
-  // }
+  if(isValidating){
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="flex-1 flex justify-center items-start my-10">

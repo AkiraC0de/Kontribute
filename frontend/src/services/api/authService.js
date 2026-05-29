@@ -29,6 +29,14 @@ const authService = {
     })
   },
 
+  resendEmailVerification: async (sessionToken) => {
+    return await apiRequest.get("/v1/auth/verify/email/resend", {
+      headers: {
+        "Authorization" : `Bearer ${sessionToken}`,
+      }
+    })
+  },
+
   getCurrentUser: async () => {
     return await apiRequest.get('/auth/me');
   }

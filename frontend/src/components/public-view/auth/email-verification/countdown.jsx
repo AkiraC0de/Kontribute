@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import authService from "../../../../services/api/authService";
 
 const COOLDOWN_IN_SEC = 60;
 
-const Countdown = () => {
+const Countdown = ({setError}) => {
   const [countdown, setCountdown] = useState(COOLDOWN_IN_SEC);
+  const { sessionToken } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -17,8 +21,15 @@ const Countdown = () => {
     };
   }, [countdown]);
 
-  const handleResend = () => {
-    
+  const handleResend = async () => {
+    try {
+      const data = await authService.resendEmailVerification(sessionToken);
+      navigate(`/auth/email-verification/${data.sessionToken}`, { replace: true, state: { newVerification: true }})
+      setCountdown(COOLDOWN_IN_SEC)
+    } catch (error) {
+      console.error(error.message);
+      setError(error.message);
+    }
   }
 
   return (
@@ -29,7 +40,7 @@ const Countdown = () => {
             <span>resend OTP in </span>
              <span className="font-bold">{countdown}s</span>
           </>
-        : <button className="font-medium hover:underline">
+        : <button onClick={handleResend} className="font-medium hover:underline cursor-pointer">
             Resend OTP
           </button>
       }

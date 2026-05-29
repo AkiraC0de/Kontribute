@@ -48,7 +48,7 @@ const request = async (rawRoute, rawOptions = {}) => {
     const status = data?.status || response.status;
     const errorCode = data?.code || "UNKNOWN_ERROR";
 
-    switch(data.code){
+    switch(data?.code){
       case "VALIDATION_ERROR":
         throw new ValidationError(message, status, data.errors);
         break;

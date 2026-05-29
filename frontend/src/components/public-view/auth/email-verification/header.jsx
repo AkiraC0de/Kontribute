@@ -1,7 +1,11 @@
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router";
 
 const Header = () => {
   const { user } = useSelector(state => state.auth);
+  const location = useLocation();
+  const isNewOtp = location.state?.newVerification;
 
   return (
     <div className="w-full flex flex-col items-center mb-8">
@@ -114,8 +118,8 @@ const Header = () => {
       </h1>
       <h2 className="text-gray-600 text-center">
         <span>Please enter the </span>
-        <span className="text-primary font-bold">6 Digit </span>
-        <span>Code we have sent to {user?.email || "you"}</span>
+        <span className="text-primary font-bold">{isNewOtp && "New "} 6 Digit </span>
+        <span className="italic">Code we have sent to {user?.email || "you"}</span>
       </h2>
     </div>
   );

@@ -6,10 +6,7 @@ import Spinner from "../../../common/Spinner";
 const Form = () => {
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-
-  }, [])
+  const [error, setError] = useState("");
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -63,7 +60,8 @@ const Form = () => {
           />
         ))}
       </div>
-      <Countdown/>
+      <Countdown setError={setError}/>
+      {error && <p className="text-red-500 text-center my-4">{error}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Verify"}
       </PrimaryButton>
