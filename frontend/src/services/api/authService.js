@@ -6,7 +6,7 @@ const authService = {
 
     localStorage.setItem("accessToken", data.accessToken);
 
-    return data.user;  
+    return data;  
   },
 
   register: async (userData) => {

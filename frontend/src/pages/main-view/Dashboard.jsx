@@ -9,11 +9,7 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     await authService.logout();
-    navigate("/auth/login", { replace: true, state: null });
-
-    setTimeout(() => {
-      dispatch(logoutUser());
-    }, 100);
+    dispatch(logoutUser());
   }
 
   return (

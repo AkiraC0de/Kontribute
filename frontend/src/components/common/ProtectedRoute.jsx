@@ -15,31 +15,15 @@ const ProtectedRoute = ({ children }) => {
     />;
   }
 
-  return (
-    <AnimatePresence mode="wait">
-      {isAuthenticating ? (
-        <motion.div
-          key="spinner"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="flex items-center justify-center h-screen"
-        >
-          <Spinner />
-        </motion.div>
-      ) : (
-        <motion.div
-          key={location.pathname} 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }} 
-        >
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  if(isAuthenticating){
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner />
+      </div>
+    )
+  }
+
+  return children;
 }
 
 export default ProtectedRoute;

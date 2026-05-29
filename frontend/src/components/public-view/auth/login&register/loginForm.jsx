@@ -42,8 +42,8 @@ const LoginForm = () => {
 
     setIsLoading(true);
     try {  
-      const user = await authService.login(formData);
-      dispatch(loginUser(user))
+      const data = await authService.login(formData);
+      dispatch(loginUser(data.user))
     } catch (error) {
       setGlobalError(error.message);
     } finally {
