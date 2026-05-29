@@ -11,6 +11,10 @@ const verifySessionToken = (sessionType) => {
     // validate the token if it does exist in the databsae
     const sessionToken = await validateSessionToken(token, sessionType);
 
+    if(!sessionToken.userId){
+      throw new UnauthorizeError("Invalid or Expired Session Token.");
+    }
+
     req.user = { _id: sessionToken.userId._id, role: sessionToken.userId.role };
     next();
   }
