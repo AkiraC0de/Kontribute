@@ -52,10 +52,8 @@ const RegisterForm = () => {
     setIsLoading(true);
     try {
       const data = await authService.register(formData);
-      console.log(data);
       dispatch(setUser({email: data.user.email}));
       navigate(`/auth/email-verification/${data.sessionToken}`, { state: { isValidSession: true } })
-
     } catch (error) {
       if(error.errors){
         const structuredErrors = formatValidationErrors(error.errors);

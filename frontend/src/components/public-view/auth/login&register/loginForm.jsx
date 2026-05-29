@@ -43,8 +43,8 @@ const LoginForm = () => {
     setIsLoading(true);
     try {  
       const data = await authService.login(formData);
-      navigate(location.state?.from || "/main/settings", { replace: true });
       dispatch(loginUser(data.user));
+      navigate(location.state?.from || "/main/settings", { replace: true });
     } catch (error) {
       setGlobalError(error.message);
     } finally {

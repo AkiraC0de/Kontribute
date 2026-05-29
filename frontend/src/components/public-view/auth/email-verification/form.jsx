@@ -39,7 +39,7 @@ const Form = () => {
   };
   
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
   } 
 
   return (
