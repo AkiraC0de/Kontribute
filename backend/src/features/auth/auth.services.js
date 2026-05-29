@@ -15,6 +15,7 @@ import { sendVerificationCodeViaEmail } from "../../utils/mailer.js";
 import { generateTokens } from "../../utils/token.js";
 import InvalidCredentials from "../../errors/InvalidCredentials.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
+import e from "express";
 
 // --- services
 
@@ -153,7 +154,7 @@ export const resetUserPassword = async (userId, newPassword) => {
 // --- Helpers
 
 
-const issueVerificationTokens = (userId, verificationType) =>
+export const issueVerificationTokens = (userId, verificationType) =>
   Promise.all([
     createSessionToken(userId, verificationType),
     createOtp(userId, verificationType),
@@ -178,7 +179,7 @@ const findUserByEmail = async (email) => {
   return user;
 }
 
-const invalidateSessionAndOtp = (userId, sessionType) =>
+export const invalidateSessionAndOtp = (userId, sessionType) =>
   Promise.all([
     Otp.deleteMany({ userId, type: sessionType}),
     SessionToken.deleteMany({ userId, type: sessionType})

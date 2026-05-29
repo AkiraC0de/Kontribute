@@ -13,6 +13,7 @@ import { sixDigitPinVerificationSchema,
 
 import { 
   handleEmailVerification,
+  handleEmailVerificationResend,
   handleLogin,
   handleLogout,
   handleMe,
@@ -56,6 +57,12 @@ authRoute.post("/verify/email",
   joiValidator(sixDigitPinVerificationSchema), 
   handleEmailVerification 
 );
+
+// POST /api/v1/auth/verify/email/resend
+authRoute.get("/verify/email/resend",
+  verifySessionToken(SESSION_TOKEN_TYPES.EMAIL_VERIFICATION),  
+  handleEmailVerificationResend
+)
 
 // POST /api/v1/auth/verify/reset-password - Verify the emailed OTP. Requires SessionToken (type: resetPasswordVerification)
 authRoute.post("/verify/reset-password", 
