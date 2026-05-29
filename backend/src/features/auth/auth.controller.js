@@ -47,11 +47,15 @@ export const handleRegister = async (req, res) => {
 export const handleEmailVerification = async (req, res) => {
   const result = await verifyUserEmail(req.user._id, req.body.pin);
 
+  const { accessToken, refreshToken} = generateTokens(req.user);
+
   return res.status(200)
+    .cookie(COOKIE_REFRESHTOKEN.NAME, refreshToken, COOKIE_REFRESHTOKEN.OPTIONS)
     .json({
       success : true,
       message: result.message,
-      user: result.user
+      user: result.user,
+      accessToken
     });
 }
 
