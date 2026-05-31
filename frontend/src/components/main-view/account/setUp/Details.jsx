@@ -1,8 +1,21 @@
+import { useDispatch, useSelector } from "react-redux";
 import { accountSetUpDetailsControls } from "../../../../services/utils/config";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
+import { setUser } from "../../../../services/store/authSlice";
 
 const Details = ({ next }) => {
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+
+  const handleChange = (e) => {
+    dispatch(setUser({[e.target.name] : e.target.value}));
+  }
+
+  const handleSexChange = (e) => {
+    dispatch(setUser({sex : e.target.value}));
+  }
+
   return (
     <div className="w-full h-full flex flex-col items-start">
       <div className="flex-1 w-full flex flex-col justify-center">
@@ -168,23 +181,27 @@ const Details = ({ next }) => {
         </h1>
         <div className="w-full space-y-4">
           <Input
+            value={user?.firstName || ""}
+            onChange={handleChange}
             className="flex-1"
             label="First name"
             name="firstName"
             placeholder="Ex: John"
           />
           <Input
+            value={user?.lastName || ""}
+            onChange={handleChange}
             className="flex-1"
             label="First name"
-            name="firstName"
-            placeholder="Ex: John"
+            name="lastName"
+            placeholder="Ex: Dela cruz"
           />
           <div>
             <p className="font-medium text-gray-700 text-sm tracking-wide mb-2">Sex</p>
             <div className="flex gap-4">
-              <Input label="Male" type="radio" />
-              <Input label="Female" type="radio" />
-              <Input label="Prefer not to say" type="radio" />
+              <Input label="Male" value="Male" checked={user?.sex === "Male"} onChange={handleSexChange} type="radio" />
+              <Input label="Female" value="Female" checked={user?.sex === "Female"} onChange={handleSexChange} type="radio" />
+              <Input label="Prefer not to say" value="Prefer not to say" checked={user?.sex === "Prefer not to say"} onChange={handleSexChange} type="radio" />
             </div>
           </div>
         </div>

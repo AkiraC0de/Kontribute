@@ -29,7 +29,10 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
     setUser : (state, action) => {
-      state.user = action.payload;
+      state.user = {
+        ...state.user,
+        ...action.payload
+      };
     },
     setIsAuthenticated : (state, action) => {
       state.isAuthenticated = action.payload
