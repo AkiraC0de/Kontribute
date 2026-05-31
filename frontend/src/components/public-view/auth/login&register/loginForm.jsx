@@ -44,7 +44,7 @@ const LoginForm = () => {
     try {  
       const data = await authService.login(formData);
       dispatch(loginUser(data.user));
-      navigate(location.state?.from || "/main/settings", { replace: true });
+      navigate(location.state?.from || "/main/dashboard", { replace: true });
     } catch (error) {
       setGlobalError(error.message);
     } finally {

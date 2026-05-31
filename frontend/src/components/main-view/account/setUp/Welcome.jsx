@@ -2,16 +2,13 @@ import PrimaryButton from "../../../ui/PrimaryButton";
 
 const Welcome = ({next}) => {
   return (
-    <div className="flex-1 h-full flex flex-col">
-      <div className="h-full flex flex-col justify-center">
+    <div className="w-full h-full flex flex-col">
+      <div className="h-full flex text-center flex-col justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-full max-h-80"
           viewBox="0 0 613.35286 700.56123"
-          xmlns:xlink="http://www.w3.org/1999/xlink"
-          role="img"
-          artist="Katerina Limpitsouni"
-          source="https://undraw.co/"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
         >
           <path
             d="M587.667,756.93133l-.78168-17.57606q-.12187-.06468-.24405-.12879c-8.37606-4.39513-17.97576,3.561-15.3004,12.63392,2.51722,8.5366,4.20846,17.73958,8.81613,25.21162a34.14441,34.14441,0,0,0,25.03847,15.77861l10.64166,6.51555a57.21525,57.21525,0,0,0-12.05953-46.36368,55.2668,55.2668,0,0,0-10.157-9.4375C591.07189,750.28541,587.667,756.93133,587.667,756.93133Z"
@@ -285,9 +282,10 @@ const Welcome = ({next}) => {
             fill="#3f3d56"
           />
         </svg>
-        <h1 className="text-center text-2xl mt-20 font-medium">
+        <h1 className=" text-2xl mt-20 font-medium">
           Welcome to <span className="font-bold text-primary">Kontribute</span>!
         </h1>
+        <p className="text-sm mt-2">Time to set up your account.</p>
       </div>
       <PrimaryButton onClick={() => next()}>
         Continue

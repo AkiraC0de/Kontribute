@@ -53,3 +53,20 @@ export const publicRegisterControls = [
     required: true
   },
 ]
+
+export const accountSetUpDetailsControls = [
+  {
+    label: "First name",
+    type: "text",
+    name: "firstName",
+    placeholder: "Ex: John",
+    required: true
+  },
+  {
+    label: "Last name",
+    type: "text",
+    name: "lastName",
+    placeholder: "Ex: Dela Cruz",
+    required: true
+  },
+]
