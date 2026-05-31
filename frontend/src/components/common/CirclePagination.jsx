@@ -18,7 +18,6 @@ const CirclePagination = ({
             key={pageNumber}
             className="relative flex items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             style={{ width: circleSize, height: circleSize }}
-            aria-label={`Go to page ${pageNumber}`}
           >
             {/* Background Circle Track */}
             <div className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 hover:bg-gray-600" />

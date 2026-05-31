@@ -9,6 +9,7 @@ const Details = () => {
         {
           accountSetUpDetailsControls.map(control => (
             <Input
+              key={control.name}
               className="w-full"
               label={control.label}
               name={control.name}
