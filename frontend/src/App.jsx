@@ -50,6 +50,12 @@ function App() {
         </Route>
       </Route>
 
+      <Route path="/main/account/set-up" element={
+        <ProtectedRoute>
+          <SetUp />
+        </ProtectedRoute>
+      }/>
+
       <Route path="/main" element={
         <ProtectedRoute>
           <MainLayout />
@@ -58,17 +64,13 @@ function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="settings" element={<Settings />} />
-        <Route path="account">
-          {/* <Route path="set-up" element={<SetUp />} /> */}
-        </Route>
+        {/* <Route path="account">
+          
+        </Route> */}
       </Route>
 
       
-      <Route path="/main/account/set-up" element={
-        <ProtectedRoute>
-          <SetUp />
-        </ProtectedRoute>
-      }/>
+      
 
       <Route path="*" element={<NotFound />} />
     </Routes>
