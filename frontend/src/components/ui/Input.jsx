@@ -54,7 +54,7 @@ const PasswordInput = ({ label, id, error, className = "", ...props }) => {
 
 const CheckboxRadioInput = ({ label, id, type, error, className = "", ...props }) => {
   return (
-    <div className={`text-sm flex flex-col gap-1 w-full ${className}`}>
+    <div className={`text-sm flex flex-col gap-1${className}`}>
       <div className="flex items-center gap-2">
         <input
           id={id}

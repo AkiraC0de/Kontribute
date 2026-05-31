@@ -8,7 +8,7 @@ const CirclePagination = ({
   circleSize = "10px",
 }) => {
   return (
-    <div className={`flex items-center justify-center gap-3 ${className}`}>
+    <div className={`flex items-center justify-center gap-2 ${className}`}>
       {Array.from({ length: totalPages }, (_, i) => {
         const pageNumber = i + 1;
         const isActive = currentPage === pageNumber;
@@ -26,7 +26,7 @@ const CirclePagination = ({
             {isActive && (
               <motion.div
                 layoutId="activeCircle"
-                className="absolute inset-0 bg-primary rounded-full"
+                className="absolute inset-0 -inset-x-1 z-10 w-4 bg-primary rounded-full"
                 transition={{
                   type: "spring",
                   stiffness: 300,
