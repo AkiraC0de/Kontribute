@@ -1,3 +1,5 @@
+import { findActiveUserById } from "./user.services.js";
+
 export const handleMe = async (req, res) => {
   const user = await findActiveUserById(req.user._id);
 

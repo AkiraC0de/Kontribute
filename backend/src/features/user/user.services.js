@@ -1,7 +1,7 @@
-import ERROR_CODES from "../../config/errorCodes";
-import GenericError from "../../errors/GenericError";
-import UserNotFound from "../../errors/UserNotFound";
-import User from "../../models/user.model"
+import ERROR_CODES from "../../config/errorCodes.js";
+import GenericError from "../../errors/GenericError.js";
+import UserNotFound from "../../errors/UserNotFound.js";
+import User from "../../models/user.model.js"
 
 export const findActiveUserById = (userId) => {
   const user = User.findById(userId);
