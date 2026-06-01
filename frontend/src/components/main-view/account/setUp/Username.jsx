@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { setUser } from "../../../../services/store/authSlice";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
@@ -7,9 +8,11 @@ import authService from "../../../../services/api/authService";
 import Spinner from "../../../common/Spinner";
 
 const Username = ({ next }) => {
+  const dispatch = useDispatch()  
+  const navigate = useNavigate()
+
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
-  const dispatch = useDispatch()  
   const user = useSelector(state => state.auth.user);
 
   const username = user?.username || "";
@@ -30,6 +33,7 @@ const Username = ({ next }) => {
     setIsLoading(true)
     try {
       const data = await authService.setUpAccount(user);
+      navigate("/main/dashboard", { replace: true })
     } catch (error) {
       setGlobalError(error.message)
     } finally {
