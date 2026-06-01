@@ -1,6 +1,7 @@
 import ERROR_CODES from "../../config/errorCodes.js";
 import GenericError from "../../errors/GenericError.js";
 import UserNotFound from "../../errors/UserNotFound.js";
+import SessionToken, { SESSION_TOKEN_TYPES } from "../../models/sessionToken.model.js";
 import User from "../../models/user.model.js"
 
 export const findActiveUserById = (userId) => {
@@ -21,4 +22,8 @@ export const updateUser = (user, newUserData) => {
   })
 
   return user
+}
+
+export const invalidateAccountSetUpSessionToken = async (userId) => {
+  return SessionToken.deleteMany({userId, type: SESSION_TOKEN_TYPES.ACCOUNT_SET_UP});
 }
