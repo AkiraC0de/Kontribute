@@ -10,3 +10,8 @@ export const handleMe = async (req, res) => {
       user: user.toPublicJSON()
     })
 }
+
+export const handleAccountSetUp = async (req, res) => {
+  const user = await findActiveUserById(req.user._id);
+  
+}
