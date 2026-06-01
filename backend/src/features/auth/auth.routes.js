@@ -16,7 +16,6 @@ import {
   handleEmailVerificationResend,
   handleLogin,
   handleLogout,
-  handleMe,
   handleRefresh,
   handleRegister,
   handleRequestResetPassword,
@@ -30,10 +29,7 @@ import { SESSION_TOKEN_TYPES } from "../../models/sessionToken.model.js";
 const authRoute = Router();
 
 // -- Core Authentication
-
-// POST /api/v1/auth/me - Exchange an old refresh token for a new pair 
-authRoute.get("/me", verifyAuth, handleMe);
-
+ 
 // POST /api/v1/auth/register - Register a new account
 authRoute.post("/register", joiValidator(registerSchema), handleRegister );
 

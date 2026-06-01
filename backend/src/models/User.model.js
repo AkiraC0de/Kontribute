@@ -22,6 +22,7 @@ const userSchema = new Schema({
         sparse: true,
         unique: true,
         minlength: 3,
+        maxlength: 15,
         trim: true
     },
     email: {
