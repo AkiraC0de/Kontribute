@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isLoading: false,
   user: {
     username: "",
     firstName: "",
@@ -14,6 +13,12 @@ const accountSetUpSlice = createSlice({
   name: "accountSetUp",
   initialState, 
   reducers: {
+    setUser : (state, action) => {
+      state.user = {
+        ...state.user,
+        ...action.payload
+      }
+    },
     setUsername: (state, action) => {
       state.user.username = action.payload;
     },
@@ -25,9 +30,6 @@ const accountSetUpSlice = createSlice({
     },
     setSex: (state, action) => {
       state.user.sex = action.payload;
-    },
-    setIsLoading: (state, action) => {
-      state.isLoading = action.payload;
     }
   }
 });
@@ -37,8 +39,7 @@ export const {
   setFirstName, 
   setLastName, 
   setSex, 
-  setIsLoading, 
-  resetForm 
+  setUser,
 } = accountSetUpSlice.actions;
 
 export default accountSetUpSlice.reducer;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { setUser } from "../../../../services/store/authSlice";
+import { setUser } from "../../../../services/store/accountSetUpSlice";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
 import authService from "../../../../services/api/authService";
@@ -13,7 +13,7 @@ const Username = ({ next }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector(state => state.accountSetUp.user);
 
   const username = user?.username || "";
   const isCorrectLength = username.length >= 3 && username.length <= 15;

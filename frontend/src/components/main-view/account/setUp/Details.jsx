@@ -2,16 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { accountSetUpDetailsControls } from "../../../../services/utils/config";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
-import { setUser } from "../../../../services/store/authSlice";
+import { setUser } from "../../../../services/store/accountSetUpSlice";
 import { useState } from "react";
 import { isValidName, isValidString } from "../../../../services/utils/utils";
 
 const Details = ({ next }) => {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user);
+
+  const user = useSelector(state => state.accountSetUp.user);
   const [error, setError] = useState({});
 
   const isAllInputFilled = user?.firstName && user?.lastName && user?.sex;
+  const hasError = error?.firstName || error?.lastName || error?.sex; 
 
   const handleChange = (e) => {
     setError(prev => ({...prev, [e.target.name]: ""}))
@@ -235,7 +237,7 @@ const Details = ({ next }) => {
           </div>
         </div>
       </div>
-      <PrimaryButton onClick={handleContinue} className={`w-full mt-auto ${!isAllInputFilled ? "opacity-50 cursor-not-allowed" : ""}`}>Continue</PrimaryButton>
+      <PrimaryButton onClick={handleContinue} className={`w-full mt-auto ${!isAllInputFilled && hasError ? "opacity-50 cursor-not-allowed" : ""}`}>Continue</PrimaryButton>
     </div>
   );
 };
