@@ -11,6 +11,8 @@ const Details = ({ next }) => {
   const user = useSelector(state => state.auth.user);
   const [error, setError] = useState({});
 
+  const isAllInputFilled = user?.firstName && user?.lastName && user?.sex;
+
   const handleChange = (e) => {
     setError(prev => ({...prev, [e.target.name]: ""}))
     dispatch(setUser({[e.target.name] : e.target.value}));
@@ -233,7 +235,7 @@ const Details = ({ next }) => {
           </div>
         </div>
       </div>
-      <PrimaryButton onClick={handleContinue} className="w-full mt-auto">Continue</PrimaryButton>
+      <PrimaryButton onClick={handleContinue} className={`w-full mt-auto ${!isAllInputFilled ? "opacity-50 cursor-not-allowed" : ""}`}>Continue</PrimaryButton>
     </div>
   );
 };

@@ -3,10 +3,12 @@ import Details from "../../../components/main-view/account/setUp/Details"
 import Welcome from "../../../components/main-view/account/setUp/Welcome"
 import { useSearchParams } from "react-router"
 import { motion } from "motion/react"
+import Username from "../../../components/main-view/account/setUp/Username"
 
 const pages = [
   Welcome,
   Details,
+  Username
 ]
 
 const SetUp = () => {

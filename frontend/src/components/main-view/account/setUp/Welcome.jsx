@@ -288,7 +288,7 @@ const Welcome = ({next}) => {
         <p className="text-sm mt-2">Time to set up your account.</p>
       </div>
       <PrimaryButton onClick={() => next()}>
-        Continue
+        Let's start
       </PrimaryButton>
     </div>
   );

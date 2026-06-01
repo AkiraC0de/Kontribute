@@ -34,3 +34,10 @@ export const isValidName = (value) => {
 
   return nameRegex.test(value);
 } 
+
+export const isValidUsername = (value) => {
+  if (!value) return false
+  const usernameRegex = new RegExp(/^[a-zA-Z0-9._]{3,15}$/);
+
+  return usernameRegex.test(value);
+}
