@@ -46,7 +46,7 @@ const authService = {
   },
 
   getCurrentUser: async () => {
-    return await apiRequest.get('/auth/me');
+    return await apiRequest.get('/v1/user/me');
   }
 };
 

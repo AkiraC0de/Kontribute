@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { handleMe } from "./user.controllers";
-import verifyAuth from "../../middlewares/verifyAuth";
+import { handleMe } from "./user.controllers.js";
+import verifyAuth from "../../middlewares/verifyAuth.js";
 
 const userRoute = Router();
 
