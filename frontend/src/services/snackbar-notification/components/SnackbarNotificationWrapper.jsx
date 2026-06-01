@@ -1,13 +1,14 @@
 import { createContext, useState, useCallback } from "react"
 import SnackbarNotification from "./SnackbarNotification";
+import { AnimatePresence } from "motion/react"
 
 export const SnackbarNotificationContext = createContext();
 
 const SnackbarNotificationWrapper = ({children}) => {
-  const [notifications, setNotifications] = useState([{id: "test", message: "yow"}]);
+  const [notifications, setNotifications] = useState([]);
 
-  const showNotification = useCallback((message, type = "info", duration = 3000) => {
-    const id = Date.now();
+  const showNotification = useCallback((message, type = "INFO", duration = 3000) => {
+    const id = Date.now() + type;
     
     setNotifications((prev) => [...prev, { id, message, type }]);
 
@@ -17,12 +18,20 @@ const SnackbarNotificationWrapper = ({children}) => {
     }, duration);
   }, []);
 
+  const closeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
+  }, [notifications])
+
   return (
     <SnackbarNotificationContext.Provider value={{ showNotification }}>
       {children}
-      <div className="absolute top-0 left-0 bg-amber-200 p-2">
-        {notifications.map(notif => (<SnackbarNotification key={notif.id} type={notif.type} message={notif.message}/>))}
+      
+      <div className="absolute bottom-0 right-0 px-5 pb-8 pt-4 flex flex-col gap-3 overflow-hidden">
+        <AnimatePresence>
+          {notifications.map(notif => (<SnackbarNotification key={notif.id} id={notif.id}close={closeNotification} type={notif.type} message={notif.message}/>))}
+        </AnimatePresence>
       </div>
+      
     </SnackbarNotificationContext.Provider>
   )
 }
