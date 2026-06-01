@@ -7,7 +7,7 @@ import Input from "../../../ui/Input";
 import Spinner from "../../../common/Spinner"
 import useSnackbarNotification from "../../../../services/snackbar-notification/hooks/useSnackbarNotification"
 
-import { formatValidationErrors, isValidString } from "../../../../services/utils/utils";
+import { formatValidationErrors, isValidEmail, isValidString } from "../../../../services/utils/utils";
 import { publicLoginControls } from "../../../../services/utils/config";
 import authService from "../../../../services/api/authService";
 import { loginUser } from "../../../../services/store/authSlice";
@@ -85,7 +85,7 @@ const LoginForm = () => {
         />
       ))}
       <div className="mt-4 text-end text-sm">
-        <Link to="auth/forgot-password" className="hover:underline">Forgot password</Link>
+        <Link to="/auth/forgot-password" state={{email: isValidEmail(formData?.identifier) && formData.identifier}} className="hover:underline">Forgot password</Link>
       </div>
       {globalError && <p className="text-red-500 text-sm text-center my-4">{globalError}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
