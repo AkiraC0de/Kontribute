@@ -10,7 +10,15 @@ export const findActiveUserById = (userId) => {
     throw new UserNotFound();
 
   if(user.isBlocked) 
-    throw new GenericError(403, "You account has been blocked. Please contact us.", ERROR_CODES.REQUEST_ERROR);
+    throw new GenericError(403, "You account has been blocked. Please contact us.", ERROR_CODES.ACCOUNT_BLOCKED);
 
   return user;
+}
+
+export const updateUser = (user, newUserData) => {
+  Object.keys(newUserData).forEach(field => {
+    user[field] = newUserData[field]
+  })
+
+  return user
 }
