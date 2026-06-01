@@ -90,6 +90,8 @@ export const loginUser = async (userData) => {
 
   if(!user.isEmailVerified) throw new InvalidCredentials("Your account is not verified. Please check your email for the verification pin.");
 
+  if(!user.isSetUpDone) throw new GenericError(403, "It looks like you need to finish setting up your account. Visit the Account Setup Page to get started.", ERROR_CODES.ACCOUNT_REQUIRES_SET_UP);
+
   const isPasswordValid = await user.comparePassword(password);
   if(!isPasswordValid) throw new InvalidCredentials("Email, Username, or password is incorrect.");
 
