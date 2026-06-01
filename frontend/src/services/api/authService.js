@@ -30,11 +30,15 @@ const authService = {
   },
 
   verifyEmail: async (pin, sessionToken) => {
-    return await apiRequest.post("/v1/auth/verify/email", { pin }, {
+    const data = await apiRequest.post("/v1/auth/verify/email", { pin }, {
       headers: {
         "Authorization" : `Bearer ${sessionToken}`,
       }
     })
+
+    localStorage.setItem("accessToken", data.accessToken);
+
+    return data
   },
 
   resendEmailVerification: async (sessionToken) => {
@@ -43,6 +47,10 @@ const authService = {
         "Authorization" : `Bearer ${sessionToken}`,
       }
     })
+  },
+
+  setUpAccount: async (data) => {
+    return await apiRequest.put("/v1/user/account/set-up", data)
   },
 
   getCurrentUser: async () => {

@@ -1,10 +1,17 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../../../services/store/authSlice";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
+import authService from "../../../../services/api/authService";
+import Spinner from "../../../common/Spinner";
 
 const Username = ({ next }) => {
-  const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch()  
+  const user = useSelector(state => state.auth.user);
 
+  const username = user?.username || "";
   const isCorrectLength = username.length >= 3 && username.length <= 15;
   const hasValidChars = /^[a-zA-Z0-9._]*$/.test(username); // Allows empty string while typing
   const isInputEmpty = username.length === 0;
@@ -12,9 +19,20 @@ const Username = ({ next }) => {
   const isValidUsername =
     isCorrectLength && /^[a-zA-Z0-9._]{3,15}$/.test(username);
 
-  const handleContinue = () => {
-    if (isValidUsername) {
-      next();
+  const handleChange = (e) => {
+    dispatch(setUser({[e.target.name] : e.target.value}));
+  }  
+
+  const handleContinue = async () => {
+    if (!isValidUsername) return
+    setIsLoading(true)
+    try {
+      const data = await authService.setUpAccount(user);
+      console.log(data);
+    } catch (error) {
+      console.log(error.message)
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -316,7 +334,8 @@ const Username = ({ next }) => {
         <Input
           placeholder="Ex: john.delacruz"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          name="username"
+          onChange={handleChange}
         />
 
         {/* Dynamic Warning Strings */}
@@ -347,10 +366,10 @@ const Username = ({ next }) => {
 
       <PrimaryButton
         onClick={handleContinue}
-        disabled={!isValidUsername}
+        disabled={!isValidUsername || isLoading}
         className={`w-full mt-auto ${!isValidUsername ? "opacity-50 cursor-not-allowed" : ""}`}
       >
-        Complete Setup
+        {isLoading ? <Spinner color="bg-white"/> : "Complete set up"}
       </PrimaryButton>
     </div>
   );
