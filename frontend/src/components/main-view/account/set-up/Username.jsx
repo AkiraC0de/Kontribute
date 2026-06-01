@@ -18,12 +18,12 @@ const Username = ({ next }) => {
   const user = useSelector(state => state.accountSetUp.user);
 
   const username = user?.username || "";
-  const isCorrectLength = username.length >= 3 && username.length <= 15;
+  const isCorrectLength = username.length >= 3 && username.length <= 20;
   const hasValidChars = /^[a-zA-Z0-9._]*$/.test(username); // Allows empty string while typing
   const isInputEmpty = username.length === 0;
 
   const isValidUsername =
-    isCorrectLength && /^[a-zA-Z0-9._]{3,15}$/.test(username);
+    isCorrectLength && /^[a-zA-Z0-9._]{3,20}$/.test(username);
 
   const handleChange = (e) => {
     setGlobalError("")
@@ -39,6 +39,7 @@ const Username = ({ next }) => {
       navigate("/main/dashboard", { replace: true })
     } catch (error) {
       setGlobalError(error.message)
+      console.log(error.errors)
     } finally {
       setIsLoading(false)
     }
@@ -356,7 +357,7 @@ const Username = ({ next }) => {
                 : "text-red-500"
           }`}
         >
-          • Use 3–15 characters.
+          • Use 3–20 characters.
         </p>
 
         <p

@@ -46,6 +46,8 @@ const ForgotPassword = () => {
           </Link>
         </form>
       </div>
+      {/* Grid background */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[size:4rem_4rem] mask-[radial-gradient(ellipse_70%_70%_at_50%_50%,#000_40%,transparent_100%)]"></div>  
     </div>
   )
 }
