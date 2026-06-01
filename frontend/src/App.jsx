@@ -50,11 +50,7 @@ function App() {
         </Route>
       </Route>
 
-      <Route path="/main/account/set-up" element={
-        <ProtectedRoute>
-          <SetUp />
-        </ProtectedRoute>
-      }/>
+      <Route path="/main/account/set-up/:sessionToken" element={<SetUp />}/>
 
       <Route path="/main" element={
         <ProtectedRoute>
@@ -68,9 +64,6 @@ function App() {
           
         </Route> */}
       </Route>
-
-      
-      
 
       <Route path="*" element={<NotFound />} />
     </Routes>

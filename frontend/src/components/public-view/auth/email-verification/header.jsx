@@ -119,7 +119,7 @@ const Header = () => {
       <h2 className="text-gray-600 text-center">
         <span>Please enter the </span>
         <span className="text-primary font-bold">{isNewOtp && "New "} 6 Digit </span>
-        <span className="italic">Code we have sent to {user?.email || "you"}</span>
+        <span className="italic">Code we have sent to {user?.email || "you via email"}</span>
       </h2>
     </div>
   );

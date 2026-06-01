@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { setUser } from "../../../../services/store/accountSetUpSlice";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
@@ -10,6 +10,7 @@ import Spinner from "../../../common/Spinner";
 const Username = ({ next }) => {
   const dispatch = useDispatch()  
   const navigate = useNavigate()
+  const { sessionToken } = useParams()
 
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
@@ -32,7 +33,7 @@ const Username = ({ next }) => {
     if (!isValidUsername) return
     setIsLoading(true)
     try {
-      const data = await authService.setUpAccount(user);
+      const data = await authService.setUpAccount(sessionToken, user);
       navigate("/main/dashboard", { replace: true })
     } catch (error) {
       setGlobalError(error.message)

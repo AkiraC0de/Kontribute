@@ -1,9 +1,12 @@
 import CirclePagination from "../../../components/common/CirclePagination"
 import Details from "../../../components/main-view/account/set-up/Details"
 import Welcome from "../../../components/main-view/account/set-up/Welcome"
-import { useSearchParams } from "react-router"
+import { useNavigate, useParams, useSearchParams } from "react-router"
 import { motion } from "motion/react"
+import { useEffect, useState } from "react"
+import authService from "../../../services/api/authService"
 import Username from "../../../components/main-view/account/set-up/Username"
+import FullPageSpinner from "../../../components/common/FullPageSpinner"
 
 const pages = [
   Welcome,
@@ -12,10 +15,34 @@ const pages = [
 ]
 
 const SetUp = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { sessionToken } = useParams()
   const totalPages = pages.length;
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
+
+  const [isValidating, setIsValidating] = useState(true);
+  useEffect(() => {
+    const verifyTokenOnFirstLoad = async () => {
+      const [navigation] = performance.getEntriesByType('navigation');
+      if (navigation && navigation.type !== 'reload') {
+        setIsValidating(false);
+        return;
+      } 
+
+      try {
+        await authService.verifySessionToken(sessionToken);
+      } catch (error) {
+        console.error("Invalid token on first load:", error.message);
+        navigate("/main/dashboard", { replace: true });
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    verifyTokenOnFirstLoad();
+  }, [sessionToken, navigate]);
 
   const setCurrentPage = (newPage) => {
     setSearchParams({ page: newPage });
@@ -28,6 +55,10 @@ const SetUp = () => {
       console.log("Setup complete!");
     }
   };
+
+  if(isValidating){
+    return <FullPageSpinner/>
+  }
 
   return (
     <div className="flex justify-center flex-col items-center min-h-screen p-5 relative overflow-hidden">

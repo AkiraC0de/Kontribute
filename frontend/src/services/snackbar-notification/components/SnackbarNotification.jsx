@@ -32,7 +32,6 @@ const Icon = ({ type }) => {
 }
 
 const SnackbarNotification = ({id, type, message, close}) => {
-  console.log(type)
   return (
     <motion.div 
       key={id}

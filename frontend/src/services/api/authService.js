@@ -49,8 +49,12 @@ const authService = {
     })
   },
 
-  setUpAccount: async (data) => {
-    return await apiRequest.put("/v1/user/account/set-up", data)
+  setUpAccount: async (sessionToken, data) => {
+    return await apiRequest.put("/v1/user/account/set-up", data, {
+      headers: {
+        "Authorization" : `Bearer ${sessionToken}`,
+      }
+    })
   },
 
   getCurrentUser: async () => {
