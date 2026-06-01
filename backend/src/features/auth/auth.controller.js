@@ -8,6 +8,7 @@ import ERROR_CODES from "../../config/errorCodes.js";
 import { verifyToken } from "../../utils/token.js";
 
 import { 
+  createSessionToken,
   findUserById,
   invalidateSessionAndOtp,
   issueVerificationTokens,
@@ -37,6 +38,7 @@ export const handleEmailVerification = async (req, res) => {
   const result = await verifyUserEmail(req.user._id, req.body.pin);
 
   const { accessToken, refreshToken} = generateTokens(req.user);
+  const sessionToken = await createSessionToken(req.user._id, SESSION_TOKEN_TYPES.ACCOUNT_SET_UP);
 
   return res.status(200)
     .cookie(COOKIE_REFRESHTOKEN.NAME, refreshToken, COOKIE_REFRESHTOKEN.OPTIONS)
@@ -44,7 +46,8 @@ export const handleEmailVerification = async (req, res) => {
       success : true,
       message: result.message,
       user: result.user,
-      accessToken
+      accessToken,
+      sessionToken
     });
 }
 

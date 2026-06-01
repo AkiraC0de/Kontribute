@@ -3,7 +3,8 @@ import { mongo, Schema, model } from "mongoose";
 export const SESSION_TOKEN_TYPES = {
   EMAIL_VERIFICATION : "emailVerification",
   RESET_PASS_VERIFICATION : "resetPasswordVerification",
-  RESET_PASS : "resetPassword"
+  RESET_PASS : "resetPassword",
+  ACCOUNT_SET_UP : "accountSetUp"
 }
 
 const sessionTokenSchema = new Schema({

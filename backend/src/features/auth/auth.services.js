@@ -185,7 +185,7 @@ export const invalidateSessionAndOtp = (userId, sessionType) =>
     SessionToken.deleteMany({ userId, type: sessionType})
   ]);
 
-const createSessionToken = async (userId, sessionType) => {
+export const createSessionToken = async (userId, sessionType) => {
   const existingSessionToken = await SessionToken.findOne({ userId, type: sessionType, });
 
   if(existingSessionToken && existingSessionToken.isOnCooldown()) 
