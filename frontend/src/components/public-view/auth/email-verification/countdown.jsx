@@ -40,7 +40,7 @@ const Countdown = ({setError}) => {
             <span>resend OTP in </span>
              <span className="font-bold">{countdown}s</span>
           </>
-        : <button onClick={handleResend} className="font-medium hover:underline cursor-pointer">
+        : <button onClick={handleResend} type="button" className="font-medium hover:underline cursor-pointer">
             Resend OTP
           </button>
       }

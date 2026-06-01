@@ -6,6 +6,7 @@ import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
 import authService from "../../../../services/api/authService";
 import Spinner from "../../../common/Spinner";
+import { loginUser } from "../../../../services/store/authSlice";
 
 const Username = ({ next }) => {
   const dispatch = useDispatch()  
@@ -34,6 +35,7 @@ const Username = ({ next }) => {
     setIsLoading(true)
     try {
       const data = await authService.setUpAccount(sessionToken, user);
+      dispatch(loginUser(data.user));
       navigate("/main/dashboard", { replace: true })
     } catch (error) {
       setGlobalError(error.message)

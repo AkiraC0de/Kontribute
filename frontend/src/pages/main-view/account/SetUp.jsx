@@ -25,12 +25,6 @@ const SetUp = () => {
   const [isValidating, setIsValidating] = useState(true);
   useEffect(() => {
     const verifyTokenOnFirstLoad = async () => {
-      const [navigation] = performance.getEntriesByType('navigation');
-      if (navigation && navigation.type !== 'reload') {
-        setIsValidating(false);
-        return;
-      } 
-
       try {
         await authService.verifySessionToken(sessionToken);
       } catch (error) {
