@@ -48,6 +48,8 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="/auth/email-verification/:sessionToken" element={<EmailVerification/>}/>
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route path="/main/account/set-up/:sessionToken" element={<SetUp />}/>
@@ -65,7 +67,7 @@ function App() {
         </Route> */}
       </Route>
 
-      <Route path="*" element={<NotFound />} />
+      
     </Routes>
   );
 }

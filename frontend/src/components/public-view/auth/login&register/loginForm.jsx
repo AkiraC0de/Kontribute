@@ -84,8 +84,8 @@ const LoginForm = () => {
           error={fieldErrors[control.name]}
         />
       ))}
-      <div className="mt-5 text-end text-sm">
-        <Link to="auth/forgot-password">Forgot password?</Link>
+      <div className="mt-4 text-end text-sm">
+        <Link to="auth/forgot-password" className="hover:underline">Forgot password</Link>
       </div>
       {globalError && <p className="text-red-500 text-sm text-center my-4">{globalError}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
