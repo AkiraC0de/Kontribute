@@ -9,8 +9,8 @@ const userRoute = Router();
 // GET /api/v1/user/me - Fetch users data
 userRoute.get("/me", verifyAuth, handleMe);
 
-// GET /api/v1/user/account/set-up - Set up users account after registration
-userRoute.post(
+// PUT /api/v1/user/account/set-up - Set up users account after registration
+userRoute.put(
   "/account/set-up",
   verifyAuth,
   joiValidator(accountSetUpSchema),
