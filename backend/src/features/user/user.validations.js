@@ -44,14 +44,15 @@ export const accountSetUpSchema = Joi.object({
 
   username: Joi.string()
     .trim()
-    .alphanum()
+    .pattern(/^[a-zA-Z0-9._]+$/) 
     .min(3)
-    .max(30)
+    .max(20)
     .required()
     .messages({
       "string.empty": "Username is required",
-      "string.alphanum": "Username can only contain alphanumeric characters",
+      "string.pattern.base": "Username can only contain letters, numbers, underscores, and periods",
       "string.min": "Username must be at least 3 characters long",
+      "string.max": "Username cannot exceed 20 characters",
       "any.required": "Username is required"
     })
 });

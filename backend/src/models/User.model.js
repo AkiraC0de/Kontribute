@@ -22,7 +22,7 @@ const userSchema = new Schema({
         sparse: true,
         unique: true,
         minlength: 3,
-        maxlength: 15,
+        maxlength: 20,
         trim: true
     },
     sex: {
