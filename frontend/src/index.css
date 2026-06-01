@@ -61,7 +61,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 
