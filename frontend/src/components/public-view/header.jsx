@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { LogIn, Menu, PenLine, X } from "lucide-react";
+import { LogIn, LogInIcon, Menu, PenLine, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import { motion, AnimatePresence, scale } from "motion/react";
+
 import PrimaryButton from "../ui/PrimaryButton";
 import SecondaryButton from "../ui/SecondayButton";
-import { motion, AnimatePresence, scale } from "motion/react";
 import Nav from "./nav";
 
 const Header = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -55,15 +58,29 @@ const Header = () => {
             <div onClick={closeMenu}>
               <Nav />
             </div>
+            
 
-            <div className="flex lg:flex-row lg:space-x-4">
-              <Link to="/auth/login">
-                <SecondaryButton>Login</SecondaryButton>
-              </Link>
-              <Link to="/auth/register">
-                <PrimaryButton>Register</PrimaryButton>
-              </Link>
-            </div>
+            {
+              isAuthenticated
+              ? (
+                <Link to="/main/dashboard">
+                  <PrimaryButton className="flex gap-2 items-center pl-3">
+                    <LogInIcon size={20}/>
+                    <span>Go to dashboard</span>
+                  </PrimaryButton>
+                </Link>
+                ) 
+              : (
+                <div className="flex lg:flex-row lg:space-x-4">
+                  <Link to="/auth/login">
+                    <SecondaryButton>Login</SecondaryButton>
+                  </Link>
+                  <Link to="/auth/register">
+                    <PrimaryButton>Register</PrimaryButton>
+                  </Link>
+                </div>
+              )
+            }
           </div>
         </div>
 
@@ -82,16 +99,27 @@ const Header = () => {
                   <Nav />
                 </div>
 
-                <div className="flex flex-col mt-4 text-sm">
-                  <Link to="/auth/login" className="flex gap-2 text-black py-3 group" onClick={closeMenu}>
-                    <LogIn className="group-hover:scale-120 transition-all duration-200" size={22}/>
-                    <span>Login</span>
-                  </Link>
-                  <Link to="/auth/register" className="flex gap-2 text-black py-3" onClick={closeMenu}>
-                    <PenLine size={22}/>
-                    <span>Register</span>
-                  </Link>
-                </div>
+                {
+                  isAuthenticated 
+                  ? (
+                    <Link to="/main/dashboard" className="flex gap-2 text-sm text-black py-3 group" onClick={closeMenu}>
+                      <LogIn className="group-hover:scale-120 transition-all duration-200" size={22}/>
+                      <span>Go to dashboard</span>
+                    </Link>
+                  )
+                  : (
+                    <div className="flex flex-col mt-4 text-sm">
+                      <Link to="/auth/login" className="flex gap-2 text-black py-3 group" onClick={closeMenu}>
+                        <LogIn className="group-hover:scale-120 transition-all duration-200" size={22}/>
+                        <span>Login</span>
+                      </Link>
+                      <Link to="/auth/register" className="flex gap-2 text-black py-3" onClick={closeMenu}>
+                        <PenLine size={22}/>
+                        <span>Register</span>
+                      </Link>
+                    </div>
+                  )
+                }
               </div>
             </motion.div>
           )}
