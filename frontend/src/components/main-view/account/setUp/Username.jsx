@@ -8,6 +8,7 @@ import Spinner from "../../../common/Spinner";
 
 const Username = ({ next }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [globalError, setGlobalError] = useState("");
   const dispatch = useDispatch()  
   const user = useSelector(state => state.auth.user);
 
@@ -20,6 +21,7 @@ const Username = ({ next }) => {
     isCorrectLength && /^[a-zA-Z0-9._]{3,15}$/.test(username);
 
   const handleChange = (e) => {
+    setGlobalError("")
     dispatch(setUser({[e.target.name] : e.target.value}));
   }  
 
@@ -28,9 +30,8 @@ const Username = ({ next }) => {
     setIsLoading(true)
     try {
       const data = await authService.setUpAccount(user);
-      console.log(data);
     } catch (error) {
-      console.log(error.message)
+      setGlobalError(error.message)
     } finally {
       setIsLoading(false)
     }
@@ -362,7 +363,10 @@ const Username = ({ next }) => {
         >
           • Letters, numbers, underscores, and periods only.
         </p>
+        {globalError && <p className="text-red-500 text-sm text-center my-4">{globalError}</p>}
       </div>
+
+      
 
       <PrimaryButton
         onClick={handleContinue}
