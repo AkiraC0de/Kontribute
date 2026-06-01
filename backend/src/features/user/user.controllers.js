@@ -7,7 +7,7 @@ export const handleMe = async (req, res) => {
   const user = await findActiveUserById(req.user._id);
 
   if(!user.isSetUpDone)
-    throw GenericError(403, "Please proceed to setting up your account.", ERROR_CODES.ACCOUNT_REQUIRES_SET_UP);
+    throw new GenericError(403, "Please proceed to setting up your account.", ERROR_CODES.ACCOUNT_REQUIRES_SET_UP);
 
   return res.status(200)
     .json({
