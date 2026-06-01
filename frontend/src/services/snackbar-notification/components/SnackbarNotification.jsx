@@ -40,10 +40,10 @@ const SnackbarNotification = ({id, type, message, close}) => {
       animate={{ x: 0, opacity: 1 }}       
       exit={{ x: "100%", opacity: 0 }}     
       transition={{ duration: 0.5 }}
-      className="p-3 bg-white shadow-custom rounded-xl w-85 flex items-center">
+      className="p-2 bg-white shadow-custom-sm rounded-xl w-75 lg:w-80 flex items-center">
       <div className="flex-1 flex gap-2 items-center">
         <Icon type={type}/>
-        <p className="font-medium text-sm flex-1 line-clamp-1 text-black">{message}</p>
+        <p className="font-medium text-xs lg:text-sm flex-1 line-clamp-1 text-black">{message}</p>
       </div>
       <button onClick={() => close(id)} className="w-10 p-2 rounded-full hover:bg-gray-100 transition-all duration-300 cursor-pointer">
         <X color="black"/>

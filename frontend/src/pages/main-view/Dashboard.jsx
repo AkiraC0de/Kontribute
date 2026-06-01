@@ -15,10 +15,10 @@ const Dashboard = () => {
   }
 
   const handleShowNotification = () => {
-    showNotification("MESSAGE", "WARNING");
-    showNotification("MESSAGE", "INFO");
-    showNotification("MESSAGE", "FAILED");
-    showNotification("MESSAGE", "SUCCESS");
+    showNotification("JANELLE GANDA", "WARNING");
+    showNotification("JANELLE GANDA", "INFO");
+    showNotification("JANELLE GANDA", "FAILED");
+    showNotification("JANELLE GANDA", "SUCCESS");
   }
 
   return (

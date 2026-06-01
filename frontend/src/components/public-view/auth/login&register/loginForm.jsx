@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Input from "../../../ui/Input";
 import Spinner from "../../../common/Spinner"
+import useSnackbarNotification from "../../../../services/snackbar-notification/hooks/useSnackbarNotification"
 
 import { formatValidationErrors, isValidString } from "../../../../services/utils/utils";
 import { publicLoginControls } from "../../../../services/utils/config";
@@ -15,6 +16,7 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showNotification } = useSnackbarNotification()
 
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +46,7 @@ const LoginForm = () => {
     try {  
       const data = await authService.login(formData);
       dispatch(loginUser(data.user));
+      showNotification("Login Successfull", "SUCCESS");
       navigate(location.state?.from || "/main/dashboard", { replace: true });
     } catch (error) {
       setGlobalError(error.message);

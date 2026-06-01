@@ -26,7 +26,7 @@ const SnackbarNotificationWrapper = ({children}) => {
     <SnackbarNotificationContext.Provider value={{ showNotification }}>
       {children}
       
-      <div className="absolute bottom-0 right-0 px-5 pb-8 pt-4 flex flex-col gap-3 overflow-hidden">
+      <div className="fixed bottom-0 z-200 right-0 p-2  lg:p-4 flex flex-col gap-3 overflow-hidden">
         <AnimatePresence>
           {notifications.map(notif => (<SnackbarNotification key={notif.id} id={notif.id}close={closeNotification} type={notif.type} message={notif.message}/>))}
         </AnimatePresence>
