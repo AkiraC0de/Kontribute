@@ -1,9 +1,9 @@
 import CirclePagination from "../../../components/common/CirclePagination"
-import Details from "../../../components/main-view/account/setUp/Details"
-import Welcome from "../../../components/main-view/account/setUp/Welcome"
+import Details from "../../../components/main-view/account/set-up/Details"
+import Welcome from "../../../components/main-view/account/set-up/Welcome"
 import { useSearchParams } from "react-router"
 import { motion } from "motion/react"
-import Username from "../../../components/main-view/account/setUp/Username"
+import Username from "../../../components/main-view/account/set-up/Username"
 
 const pages = [
   Welcome,
