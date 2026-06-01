@@ -22,6 +22,10 @@ const SetUp = () => {
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [])
+
   const [isValidating, setIsValidating] = useState(true);
   useEffect(() => {
     const verifyTokenOnFirstLoad = async () => {
