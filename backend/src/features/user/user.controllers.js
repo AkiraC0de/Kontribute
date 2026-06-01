@@ -21,11 +21,11 @@ export const handleAccountSetUp = async (req, res) => {
   const user = await findActiveUserById(req.user._id);
 
   if(user.isSetUpDone)
-    throw GenericError(403, "Your account has already been set up.", ERROR_CODES.REQUEST_ERROR);
+    throw new GenericError(403, "Your account has already been set up.", ERROR_CODES.REQUEST_ERROR);
 
   const conflictingUsername = await User.findOne({username: req.body.username});
   if(conflictingUsername)
-    throw GenericError(400, "Username has already been taken. Please enter a new one.", ERROR_CODES.REQUEST_ERROR);
+    throw new GenericError(400, "Username has already been taken. Please enter a new one.", ERROR_CODES.REQUEST_ERROR);
 
   const setupData = {
     ...req.body,

@@ -25,6 +25,11 @@ const userSchema = new Schema({
         maxlength: 15,
         trim: true
     },
+    sex: {
+        type: String,
+        trim: true,
+        enum: ["Male", "Female", "Prefer not to say"]
+    },
     email: {
         type: String,
         required: true,

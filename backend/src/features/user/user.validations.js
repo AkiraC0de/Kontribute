@@ -21,6 +21,16 @@ export const accountSetUpSchema = Joi.object({
       "any.required": "Last name is required"
     }),
 
+  sex: Joi.string()
+    .trim()
+    .valid("Male", "Female", "Prefer not to say")
+    .required()
+    .messages({
+      "string.empty": "Sex selection is required",
+      "any.only": "Sex must be Male, Female, or Prefer not to say",
+      "any.required": "Sex selection is required"
+    }),
+
   middleInitial: Joi.string()
     .trim()
     .length(1)
