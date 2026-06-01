@@ -22,7 +22,15 @@ export const isValidString = (value) => {
 };
 
 export const isValidEmail = (value) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!value) return false
+  const emailRegex = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 
   return emailRegex.test(value);
 };
+
+export const isValidName = (value) => {
+  if (!value) return false
+  const nameRegex = new RegExp(/^[A-Za-z]?[A-Za-z ]*$/);
+
+  return nameRegex.test(value);
+} 

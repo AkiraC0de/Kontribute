@@ -3,18 +3,42 @@ import { accountSetUpDetailsControls } from "../../../../services/utils/config";
 import Input from "../../../ui/Input";
 import PrimaryButton from "../../../ui/PrimaryButton";
 import { setUser } from "../../../../services/store/authSlice";
+import { useState } from "react";
+import { isValidName, isValidString } from "../../../../services/utils/utils";
 
 const Details = ({ next }) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
+  const [error, setError] = useState({});
 
   const handleChange = (e) => {
+    setError(prev => ({...prev, [e.target.name]: ""}))
     dispatch(setUser({[e.target.name] : e.target.value}));
   }
 
   const handleSexChange = (e) => {
+    setError(prev => ({...prev, sex: ""}))
     dispatch(setUser({sex : e.target.value}));
   }
+
+  const validateInputs = () => {
+    let errors = {}
+    if(!isValidName(user?.firstName)) errors.firstName = "Numbers are not allowed in first name.";
+    if(!isValidName(user?.lastName)) errors.lastName = "Numbers are not allowed in last name.";
+
+    if (!isValidString(user?.firstName)) errors.firstName = "First name is required.";
+    if (!isValidString(user?.lastName)) errors.lastName = "First name is required.";
+    if (!isValidString(user?.sex)) errors.sex = "Please choose an option.";
+
+    setError(errors)
+    return Object.keys(errors).length === 0;
+  }
+
+  const handleContinue = () => {
+    const valid = validateInputs();
+    if(!valid) return
+    next();
+  } 
 
   return (
     <div className="w-full h-full flex flex-col items-start">
@@ -187,6 +211,7 @@ const Details = ({ next }) => {
             label="First name"
             name="firstName"
             placeholder="Ex: John"
+            error={error.firstName}
           />
           <Input
             value={user?.lastName || ""}
@@ -195,6 +220,7 @@ const Details = ({ next }) => {
             label="First name"
             name="lastName"
             placeholder="Ex: Dela cruz"
+            error={error.lastName}
           />
           <div>
             <p className="font-medium text-gray-700 text-sm tracking-wide mb-2">Sex</p>
@@ -203,10 +229,11 @@ const Details = ({ next }) => {
               <Input label="Female" value="Female" checked={user?.sex === "Female"} onChange={handleSexChange} type="radio" />
               <Input label="Prefer not to say" value="Prefer not to say" checked={user?.sex === "Prefer not to say"} onChange={handleSexChange} type="radio" />
             </div>
+            {error?.sex && <p className="text-sm text-red-600 mt-0.5">{error.sex}</p>}
           </div>
         </div>
       </div>
-      <PrimaryButton className="w-full mt-auto">Continue</PrimaryButton>
+      <PrimaryButton onClick={handleContinue} className="w-full mt-auto">Continue</PrimaryButton>
     </div>
   );
 };
