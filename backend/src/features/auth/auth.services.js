@@ -16,7 +16,7 @@ import { generateTokens } from "../../utils/token.js";
 import InvalidCredentials from "../../errors/InvalidCredentials.js";
 import TooManyRequest from "../../errors/TooManyRequest.js";
 import e from "express";
-
+import ValidationError from "../../errors/ValidationError.js";
 // --- services
 
 export const registerUser = async (userData) => {
@@ -43,7 +43,7 @@ const findUserByIdentifier = (identifier) =>
   User.findOne({ $or: [{ username : identifier }, { email : identifier }] });
 
 const throwIfVerifiedConflict = () => {
-    throw new GenericError(400, "The email has already been registered.", ERROR_CODES.EMAIL_ALREADY_REGISTERED);
+    throw new ValidationError("Email have already taken.", [ {field: "email", message: "The email has already been registered"} ]);
 };
 
 const handleUnverifiedConflict = async (existingUser) => {
