@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Resend from "../../../../components/public-view/auth/email-verification/resend"
+import Resend from "../../../../components/common/Resend"
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Spinner from "../../../common/Spinner";
 import authService from "../../../../services/api/authService";
@@ -16,7 +16,7 @@ const Form = () => {
 
   const { sessionToken } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleChange = (e, index) => {
     setError("")
@@ -48,6 +48,16 @@ const Form = () => {
       }
     }
   };
+
+  const handleResend = async () => {
+    try {
+      const data = await authService.resendEmailVerification(sessionToken);
+      navigate(`/auth/email-verification/${data.sessionToken}`, { replace: true, state: { newVerification: true }})
+      setError("")
+    } catch (error) {
+      setError(error.message);
+    }
+  }
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +100,7 @@ const Form = () => {
           />
         ))}
       </div>
-      <Resend setError={setError}/>
+      <Resend resendHandler={handleResend}/>
       {error && <p className="text-red-500 text-sm text-center my-4">{error}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Verify"}
