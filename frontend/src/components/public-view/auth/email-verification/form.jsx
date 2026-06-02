@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Countdown from "../../../../components/public-view/auth/email-verification/countdown"
+import Resend from "../../../../components/public-view/auth/email-verification/resend"
 import PrimaryButton from "../../../ui/PrimaryButton";
 import Spinner from "../../../common/Spinner";
 import authService from "../../../../services/api/authService";
@@ -90,7 +90,7 @@ const Form = () => {
           />
         ))}
       </div>
-      <Countdown setError={setError}/>
+      <Resend setError={setError}/>
       {error && <p className="text-red-500 text-sm text-center my-4">{error}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
         {isLoading ? <Spinner color="bg-white"/> : "Verify"}

@@ -39,7 +39,6 @@ const Username = ({ next }) => {
       navigate("/main/dashboard", { replace: true })
     } catch (error) {
       setGlobalError(error.message)
-      console.log(error.errors)
     } finally {
       setIsLoading(false)
     }

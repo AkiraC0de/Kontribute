@@ -4,7 +4,7 @@ import authService from "../../../../services/api/authService";
 
 const COOLDOWN_IN_SEC = 60;
 
-const Countdown = ({setError}) => {
+const Resend = ({setError}) => {
   const [countdown, setCountdown] = useState(COOLDOWN_IN_SEC);
   const { sessionToken } = useParams();
   const navigate = useNavigate();
@@ -25,6 +25,7 @@ const Countdown = ({setError}) => {
     try {
       const data = await authService.resendEmailVerification(sessionToken);
       navigate(`/auth/email-verification/${data.sessionToken}`, { replace: true, state: { newVerification: true }})
+      setError("")
       setCountdown(COOLDOWN_IN_SEC)
     } catch (error) {
       console.error(error.message);
@@ -47,4 +48,4 @@ const Countdown = ({setError}) => {
     </div>
   )
 }
-export default Countdown
+export default Resend
