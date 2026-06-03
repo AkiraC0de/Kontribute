@@ -5,23 +5,34 @@ import { useSelector } from "react-redux"
 import { useLocation, Link, useNavigate } from "react-router"
 import PrimaryButton from "../../../components/ui/PrimaryButton"
 import SecondaryButton from "../../../components/ui/SecondayButton"
+import authService from "../../../services/api/authService"
+import Spinner from "../../../components/common/Spinner"
 
 const ForgotPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState(location.state?.email || "");
+  const [identifier, setIdentifier] = useState(location.state?.identifier || "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setError("")
-    setEmail(e.target.value)
+    setIdentifier(e.target.value)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true)
+    try {
+      const data = await authService.requestResetPassword(identifier);
+      navigate(`/auth/reset-password-verification/${data.sessionToken}`, { state: { message: data.message } })
+      console.log(data)
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -30,16 +41,17 @@ const ForgotPassword = () => {
         <div className="flex items-center w-full flex-col">
           <AlertCircle size={80} className="stroke-primary"/>
           <h1 className="text-black font-medium text-2xl mt-4 mb-2">Forgot Password</h1>
-          <p className="text-center">Enter your email and we will send you an OTP to reset your password.</p>
+          <p className="text-center">Enter your email or username and we will send you an OTP to reset your password.</p>
         </div>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
           <Input
-            value={email}
+            value={identifier}
             onChange={handleChange}
-            placeholder="Ex: example@gmail.com"
+            placeholder="Enter your email or username"
           />
+          {error && <p className="text-red-500 text-sm text-center my-4">{error}</p>}
           <PrimaryButton type="submit" className="mt-4">
-            Submit
+            {isLoading ? <Spinner color="bg-white"/> : "Submit"}
           </PrimaryButton>
           <Link to="/auth/login">
             <SecondaryButton type="button" className="w-full flex justify-center items-center gap-2">

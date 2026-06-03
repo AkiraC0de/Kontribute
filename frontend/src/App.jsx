@@ -23,6 +23,7 @@ import Features from "./pages/public-view/Features";
 import FullPageSpinner from "./components/common/FullPageSpinner";
 import SetUp from "./pages/main-view/account/SetUp";
 import ForgotPassword from "./pages/public-view/auth/ForgotPassword";
+import ResetPasswordVerification from "./pages/public-view/auth/ResetPasswordVerification";
 
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="email-verification/:sessionToken" element={<EmailVerification/>}/>
           <Route path="forgot-password" element={<ForgotPassword/>} />
+          <Route path="reset-password-verification/:sessionToken" element={<ResetPasswordVerification/>} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

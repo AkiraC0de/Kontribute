@@ -57,6 +57,10 @@ const authService = {
     })
   },
 
+  requestResetPassword: async (identifier) => {
+    return await apiRequest.post("/v1/auth/password/request-reset", { identifier })
+  },
+
   getCurrentUser: async () => {
     return await apiRequest.get('/v1/user/me');
   }

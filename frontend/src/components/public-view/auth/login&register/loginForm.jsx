@@ -85,7 +85,7 @@ const LoginForm = () => {
         />
       ))}
       <div className="mt-4 text-end text-sm">
-        <Link to="/auth/forgot-password" state={{email: isValidEmail(formData?.identifier) && formData.identifier}} className="hover:underline">Forgot password</Link>
+        <Link to="/auth/forgot-password" state={{identifier: formData?.identifier || ""}} className="hover:underline">Forgot password</Link>
       </div>
       {globalError && <p className="text-red-500 text-sm text-center my-4">{globalError}</p>}
       <PrimaryButton disabled={isLoading} className="w-full mt-5 flex justify-center items-center" type="submit">
