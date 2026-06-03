@@ -9,7 +9,7 @@ import UserNotFound from "../../errors/UserNotFound.js";
 import User from "../../models/user.model.js";
 import SessionToken, { SESSION_TOKEN_TYPES } from "../../models/sessionToken.model.js";
 
-import { generateCryptoToken, generateSixDigitCode } from "../../utils/utils.js";
+import { generateCryptoToken, generateSixDigitCode, isValidEmail, maskEmail } from "../../utils/utils.js";
 import Otp, { MAX_OTP_ATTEMPTS, OTP_TYPES } from "../../models/otp.model.js";
 import { sendVerificationCodeViaEmail } from "../../utils/mailer.js";
 import { generateTokens } from "../../utils/token.js";
@@ -116,8 +116,14 @@ export const requestResetPassword = async (identifier) => {
 
   sendVerificationCodeViaEmail(user.email, "Reset Password Verification", otp); // No await for advance response
 
+  const isIdentifierEmail = isValidEmail(identifier);
+  const messageEmail = isIdentifierEmail ? user.email : maskEmail(user.email)
+
   return {
-    message: "PIN for verification has sent via email.",
+    message: `OTP for verification has been sent to "${messageEmail}".`,
+    user: {
+      email: messageEmail
+    },
     sessionToken
   };
 }

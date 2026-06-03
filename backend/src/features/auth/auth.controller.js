@@ -133,6 +133,7 @@ export const handleRequestResetPassword = async (req, res) => {
     .json({
       success: true,
       message: result.message,
+      user: result.user,
       sessionToken: result.sessionToken
     })
 }
