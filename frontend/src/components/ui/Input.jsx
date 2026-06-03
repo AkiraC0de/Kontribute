@@ -31,6 +31,7 @@ const PasswordInput = ({ label, id, error, className = "", ...props }) => {
 
         <button
           type="button"
+          tabIndex="-1"
           onClick={() => setShowPassword(!showPassword)}
           className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
         >

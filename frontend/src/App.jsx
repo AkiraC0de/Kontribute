@@ -22,7 +22,7 @@ import About from "./pages/public-view/About";
 import Features from "./pages/public-view/Features";
 import FullPageSpinner from "./components/common/FullPageSpinner";
 import SetUp from "./pages/main-view/account/SetUp";
-import ForgotPassword from "./pages/public-view/ForgotPassword";
+import ForgotPassword from "./pages/public-view/auth/ForgotPassword";
 
 
 function App() {

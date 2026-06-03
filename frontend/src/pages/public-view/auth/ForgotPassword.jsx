@@ -1,13 +1,15 @@
 import { AlertCircle, ChevronLeft } from "lucide-react"
-import Input from "../../components/ui/Input"
+import Input from "../../../components/ui/Input"
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import { useLocation, Link } from "react-router"
-import PrimaryButton from "../../components/ui/PrimaryButton"
-import SecondaryButton from "../../components/ui/SecondayButton"
+import { useLocation, Link, useNavigate } from "react-router"
+import PrimaryButton from "../../../components/ui/PrimaryButton"
+import SecondaryButton from "../../../components/ui/SecondayButton"
 
 const ForgotPassword = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState(location.state?.email || "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,6 +21,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
   }
 
   return (

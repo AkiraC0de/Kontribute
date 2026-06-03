@@ -52,9 +52,7 @@ const RegisterForm = () => {
     setIsLoading(true);
     try {
       const data = await authService.register(formData);
-      dispatch(setUser({email: data.user.email}));
-      dispatch(setIsAuthenticated(true));
-      navigate(`/auth/email-verification/${data.sessionToken}`)
+      navigate(`/auth/email-verification/${data.sessionToken}`, { state: { email: data.user.email} })
     } catch (error) {
       if(error.errors){
         const structuredErrors = formatValidationErrors(error.errors);
