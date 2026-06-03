@@ -5,7 +5,7 @@ import Spinner from "../../../common/Spinner";
 import authService from "../../../../services/api/authService";
 import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../../../services/store/authSlice";
+import { setIsAuthenticated, setUser } from "../../../../services/store/authSlice";
 import useSnackbarNotification from "../../../../services/snackbar-notification/hooks/useSnackbarNotification";
 
 const Form = () => {
@@ -70,6 +70,7 @@ const Form = () => {
     try {
       const data = await authService.verifyEmail(pins, sessionToken);
       dispatch(setUser(data.user));
+      dispatch(setIsAuthenticated(true));
       showNotification("Email has been verified", "SUCCESS")
       navigate(`/main/account/set-up/${data.sessionToken}?page=1`, { replace: true });
     } catch (error) {
