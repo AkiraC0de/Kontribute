@@ -12,7 +12,7 @@ const groupSchema = new Schema({
     type: String,
     required: true,
   },
-  desc: String,
+  description: String,
   status: {
     type: String,
     enum: Object.values(GROUP_STATUS),
