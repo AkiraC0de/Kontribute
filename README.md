@@ -1,5 +1,6 @@
 ## TASK
 
 BACKEND:
-- models for Task and Activities
+- Joi validation
 - cron jobs to handle expiration of invitation
+current: Error And Response handling
