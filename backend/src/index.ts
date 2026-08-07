@@ -1,7 +1,14 @@
 import express from "express"
+import cors from "cors"
+import cookieParser from "cookie-parser"
+
 import initDatabase from "./db/connect"
 
 const app = express()
+
+app.use(express.json())
+app.use(cookieParser())
+app.use(cors({credentials: true}))
 
 app.listen(process.env.PORT, async () => {
   await initDatabase()
