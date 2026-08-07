@@ -5,12 +5,15 @@ import cookieParser from "cookie-parser"
 import initDatabase from "./db/connect"
 import errorHandler from "./middlewares/errorHandler"
 
+import authRoute from "./routes/auth.routes"
+
 const app = express()
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({credentials: true}))
 
+app.use("/api/v2/auth", authRoute)
 
 app.use(errorHandler())
 
