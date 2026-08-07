@@ -1,4 +1,4 @@
-import { Schema, model, InferSchemaType } from "mongoose"
+import { Schema, model, InferSchemaType, HydratedDocument } from "mongoose"
 
 export const USER_SEX = {
     MALE: "Male",
@@ -68,8 +68,9 @@ const userSchema = new Schema({
 userSchema.index({ role: 1 })
 userSchema.index({ isEmailVerified: 1 })
 
+export type UserType = InferSchemaType<typeof userSchema>;
 
-export type UserType = InferSchemaType<typeof userSchema>
+export type UserDocument = HydratedDocument<UserType>;
 
 const User = model("User", userSchema)
 export default User
