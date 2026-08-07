@@ -50,13 +50,13 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="email-verification/:sessionToken" element={<EmailVerification/>}/>
           <Route path="forgot-password" element={<ForgotPassword/>} />
-          <Route path="reset-password-verification/:sessionToken" element={<ResetPasswordVerification/>} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route path="/main/account/set-up/:sessionToken" element={<SetUp />}/>
+      <Route path="/auth/reset-password-verification/:sessionToken" element={<ResetPasswordVerification/>} />
 
       <Route path="/main" element={
         <ProtectedRoute>

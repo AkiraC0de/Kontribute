@@ -26,7 +26,7 @@ const ForgotPassword = () => {
     setIsLoading(true)
     try {
       const data = await authService.requestResetPassword(identifier);
-      navigate(`/auth/reset-password-verification/${data.sessionToken}`, { state: { message: data.message } })
+      navigate(`/auth/reset-password-verification/${data.sessionToken}`, { state: { email: data?.user?.email } })
       console.log(data)
     } catch (error) {
       setError(error.message)
@@ -49,7 +49,7 @@ const ForgotPassword = () => {
             onChange={handleChange}
             placeholder="Enter your email or username"
           />
-          {error && <p className="text-red-500 text-sm text-center my-4">{error}</p>}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           <PrimaryButton type="submit" className="mt-4">
             {isLoading ? <Spinner color="bg-white"/> : "Submit"}
           </PrimaryButton>
