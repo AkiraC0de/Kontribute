@@ -64,6 +64,7 @@ export const ErrorType = {
   BAD_REQUEST_MSG: "BadRequestMsgError",
   FORBIDDEN: "ForbiddenError",
   INTERNAL: "InternalError",
+  FAILED_EMAIL: "FailedEmailError",
 } as const;
 
 export type ErrorType = typeof ErrorType[keyof typeof ErrorType];
@@ -85,6 +86,7 @@ export const ErrorMessage = {
   BAD_REQUEST_MSG: "Invalid payload or parameters provided.",
   FORBIDDEN: "You do not have permission to perform this action.",
   INTERNAL: "An internal server error occurred.",
+  FAILED_EMAIL: "Failed to send an Email. Try again later.",
 } as const;
 
 export type ErrorMessage = typeof ErrorMessage[keyof typeof ErrorMessage];
@@ -148,6 +150,7 @@ export class ApiError extends Error {
         return new BadRequestResponse(err.message, err.data).send(res)
       case ErrorType.NOT_FOUND:
         return new NotFoundResponse(err.message).send(res)
+      case ErrorType.FAILED_EMAIL: 
       case ErrorType.INTERNAL:
         return new InternalResponse(err.message).send(res)
     }
@@ -263,6 +266,12 @@ export class ForbiddenError extends ApiError {
 export class InternalError extends ApiError {
   constructor(message?: string){
     super(ErrorType.INTERNAL, message || ErrorMessage.INTERNAL)
+  }
+}
+
+export class FailedEmailError extends ApiError {
+  constructor(message?: string){
+    super(ErrorType.FAILED_EMAIL, message || ErrorMessage.FAILED_EMAIL)
   }
 }
 

@@ -85,7 +85,6 @@ abstract class ApiResponse {
    * `super.prepare()` directly (skipping the debug log below).
    */
   public send(res: Response): Response {
-    console.log(this.message) // TODO: debug leftover — remove before shipping.
     return this.prepare(res, this)
   }
 

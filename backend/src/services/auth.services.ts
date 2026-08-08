@@ -10,12 +10,13 @@ import {
 } from "../utils/authUtils"
 
 import User, { UserType, UserDocument } from "../models/user.model"
-import Token, { TOKEN_TYPE, TokenType } from "../models/token.model"
+import Token, { TOKEN_TYPE, TokenDocument } from "../models/token.model"
+import { ApiMailer } from "../core/ApiMailer"
 
 export async function registerUser(userData : Pick<UserType, "email" | "password">): Promise<Record<string, any>>  {
   const { email, password } = userData
-  const existingUser = await User.findOne({ email })
 
+  const existingUser = await User.findOne({ email })
   if (existingUser) return handleRegistrationEmailConflict(existingUser, password)
  
   const hashedPassword = await hashPassword(password)
@@ -25,10 +26,10 @@ export async function registerUser(userData : Pick<UserType, "email" | "password
   })
   const token = await issueEmailVerificationToken(newUser._id)
 
-  // await sendVerificationEmail(existingUser);
+  await ApiMailer.sendOTP(newUser.email, token.payload.otp, "Email verification code.")
   return { 
     message: "Verification OTP has been sent. Please check your email's inbox.",
-    data: { email, token }
+    data: { email }
   }
 }
 
@@ -48,16 +49,17 @@ async function handleUnverifiedRegistration(
   existingUser.password = await hashPassword(password)
   await existingUser.save()
 
+  await flushUserTokens(existingUser._id)
   const token = await issueEmailVerificationToken(existingUser._id)
   
-  // await sendVerificationEmail(existingUser);
+  await ApiMailer.sendOTP(existingUser.email, token.payload.otp, "Email verification code.")
   return { 
     message: "Verification OTP resent. Please check your email's inbox.",
-    data: { email: existingUser.email, token }
+    data: { email: existingUser.email }
   }
 }
 
-async function issueEmailVerificationToken( userId: Types.ObjectId | string ){
+async function issueEmailVerificationToken(userId: Types.ObjectId | string ){
   return Token.create({
     userId,
     type: TOKEN_TYPE.EMAIL_VERIFICATION,
@@ -67,4 +69,9 @@ async function issueEmailVerificationToken( userId: Types.ObjectId | string ){
     },
     expiresAt: getTokenExpirationDate(TOKEN_TYPE.EMAIL_VERIFICATION),
   })
+}
+
+// Deletes all users tokens
+async function flushUserTokens(userId: Types.ObjectId | string){
+  return Token.deleteMany({userId})
 }
